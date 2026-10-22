@@ -15,7 +15,7 @@ function Ridge() {
   );
 }
 
-export function Home({ state, actions }: { state: State; actions: Actions }) {
+export function Home({ state, actions, onCasino }: { state: State; actions: Actions; onCasino: () => void }) {
   const m = monthStats(state);
   const series = savingsSeries(state);
   const totalSaved = state.buckets.reduce((a, b) => a + bucketSaved(b), 0);
@@ -50,6 +50,16 @@ export function Home({ state, actions }: { state: State; actions: Actions }) {
           Log a no-spend day
         </Button>
       )}
+
+      <Card tone="pink" className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <div className="font-cc text-2xl font-semibold uppercase text-cc-pink">Feeling the urge?</div>
+          <div className="text-xs text-cc-muted">Play your chips instead. Real money stays put.</div>
+        </div>
+        <Button variant="lime" className="shrink-0" onClick={onCasino}>
+          Open casino
+        </Button>
+      </Card>
 
       <Card tone="lime">
         <div className="mb-2 flex items-end justify-between">

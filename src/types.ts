@@ -19,6 +19,7 @@ export type Settings = {
   /** Amount of the alternating paycheck (14 days before/after the anchor) */
   payOtherAmount: number;
 };
+export type ChipEntry = { id: string; date: string; amount: number; reason: string };
 export type State = {
   version: 1;
   settings: Settings | null;
@@ -29,6 +30,12 @@ export type State = {
   buckets: Bucket[];
   /** Days (ISO) the user checked in, including no-spend days */
   checkins: string[];
+  /** Play-money wallet for the casino. Never bought, never cashed out. */
+  chips: number;
+  /** Recent chip earnings (used for the weekly earning cap) */
+  chipLog: ChipEntry[];
+  /** Chips currently sitting at the poker table */
+  tableStack: number;
 };
 
 export const DEFAULT_CATEGORIES = ["Food", "Gas", "Fun", "Business", "Shopping", "Other"];
@@ -42,4 +49,7 @@ export const emptyState = (): State => ({
   bills: [],
   buckets: [],
   checkins: [],
+  chips: 500,
+  chipLog: [],
+  tableStack: 0,
 });

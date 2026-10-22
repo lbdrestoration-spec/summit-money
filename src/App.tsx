@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Casino } from "./screens/Casino";
 import { Goals } from "./screens/Goals";
 import { Home } from "./screens/Home";
 import { Plan } from "./screens/Plan";
@@ -12,6 +13,7 @@ const tabs = [
   { id: "spend", name: "Spend", icon: "＋" },
   { id: "week", name: "Week", icon: "▦" },
   { id: "goals", name: "Goals", icon: "⚑" },
+  { id: "casino", name: "Casino", icon: "♠" },
   { id: "plan", name: "Plan", icon: "☰" },
 ] as const;
 type Tab = (typeof tabs)[number]["id"];
@@ -29,14 +31,25 @@ export default function App() {
           <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-cc-muted">Command Center</div>
           <h1 className="font-cc text-3xl font-bold uppercase leading-none tracking-wide">Summit Money</h1>
         </div>
+        <button
+          onClick={() => setTab("casino")}
+          className="min-h-11 rounded-full border border-cc-gold/50 bg-cc-gold/10 px-3 font-cc text-xl text-cc-gold"
+          aria-label={`${state.chips} chips. Open the casino`}
+        >
+          ● {state.chips.toLocaleString()}
+        </button>
       </header>
 
       <main className="space-y-4 px-4">
-        {tab === "home" && <Home state={state} actions={actions} />}
+        {tab === "home" && <Home state={state} actions={actions} onCasino={() => setTab("casino")} />}
         {tab === "spend" && <Spend state={state} actions={actions} />}
         {tab === "week" && <Week state={state} />}
         {tab === "goals" && <Goals state={state} actions={actions} />}
         {tab === "plan" && <Plan state={state} actions={actions} />}
+        {/* Casino stays mounted so a hand in progress survives switching tabs */}
+        <div hidden={tab !== "casino"}>
+          <Casino state={state} actions={actions} />
+        </div>
       </main>
 
       <nav
