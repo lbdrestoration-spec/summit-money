@@ -1,4 +1,4 @@
-import type { Settings, State } from "./types";
+import type { Bill, Plan, Settings, State } from "./types";
 
 /* ---------- dates (all local time, ISO yyyy-mm-dd) ---------- */
 const pad = (n: number) => String(n).padStart(2, "0");
@@ -47,21 +47,52 @@ export function paychecksBetween(s: Settings, from: Date, to: Date): Paycheck[] 
   return out;
 }
 
+/* ---------- weekly (Friday) pay: same amount every 7 days unless a week was different ---------- */
+export type FridayPay = { date: string; amount: number; overridden: boolean };
+export function fridaysBetween(plan: Plan, from: Date, to: Date): FridayPay[] {
+  const start = parse(plan.fridayStart);
+  const out: FridayPay[] = [];
+  const k = Math.max(0, Math.ceil(daysBetween(start, from) / 7));
+  for (let d = addDays(start, k * 7); d <= to; d = addDays(d, 7)) {
+    const key = iso(d);
+    const ov = plan.fridayOverrides[key];
+    out.push({ date: key, amount: ov ?? plan.fridayAmount, overridden: ov !== undefined });
+  }
+  return out;
+}
+
+/** Every date a monthly bill comes due between two dates (inclusive). Short months use their last day. */
+export function billsBetween(bills: Bill[], from: Date, to: Date) {
+  const out: { name: string; amount: number; date: string }[] = [];
+  let cursor = new Date(from.getFullYear(), from.getMonth(), 1);
+  while (cursor <= to) {
+    const last = endOfMonth(cursor).getDate();
+    for (const b of bills) {
+      const d = new Date(cursor.getFullYear(), cursor.getMonth(), Math.min(b.dueDay, last));
+      if (d >= from && d <= to) out.push({ name: b.name, amount: b.amount, date: iso(d) });
+    }
+    cursor = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1);
+  }
+  return out;
+}
+
 /* ---------- month math ---------- */
 export function monthStats(state: State, now = today()) {
   const from = startOfMonth(now);
   const to = endOfMonth(now);
   const checks = state.settings ? paychecksBetween(state.settings, from, to) : [];
   const paychecks = checks.reduce((a, c) => a + c.amount, 0);
+  const weekly = state.plan ? fridaysBetween(state.plan, from, to).reduce((a, f) => a + f.amount, 0) : 0;
   const sideIncome = state.incomes.filter((i) => inRange(i.date, from, to)).reduce((a, i) => a + i.amount, 0);
   const bills = state.bills.reduce((a, b) => a + b.amount, 0);
   const plannedSavings = state.buckets.reduce((a, b) => a + b.monthlyPlan, 0);
   const spent = state.spends.filter((s) => inRange(s.date, from, to)).reduce((a, s) => a + s.amount, 0);
-  const spendable = paychecks + sideIncome - bills - plannedSavings;
+  const spendable = paychecks + weekly + sideIncome - bills - plannedSavings;
   const remaining = spendable - spent;
   const daysLeft = daysBetween(now, to) + 1;
   return {
     paychecks,
+    weekly,
     checks,
     sideIncome,
     bills,
@@ -82,7 +113,10 @@ export function weekStats(state: State, now = today()) {
   const spent = spends.reduce((a, s) => a + s.amount, 0);
   const byCategory = new Map<string, number>();
   for (const s of spends) byCategory.set(s.category, (byCategory.get(s.category) ?? 0) + s.amount);
-  const income = state.incomes.filter((i) => inRange(i.date, from, to)).reduce((a, i) => a + i.amount, 0);
+  const sideIncome = state.incomes.filter((i) => inRange(i.date, from, to)).reduce((a, i) => a + i.amount, 0);
+  // Friday pay that has already landed this week counts as earned
+  const friday = state.plan ? fridaysBetween(state.plan, from, now).reduce((a, f) => a + f.amount, 0) : 0;
+  const income = sideIncome + friday;
   const saved = state.buckets.flatMap((b) => b.contributions).filter((c) => inRange(c.date, from, to)).reduce((a, c) => a + c.amount, 0);
   const days = Array.from({ length: 7 }, (_, i) => {
     const d = iso(addDays(from, i));

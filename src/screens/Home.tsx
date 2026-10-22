@@ -3,6 +3,7 @@ import { StockChart } from "../Chart";
 import type { Actions } from "../store";
 import type { State } from "../types";
 import { Button, Card, Empty, Heading, label, Stat } from "../ui";
+import { DeadlineCards, FridayPayCard } from "./Deadlines";
 
 function Ridge() {
   return (
@@ -35,6 +36,9 @@ export function Home({ state, actions, onCasino }: { state: State; actions: Acti
         </div>
         <Ridge />
       </div>
+
+      <DeadlineCards state={state} />
+      <FridayPayCard state={state} actions={actions} />
 
       <div className="grid grid-cols-2 gap-3">
         <Card tone="orange">
@@ -72,7 +76,8 @@ export function Home({ state, actions, onCasino }: { state: State; actions: Acti
       <Card>
         <Heading tone="aqua">This month</Heading>
         <div className="mt-3 grid grid-cols-2 gap-y-3">
-          <Stat title="Paychecks" value={money(m.paychecks)} />
+          <Stat title="Wed paychecks" value={money(m.paychecks)} />
+          <Stat title="Friday pay" value={money(m.weekly)} />
           <Stat title="Side income" value={money(m.sideIncome)} />
           <Stat title="Bills" value={money(m.bills)} tone="pink" />
           <Stat title="Planned savings" value={money(m.plannedSavings)} tone="gold" />

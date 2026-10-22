@@ -19,10 +19,24 @@ export type Settings = {
   /** Amount of the alternating paycheck (14 days before/after the anchor) */
   payOtherAmount: number;
 };
+export type Deadline = { id: string; name: string; date: string; goal?: number };
+/** Everything personal about how money comes in and what it is working toward */
+export type Plan = {
+  /** First Friday of the weekly pay, ISO. Pay repeats every 7 days from here. */
+  fridayStart: string;
+  /** What a normal Friday pays */
+  fridayAmount: number;
+  /** Fridays that paid something different, keyed by date (ISO) */
+  fridayOverrides: Record<string, number>;
+  /** What you allow yourself to spend per week (food, gas, fun) */
+  weeklySpending: number;
+  deadlines: Deadline[];
+};
 export type ChipEntry = { id: string; date: string; amount: number; reason: string };
 export type State = {
   version: 1;
   settings: Settings | null;
+  plan: Plan | null;
   categories: string[];
   spends: Spend[];
   incomes: Income[];
@@ -43,6 +57,7 @@ export const DEFAULT_CATEGORIES = ["Food", "Gas", "Fun", "Business", "Shopping",
 export const emptyState = (): State => ({
   version: 1,
   settings: null,
+  plan: null,
   categories: [...DEFAULT_CATEGORIES],
   spends: [],
   incomes: [],

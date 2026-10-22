@@ -21,7 +21,7 @@ function Row({ title, sub, right, onDelete }: { title: string; sub?: string; rig
   );
 }
 
-export function Plan({ state, actions }: { state: State; actions: Actions }) {
+export function Plan({ state, actions, onEditPlan }: { state: State; actions: Actions; onEditPlan: () => void }) {
   /* side income */
   const [incAmt, setIncAmt] = useState("");
   const [incNote, setIncNote] = useState("");
@@ -202,14 +202,24 @@ export function Plan({ state, actions }: { state: State; actions: Actions }) {
       </Card>
 
       <Card>
-        <Heading tone="violet">Your pay schedule</Heading>
-        {state.settings && (
-          <p className="mt-2 text-sm text-cc-muted">
-            {money(state.settings.payAnchorAmount)} and {money(state.settings.payOtherAmount)}, alternating every two weeks, anchored on {state.settings.payAnchor}.
-          </p>
+        <Heading tone="violet">My plan</Heading>
+        {state.settings && state.plan && (
+          <div className="mt-2 space-y-1 text-sm text-cc-muted">
+            <p>
+              Wednesdays: {money(state.settings.payAnchorAmount)} and {money(state.settings.payOtherAmount)}, taking turns every two weeks.
+            </p>
+            <p>Fridays: {money(state.plan.fridayAmount)} a week.</p>
+            <p>Weekly spending: {money(state.plan.weeklySpending)}.</p>
+            {state.plan.deadlines.map((d) => (
+              <p key={d.id}>
+                {d.name}: {d.date}
+                {d.goal ? ` · goal ${money(d.goal)}` : ""}
+              </p>
+            ))}
+          </div>
         )}
-        <Button className="mt-3 w-full" onClick={() => confirm("Change your pay schedule? Your logged spending and savings stay.") && actions.clearSettings()}>
-          Change pay schedule
+        <Button className="mt-3 w-full" onClick={onEditPlan}>
+          Edit my plan
         </Button>
       </Card>
 

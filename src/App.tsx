@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Casino } from "./screens/Casino";
 import { Goals } from "./screens/Goals";
 import { Home } from "./screens/Home";
+import { Personalize } from "./screens/Personalize";
 import { Plan } from "./screens/Plan";
-import { Setup } from "./screens/Setup";
 import { Spend } from "./screens/Spend";
 import { Week } from "./screens/Week";
 import { useStore } from "./store";
@@ -21,8 +21,10 @@ type Tab = (typeof tabs)[number]["id"];
 export default function App() {
   const { state, actions } = useStore();
   const [tab, setTab] = useState<Tab>("home");
+  const [editingPlan, setEditingPlan] = useState(false);
 
-  if (!state.settings) return <Setup actions={actions} />;
+  if (!state.settings || !state.plan || editingPlan)
+    return <Personalize state={state} actions={actions} editing={editingPlan} onDone={() => setEditingPlan(false)} />;
 
   return (
     <div className="mx-auto min-h-dvh max-w-md pb-24">
@@ -45,7 +47,7 @@ export default function App() {
         {tab === "spend" && <Spend state={state} actions={actions} />}
         {tab === "week" && <Week state={state} />}
         {tab === "goals" && <Goals state={state} actions={actions} />}
-        {tab === "plan" && <Plan state={state} actions={actions} />}
+        {tab === "plan" && <Plan state={state} actions={actions} onEditPlan={() => setEditingPlan(true)} />}
         {/* Casino stays mounted so a hand in progress survives switching tabs */}
         <div hidden={tab !== "casino"}>
           <Casino state={state} actions={actions} />

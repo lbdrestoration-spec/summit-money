@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { iso, today } from "./calc";
 import { DAILY_LOG, grant, isLogged, PER_DOLLAR } from "./chips";
-import { emptyState, type Bill, type Bucket, type Income, type Settings, type Spend, type State } from "./types";
+import { emptyState, type Bill, type Bucket, type Income, type Plan, type Settings, type Spend, type State } from "./types";
 
 const KEY = "summit-money:v1";
 export const uid = () => crypto.randomUUID();
@@ -32,7 +32,16 @@ export function useStore() {
 
   const actions = {
     saveSettings: (settings: Settings) => update((s) => ({ ...s, settings })),
-    clearSettings: () => update((s) => ({ ...s, settings: null })),
+    savePlan: (settings: Settings, plan: Plan) => update((s) => ({ ...s, settings, plan })),
+    /** Record what a Friday actually paid. Passing the usual amount (or null) clears the change. */
+    setFridayPay: (date: string, amount: number | null) =>
+      update((s) => {
+        if (!s.plan) return s;
+        const overrides = { ...s.plan.fridayOverrides };
+        if (amount === null || amount === s.plan.fridayAmount) delete overrides[date];
+        else overrides[date] = amount;
+        return { ...s, plan: { ...s.plan, fridayOverrides: overrides } };
+      }),
     addSpend: (x: Omit<Spend, "id">) =>
       update((s) => {
         const t = iso(today());
