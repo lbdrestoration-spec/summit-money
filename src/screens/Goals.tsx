@@ -1,0 +1,62 @@
+import { useState } from "react";
+import { bucketSaved, daysBetween, iso, money, parse, today } from "../calc";
+import type { Actions } from "../store";
+import type { State } from "../types";
+import { Button, Card, Empty, Heading, Progress, input, label } from "../ui";
+
+export function Goals({ state, actions }: { state: State; actions: Actions }) {
+  const goals = state.buckets.filter((b) => b.target);
+  const [amounts, setAmounts] = useState<Record<string, string>>({});
+
+  return (
+    <div className="space-y-4">
+      <Heading tone="gold">Goals</Heading>
+      {goals.length === 0 && <Empty>No goals yet. On the Plan tab, add a savings bucket with a target amount and it shows up here.</Empty>}
+      {goals.map((g) => {
+        const saved = bucketSaved(g);
+        const pct = saved / (g.target as number);
+        const left = Math.max(0, (g.target as number) - saved);
+        const daysLeft = g.targetDate ? daysBetween(today(), parse(g.targetDate)) : null;
+        const perWeek = daysLeft && daysLeft > 0 ? left / Math.max(1, daysLeft / 7) : null;
+        return (
+          <Card key={g.id} tone={pct >= 1 ? "lime" : "gold"} className="space-y-3">
+            <div className="flex items-end justify-between gap-2">
+              <div className="font-cc text-2xl font-semibold uppercase">{g.name}</div>
+              <div className="font-cc text-xl text-cc-gold">
+                {money(saved)} <span className="text-cc-muted">/ {money(g.target as number)}</span>
+              </div>
+            </div>
+            <Progress value={pct} tone={pct >= 1 ? "lime" : "gold"} />
+            <div className="text-xs text-cc-muted">
+              {pct >= 1
+                ? "Goal reached. Nice work."
+                : perWeek
+                  ? `${money(left)} to go · about ${money(perWeek)}/week to hit ${parse(g.targetDate as string).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`
+                  : `${money(left)} to go`}
+            </div>
+            <form
+              className="flex gap-2"
+              onSubmit={(e) => {
+                e.preventDefault();
+                const n = Number(amounts[g.id]);
+                if (n > 0) {
+                  actions.contribute(g.id, n, iso(today()));
+                  setAmounts((a) => ({ ...a, [g.id]: "" }));
+                }
+              }}
+            >
+              <label className="sr-only" htmlFor={`add-${g.id}`}>
+                Add to {g.name}
+              </label>
+              <input id={`add-${g.id}`} className={input} inputMode="decimal" placeholder="Add money" value={amounts[g.id] ?? ""} onChange={(e) => setAmounts((a) => ({ ...a, [g.id]: e.target.value }))} />
+              <Button variant="lime" type="submit">
+                Add
+              </Button>
+            </form>
+            <span className={label}>Saved so far counts toward your yearly line on Home</span>
+          </Card>
+        );
+      })}
+    </div>
+  );
+}

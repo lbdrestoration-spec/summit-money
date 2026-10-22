@@ -1,0 +1,1 @@
+{"root":["./src/App.tsx","./src/Chart.tsx","./src/calc.ts","./src/main.tsx","./src/store.ts","./src/types.ts","./src/ui.tsx","./src/vite-env.d.ts","./src/screens/Goals.tsx","./src/screens/Home.tsx","./src/screens/Plan.tsx","./src/screens/Setup.tsx","./src/screens/Spend.tsx","./src/screens/Week.tsx","./vite.config.ts"],"version":"5.9.3"}

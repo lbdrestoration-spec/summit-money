@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+@theme {
+  --color-cc-night: #070b1f;
+  --color-cc-deep: #0e1433;
+  --color-cc-panel: #121a3d;
+  --color-cc-line: #26306a;
+  --color-cc-snow: #eef3ff;
+  --color-cc-muted: #8d97c7;
+  --color-cc-orange: #ff6a2b;
+  --color-cc-lime: #b6f23a;
+  --color-cc-aqua: #2de2e6;
+  --color-cc-violet: #8b5cf6;
+  --color-cc-pink: #ff3d81;
+  --color-cc-gold: #ffc53d;
+
+  --font-sans: "Inter Tight", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-cc: "Barlow Condensed", "Inter Tight", sans-serif;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    min-height: 100%;
+    background: var(--color-cc-night);
+  }
+  body {
+    color: var(--color-cc-snow);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+    overscroll-behavior-y: none;
+  }
+  button {
+    cursor: pointer;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-cc-aqua);
+    outline-offset: 2px;
+  }
+  input,
+  select {
+    font-size: 16px; /* stops mobile browsers zooming on focus */
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.rise {
+  animation: rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .rise {
+    animation: none;
+  }
+}
