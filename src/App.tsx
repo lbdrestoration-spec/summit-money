@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ambienceOn, ambienceWanted, startAmbience, stopAmbience } from "./ambience";
 import { buzz } from "./haptic";
-import { QUEST_BONUS, rankOf, runsToday } from "./rank";
+import { QUEST_BONUS, rankOf, runsToday, trophies } from "./rank";
 import { Casino } from "./screens/Casino";
 import { Goals } from "./screens/Goals";
 import { Home } from "./screens/Home";
@@ -83,6 +83,18 @@ export default function App() {
     seenGoals.current = reached;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reachedKey]);
+  const earned = trophies(state).filter((t) => t.earned).map((t) => t.id);
+  const earnedKey = earned.join(",");
+  const seenTrophies = useRef<string[]>(earned);
+  useEffect(() => {
+    const fresh = trophies(state).filter((t) => t.earned && !seenTrophies.current.includes(t.id));
+    if (fresh.length) {
+      setToast(`Trophy: ${fresh[0].name}`);
+      buzz([40, 30, 40, 30, 80]);
+    }
+    seenTrophies.current = earned;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [earnedKey]);
   useEffect(() => {
     if (!toast) return;
     const t = window.setTimeout(() => setToast(null), 2600);
