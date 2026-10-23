@@ -50,7 +50,7 @@ export function daysClean(s: State) {
 /** Consecutive weeks (Mon to Sun) with at least one deposit into a bucket, counting back from this week or last. */
 export function savingWeekStreak(s: State, now = today()) {
   const weeks = new Set<string>();
-  s.buckets.forEach((b) => b.contributions.forEach((c) => weeks.add(iso(startOfWeek(parse(c.date))))));
+  s.buckets.forEach((b) => b.contributions.filter((c) => c.amount > 0).forEach((c) => weeks.add(iso(startOfWeek(parse(c.date))))));
   let cursor = startOfWeek(now);
   if (!weeks.has(iso(cursor))) cursor = addDays(cursor, -7);
   let n = 0;
@@ -69,7 +69,7 @@ export function trophies(s: State): Trophy[] {
   const best = bestStreak(s);
   const resists = s.resisted.length;
   const kept = keptInPocket(s);
-  const wedIsh = s.buckets.some((b) => b.contributions.length >= 5);
+  const wedIsh = s.buckets.some((b) => b.contributions.filter((c) => c.amount > 0).length >= 5);
   return [
     { id: "first", name: "First Tracks", desc: "Log your first day", icon: "❄", earned: loggedSet(s).size >= 1 },
     { id: "s3", name: "Warm Up Run", desc: "3 days logged in a row", icon: "⛷", earned: best >= 3 },
@@ -96,7 +96,7 @@ export function runsToday(s: State, now = today()) {
   const t = iso(now);
   const items = [
     { id: "log", name: "Log your day", done: s.checkins.includes(t) || s.spends.some((x) => x.date === t) },
-    { id: "save", name: "Put money in a bucket", done: s.buckets.some((b) => b.contributions.some((c) => c.date === t)) },
+    { id: "save", name: "Put money in a bucket", done: s.buckets.some((b) => b.contributions.some((c) => c.amount > 0 && c.date === t)) },
     { id: "win", name: "Write one win", done: s.notes.some((n) => n.date === t) },
   ];
   return { items, all: items.every((i) => i.done), t };

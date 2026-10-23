@@ -71,6 +71,8 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
   /* categories */
   const [cat, setCat] = useState("");
   const [editing, setEditing] = useState<string | null>(null);
+  const [takeOut, setTakeOut] = useState<string | null>(null);
+  const [takeAmt, setTakeAmt] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
 
   const billsTotal = state.bills.reduce((a, b) => a + b.amount, 0);
@@ -99,7 +101,7 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
       ["type", "date", "amount", "category_or_bucket", "note"],
       ...state.spends.map((x) => ["spend", x.date, x.amount, x.category, x.note]),
       ...state.incomes.map((x) => ["income", x.date, x.amount, "", x.note]),
-      ...state.buckets.flatMap((b) => b.contributions.map((c) => ["deposit", c.date, c.amount, b.name, ""])),
+      ...state.buckets.flatMap((b) => b.contributions.map((c) => [c.amount < 0 ? "withdrawal" : "deposit", c.date, c.amount, b.name, ""])),
     ];
     const body = [rows[0], ...rows.slice(1).sort((a, b) => String(b[1]).localeCompare(String(a[1])))].map((r) => r.map(q).join(",")).join("\n");
     const blob = new Blob([body], { type: "text/csv" });
@@ -234,6 +236,28 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
                 <button className="min-h-11 px-3 font-mono text-[10px] uppercase tracking-wider text-cc-aqua" onClick={() => setEditing(b.id)} aria-label={`Edit ${b.name}`}>
                   Edit
                 </button>
+                <button className="min-h-11 px-3 font-mono text-[10px] uppercase tracking-wider text-cc-orange" onClick={() => { setTakeOut(takeOut === b.id ? null : b.id); setTakeAmt(""); }} aria-label={`Take money out of ${b.name}`}>
+                  Take out
+                </button>
+                {takeOut === b.id && (
+                  <form
+                    className="mt-1 flex gap-2"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      const n = Number(takeAmt);
+                      if (n > 0 && n <= bucketSaved(b)) {
+                        actions.withdraw(b.id, n, iso(today()));
+                        setTakeOut(null);
+                        setTakeAmt("");
+                      }
+                    }}
+                  >
+                    <input className={input} inputMode="decimal" placeholder={`Up to ${money(bucketSaved(b))}`} value={takeAmt} onChange={(e) => setTakeAmt(e.target.value)} aria-label={`Amount to take out of ${b.name}`} />
+                    <Button type="submit" disabled={!(Number(takeAmt) > 0 && Number(takeAmt) <= bucketSaved(b))}>
+                      Take out
+                    </Button>
+                  </form>
+                )}
               </div>
             ),
           )}
@@ -276,7 +300,7 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
         <div className="mt-3 space-y-2">
           {deposits.length === 0 && <Empty>No deposits yet.</Empty>}
           {deposits.map((d) => (
-            <Row key={d.id} title={`${bucketIcon(d.bucket)} ${d.bucket}`} sub={d.date} right={money(d.amount, { cents: true })} onDelete={() => actions.removeContribution(d.bucketId, d.id)} deleteLabel={`Remove ${money(d.amount, { cents: true })} deposit on ${d.date} from ${d.bucket}`} />
+            <Row key={d.id} title={`${bucketIcon(d.bucket)} ${d.bucket}`} sub={d.date} right={`${d.amount < 0 ? "−" : ""}${money(Math.abs(d.amount), { cents: true })}`} onDelete={() => actions.removeContribution(d.bucketId, d.id)} deleteLabel={`Remove ${money(Math.abs(d.amount), { cents: true })} ${d.amount < 0 ? "withdrawal" : "deposit"} on ${d.date} from ${d.bucket}`} />
           ))}
         </div>
       </Card>

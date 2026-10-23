@@ -76,6 +76,13 @@ export function useStore() {
         };
         return date === iso(today()) ? grant(next, amount * PER_DOLLAR, "Moved round-ups") : next;
       }),
+    /** Take money out of a bucket (stored as a negative entry so totals stay honest). Never more than is in it. */
+    withdraw: (bucketId: string, amount: number, date: string) =>
+      update((s) => {
+        const b = s.buckets.find((x) => x.id === bucketId);
+        if (!b || !(amount > 0) || amount > b.contributions.reduce((a, c) => a + c.amount, 0) + 1e-9) return s;
+        return { ...s, buckets: s.buckets.map((x) => (x.id === bucketId ? { ...x, contributions: [...x.contributions, { id: uid(), date, amount: -amount }] } : x)) };
+      }),
     removeBucket: (id: string) => update((s) => ({ ...s, buckets: s.buckets.filter((x) => x.id !== id) })),
     contribute: (bucketId: string, amount: number, date: string) =>
       update((s) => {

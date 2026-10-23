@@ -158,7 +158,7 @@ export function PaydaySplit({ state, actions }: { state: State; actions: Actions
   const landed = [...wed.map((p) => p.amount), ...fri.map((f) => f.amount)].reduce((a, b) => a + b, 0);
   const picks = state.buckets
     .filter((b) => b.monthlyPlan > 0)
-    .map((b) => ({ b, amt: Math.round((b.monthlyPlan * 12) / PAYDAYS_PER_YEAR), done: b.contributions.some((c) => c.date === t) }))
+    .map((b) => ({ b, amt: Math.round((b.monthlyPlan * 12) / PAYDAYS_PER_YEAR), done: b.contributions.some((c) => c.amount > 0 && c.date === t) }))
     .filter((x) => x.amt > 0);
   if (landed <= 0 || !picks.length) return null;
   return (
@@ -566,7 +566,7 @@ export function LastWeek({ state }: { state: State }) {
 export function WeekNudge({ state, actions }: { state: State; actions: Actions }) {
   const now = today();
   const from = iso(startOfWeek(now));
-  const thisWeek = state.buckets.some((b) => b.contributions.some((c) => c.date >= from && c.date <= iso(now)));
+  const thisWeek = state.buckets.some((b) => b.contributions.some((c) => c.amount > 0 && c.date >= from && c.date <= iso(now)));
   if (state.buckets.length === 0 || thisWeek) return null;
   const planned = state.buckets.reduce((a, b) => a + b.monthlyPlan, 0);
   const weekly = planned > 0 ? Math.max(5, Math.round((planned * 12) / 52 / 5) * 5) : 20;
