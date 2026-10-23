@@ -4,7 +4,7 @@ import { projectTo, totalSaved } from "../plan";
 import type { State } from "../types";
 import { iso } from "../calc";
 import type { Actions } from "../store";
-import { Button, Card, Heading, label } from "../ui";
+import { Button, Card, Heading, Progress, label } from "../ui";
 
 /** Every dollar coming in or going out over the next two weeks. Read-only. */
 export function Timeline({ state }: { state: State }) {
@@ -280,6 +280,35 @@ export function SavingsSplit({ state }: { state: State }) {
             <span className="font-cc text-lg">{money(p.v)}</span>
           </div>
         ))}
+      </div>
+    </Card>
+  );
+}
+
+const MILESTONES = [250, 500, 1000, 2500, 5000, 7500, 10000, 15000, 20000, 25000, 50000];
+
+/** Next savings milestone, with an ETA from the last 8 weeks of deposits. */
+export function Milestones({ state }: { state: State }) {
+  const total = totalSaved(state);
+  const next = MILESTONES.find((m) => m > total);
+  const prev = [...MILESTONES].reverse().find((m) => m <= total) ?? 0;
+  const now = today();
+  const from = iso(addDays(now, -56));
+  const recent = state.buckets.flatMap((b) => b.contributions).filter((c) => c.date >= from && c.date <= iso(now)).reduce((a, c) => a + c.amount, 0);
+  const perDay = recent / 56;
+  if (!next) return null;
+  const eta = perDay > 0 ? Math.ceil((next - total) / perDay) : null;
+  const when = eta !== null ? addDays(now, eta).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : null;
+  return (
+    <Card tone="gold" className="space-y-2">
+      <Heading tone="gold">Next milestone</Heading>
+      <div className="flex items-end justify-between">
+        <div className="font-cc text-4xl font-bold text-cc-gold">{money(next)}</div>
+        <div className={label}>{money(next - total)} to go</div>
+      </div>
+      <Progress value={(total - prev) / (next - prev)} tone="gold" />
+      <div className="text-xs text-cc-muted">
+        {when ? `At your pace of the last 8 weeks, around ${when} (${eta} days).` : "Add a deposit and I'll estimate the day you hit it."}
       </div>
     </Card>
   );

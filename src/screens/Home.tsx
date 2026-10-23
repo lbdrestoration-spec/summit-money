@@ -5,7 +5,7 @@ import type { State } from "../types";
 import { rankOf, savingWeekStreak } from "../rank";
 import { projectTo } from "../plan";
 import { Button, Card, Empty, Heading, label, Stat } from "../ui";
-import { Countdowns, DueSoon, PaydaySplit, Runway, SavingsSplit, Timeline, WhatIf } from "./Insights";
+import { Countdowns, DueSoon, Milestones, PaydaySplit, Runway, SavingsSplit, Timeline, WhatIf } from "./Insights";
 import { RunsCard } from "./Trail";
 import { Urge } from "./Urge";
 import { Weather } from "./Weather";
@@ -120,6 +120,7 @@ export function Home({ state, actions, onCasino, onPlan }: { state: State; actio
         </Button>
       )}
 
+      <Milestones state={state} />
       <SavingsSplit state={state} />
 
       <Card tone="lime">
