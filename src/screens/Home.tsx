@@ -1,4 +1,4 @@
-import { bucketSaved, money, monthStats, savingsSeries, streak, today, iso } from "../calc";
+import { bucketSaved, money, monthStats, parse, savingsSeries, streak, today, iso } from "../calc";
 import { StockChart } from "../Chart";
 import type { Actions } from "../store";
 import type { State } from "../types";
@@ -24,7 +24,30 @@ const QUOTES = [
 ];
 const quoteOf = (d: string) => QUOTES[[...d].reduce((a, c) => a + c.charCodeAt(0), 0) % QUOTES.length];
 
-export function Home({ state, actions, onCasino }: { state: State; actions: Actions; onCasino: () => void }) {
+function BackupNudge({ state, onPlan }: { state: State; onPlan: () => void }) {
+  let last: string | null = null;
+  try {
+    last = localStorage.getItem("summit-money:lastBackup");
+  } catch {
+    /* ignore */
+  }
+  const hasData = state.spends.length + state.checkins.length + state.buckets.reduce((a, b) => a + b.contributions.length, 0) > 0;
+  const age = last ? Math.round((today().getTime() - parse(last).getTime()) / 86400000) : null;
+  if (!hasData || (age !== null && age < 14)) return null;
+  return (
+    <Card tone="gold" className="flex items-center justify-between gap-3">
+      <div className="min-w-0">
+        <div className="font-cc text-xl font-semibold uppercase text-cc-gold">Back up your data</div>
+        <div className="text-xs text-cc-muted">{age === null ? "Everything lives on this phone only." : `Last backup was ${age} days ago.`} Save a copy so a reset can't wipe it.</div>
+      </div>
+      <Button variant="primary" className="shrink-0" onClick={onPlan}>
+        Back up
+      </Button>
+    </Card>
+  );
+}
+
+export function Home({ state, actions, onCasino, onPlan }: { state: State; actions: Actions; onCasino: () => void; onPlan: () => void }) {
   const m = monthStats(state);
   const series = savingsSeries(state);
   const totalSaved = state.buckets.reduce((a, b) => a + bucketSaved(b), 0);
@@ -53,6 +76,7 @@ export function Home({ state, actions, onCasino }: { state: State; actions: Acti
         </div>
       </div>
 
+      <BackupNudge state={state} onPlan={onPlan} />
       <Weather />
       <Countdowns state={state} />
       <p className="px-1 text-center font-cc text-xl italic leading-snug text-cc-snow/80">“{quoteOf(todayIso)}”</p>

@@ -128,7 +128,7 @@ export default function App() {
       </header>
 
       <main className="space-y-4 px-4">
-        {tab === "home" && <Home state={state} actions={actions} onCasino={() => setTab("casino")} />}
+        {tab === "home" && <Home state={state} actions={actions} onCasino={() => setTab("casino")} onPlan={() => setTab("plan")} />}
         {tab === "spend" && <Spend state={state} actions={actions} />}
         {tab === "week" && <Week state={state} actions={actions} />}
         {tab === "goals" && <Goals state={state} actions={actions} />}

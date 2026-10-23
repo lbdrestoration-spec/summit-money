@@ -68,22 +68,36 @@ export function Spend({ state, actions }: { state: State; actions: Actions }) {
         <Heading>Recent</Heading>
         <div className="mt-3 space-y-2">
           {state.spends.length === 0 && <Empty>Nothing logged yet.</Empty>}
-          {state.spends.slice(0, 30).map((s) => (
-            <div key={s.id} className="flex items-center justify-between gap-3 rounded-lg border border-cc-line/70 bg-cc-night/40 px-3 py-2">
-              <div className="min-w-0">
-                <div className="truncate text-sm">{s.note || s.category}</div>
-                <div className="font-mono text-[10px] uppercase tracking-wider text-cc-muted">
-                  {s.category} · {parse(s.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+          {(() => {
+            const days: { date: string; items: typeof state.spends }[] = [];
+            state.spends.slice(0, 40).forEach((x) => {
+              const last = days[days.length - 1];
+              if (last && last.date === x.date) last.items.push(x);
+              else days.push({ date: x.date, items: [x] });
+            });
+            return days.map((d) => (
+              <div key={d.date} className="space-y-2">
+                <div className="flex items-center justify-between pt-1 font-mono text-[10px] uppercase tracking-wider text-cc-muted">
+                  <span>{parse(d.date).toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" })}</span>
+                  <span className="text-cc-orange">{money(d.items.reduce((a, x) => a + x.amount, 0), { cents: true })}</span>
                 </div>
+                {d.items.map((s) => (
+                  <div key={s.id} className="flex items-center justify-between gap-3 rounded-lg border border-cc-line/70 bg-cc-night/40 px-3 py-2">
+                    <div className="min-w-0">
+                      <div className="truncate text-sm">{s.note || s.category}</div>
+                      <div className="font-mono text-[10px] uppercase tracking-wider text-cc-muted">{EMOJI[s.category] ? `${EMOJI[s.category]} ` : ""}{s.category}</div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-cc text-xl text-cc-orange">{money(s.amount, { cents: true })}</span>
+                      <button className="min-h-11 min-w-11 text-cc-muted" onClick={() => actions.removeSpend(s.id)} aria-label="Delete">
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div className="flex items-center gap-2">
-                <span className="font-cc text-xl text-cc-orange">{money(s.amount, { cents: true })}</span>
-                <button className="min-h-11 min-w-11 text-cc-muted" onClick={() => actions.removeSpend(s.id)} aria-label="Delete">
-                  ✕
-                </button>
-              </div>
-            </div>
-          ))}
+            ));
+          })()}
         </div>
       </Card>
     </div>

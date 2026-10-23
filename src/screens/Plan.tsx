@@ -48,6 +48,11 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
     a.download = `summit-money-backup-${iso(today())}.json`;
     a.click();
     URL.revokeObjectURL(a.href);
+    try {
+      localStorage.setItem("summit-money:lastBackup", iso(today()));
+    } catch {
+      /* ignore */
+    }
   }
   function importData(file: File) {
     file.text().then((t) => {
