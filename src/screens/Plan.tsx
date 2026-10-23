@@ -133,6 +133,12 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
           <li>52-week challenge, one-tap Pay yourself first, snow burst on every deposit</li>
           <li>Goals show your pace and finish date; skipped bets can move into savings</li>
           <li>Blackjack insurance when the dealer shows an ace</li>
+          <li>The + button saves too: Spend and Save tabs</li>
+          <li>Home photo moves with the clock: dawn, day, golden hour, aurora night</li>
+          <li>Round-up jar, bills cushion, year-end forecast, saving days grid</li>
+          <li>Plan tab: edit buckets, take money out, remove a mistaken deposit, export CSV</li>
+          <li>Share a picture of your progress from the Home photo</li>
+          <li>Rank-up celebration and trophy toasts</li>
           <li>Quick spend: the orange + button on every screen</li>
           <li>Live Whitefish temperature and 5-day snow forecast on Home</li>
           <li>Payday card suggests what to move into each bucket</li>
