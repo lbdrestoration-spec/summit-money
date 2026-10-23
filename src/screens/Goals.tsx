@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { bucketSaved, daysBetween, iso, money, parse, today } from "../calc";
+import { addDays, bucketSaved, daysBetween, iso, money, parse, today } from "../calc";
+import { bucketIcon } from "../bucketIcon";
 import type { Actions } from "../store";
 import type { State } from "../types";
 import { Button, Card, Empty, Heading, Progress, input, label } from "../ui";
@@ -20,10 +21,17 @@ export function Goals({ state, actions }: { state: State; actions: Actions }) {
         const left = Math.max(0, (g.target as number) - saved);
         const daysLeft = g.targetDate ? daysBetween(today(), parse(g.targetDate)) : null;
         const perWeek = daysLeft && daysLeft > 0 ? left / Math.max(1, daysLeft / 7) : null;
+        const since = iso(addDays(today(), -56));
+        const myWeekly = g.contributions.filter((c) => c.date >= since).reduce((a, c) => a + c.amount, 0) / 8;
+        const etaDays = left > 0 && myWeekly > 0 ? Math.ceil((left / myWeekly) * 7) : null;
+        const etaDate = etaDays !== null ? addDays(today(), etaDays) : null;
+        const onPace = etaDate && g.targetDate ? iso(etaDate) <= g.targetDate : null;
         return (
           <Card key={g.id} tone={pct >= 1 ? "lime" : "gold"} className="space-y-3" photo={["/art/lake.webp", "/art/road.webp", "/art/gondola.webp", "/art/ridge.webp"][gi % 4]}>
             <div className="flex items-end justify-between gap-2">
-              <div className="font-cc text-2xl font-semibold uppercase">{g.name}</div>
+              <div className="font-cc text-2xl font-semibold uppercase">
+                {bucketIcon(g.name)} {g.name}
+              </div>
               <div className="font-cc text-xl text-cc-gold">
                 {money(saved)} <span className="text-cc-muted">/ {money(g.target as number)}</span>
               </div>
@@ -36,6 +44,13 @@ export function Goals({ state, actions }: { state: State; actions: Actions }) {
                   ? `${money(left)} to go · about ${money(perWeek)}/week to hit ${parse(g.targetDate as string).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`
                   : `${money(left)} to go`}
             </div>
+            {pct < 1 && (
+              <div className={`text-xs ${onPace === null ? "text-cc-muted" : onPace ? "text-cc-lime" : "text-cc-orange"}`}>
+                {etaDate
+                  ? `At ${money(myWeekly)}/week lately, you finish around ${etaDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}${onPace === null ? "." : onPace ? ". On pace." : ". Behind pace, add a little more."}`
+                  : "No deposits in the last 8 weeks. Add some and I'll show when you'll finish."}
+              </div>
+            )}
             <form
               className="flex gap-2"
               onSubmit={(e) => {
