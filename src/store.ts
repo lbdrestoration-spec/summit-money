@@ -101,6 +101,30 @@ export function useStore() {
     /** Pay the daily-runs bonus once per day */
     claimQuests: (date: string, bonus: number) =>
       update((s) => (s.questDays.includes(date) ? s : grant({ ...s, questDays: [...s.questDays, date] }, bonus, "Finished today's runs"))),
+    /** 52-week challenge: week n deposits n x step into a bucket. Undo removes that deposit again. */
+    challengeMark: (week: number, bucketId: string, date: string) =>
+      update((s) => {
+        if (s.challenge.some((c) => c.week === week) || !s.buckets.some((b) => b.id === bucketId)) return s;
+        const amount = week * s.challengeStep;
+        const contribId = uid();
+        const next = {
+          ...s,
+          buckets: s.buckets.map((b) => (b.id === bucketId ? { ...b, contributions: [...b.contributions, { id: contribId, date, amount }] } : b)),
+          challenge: [...s.challenge, { week, bucketId, contribId, date }],
+        };
+        return date === iso(today()) ? grant(next, amount * PER_DOLLAR, `Challenge week ${week}`) : next;
+      }),
+    challengeUndo: (week: number) =>
+      update((s) => {
+        const e = s.challenge.find((c) => c.week === week);
+        if (!e) return s;
+        return {
+          ...s,
+          buckets: s.buckets.map((b) => (b.id === e.bucketId ? { ...b, contributions: b.contributions.filter((c) => c.id !== e.contribId) } : b)),
+          challenge: s.challenge.filter((c) => c.week !== week),
+        };
+      }),
+    setChallengeStep: (n: number) => update((s) => (s.challenge.length ? s : { ...s, challengeStep: n })),
     replaceAll: (next: State) => setState({ ...emptyState(), ...next }),
   };
 

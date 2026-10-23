@@ -2,6 +2,7 @@ export type Spend = { id: string; date: string; amount: number; category: string
 export type Income = { id: string; date: string; amount: number; note: string };
 export type Bill = { id: string; name: string; amount: number; dueDay: number };
 export type Contribution = { id: string; date: string; amount: number };
+export type ChallengeEntry = { week: number; bucketId: string; contribId: string; date: string };
 export type Bucket = {
   id: string;
   name: string;
@@ -68,6 +69,8 @@ export type State = {
   catLimits: Record<string, number>;
   /** Days (ISO) the daily runs were completed and the bonus paid */
   questDays: string[];
+  challenge: ChallengeEntry[];
+  challengeStep: number;
 };
 
 export const DEFAULT_CATEGORIES = ["Food", "Gas", "Fun", "Business", "Shopping", "Other"];
@@ -91,4 +94,6 @@ export const emptyState = (): State => ({
   packed: [],
   catLimits: {},
   questDays: [],
+  challenge: [],
+  challengeStep: 1,
 });

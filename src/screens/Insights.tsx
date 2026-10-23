@@ -340,3 +340,67 @@ export function SavingsRate({ state }: { state: State }) {
     </Card>
   );
 }
+
+/** 52-week challenge: tap week n to put n x step into a bucket. Tap again to undo. */
+export function Challenge({ state, actions }: { state: State; actions: Actions }) {
+  const [open, setOpen] = useState(false);
+  const [bucketId, setBucketId] = useState("");
+  const step = state.challengeStep;
+  const done = new Set(state.challenge.map((c) => c.week));
+  const total = Array.from(done).reduce((a, w) => a + w * step, 0);
+  const goal = (52 * 53 * step) / 2;
+  const target = bucketId || state.buckets[0]?.id || "";
+  if (state.buckets.length === 0) return null;
+  return (
+    <Card tone="aqua" className="space-y-2">
+      <button className="flex w-full items-center justify-between text-left" onClick={() => setOpen(!open)} aria-expanded={open}>
+        <Heading tone="aqua">52-week challenge</Heading>
+        <span className="font-cc text-xl text-cc-aqua">{open ? "−" : "+"}</span>
+      </button>
+      <div className="text-xs text-cc-muted">
+        {done.size} of 52 weeks · {money(total)} of {money(goal)}
+      </div>
+      <Progress value={total / goal} tone="aqua" />
+      {open && (
+        <div className="space-y-3 pt-1">
+          <p className="text-xs text-cc-muted">Week 1 saves {money(step)}, week 2 saves {money(2 * step)}, and so on. Tap a week to deposit it. Tap again to undo.</p>
+          <div className="flex gap-2">
+            {[1, 2, 5].map((n) => (
+              <button
+                key={n}
+                disabled={state.challenge.length > 0}
+                onClick={() => actions.setChallengeStep(n)}
+                className={`min-h-11 flex-1 rounded-lg border px-2 font-mono text-xs uppercase tracking-wider ${step === n ? "border-cc-aqua text-cc-aqua" : "border-cc-line text-cc-muted"} disabled:opacity-50`}
+              >
+                ${n} steps
+              </button>
+            ))}
+          </div>
+          <label className="block space-y-1">
+            <span className={label}>Deposit into</span>
+            <select className="min-h-11 w-full rounded-lg border border-cc-line bg-cc-night/60 px-3" value={target} onChange={(e) => setBucketId(e.target.value)} aria-label="Challenge bucket">
+              {state.buckets.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <div className="grid grid-cols-7 gap-1.5">
+            {Array.from({ length: 52 }, (_, i) => i + 1).map((w) => (
+              <button
+                key={w}
+                aria-label={`Challenge week ${w}`}
+                aria-pressed={done.has(w)}
+                onClick={() => (done.has(w) ? actions.challengeUndo(w) : actions.challengeMark(w, target, iso(today())))}
+                className={`min-h-11 rounded-md border font-mono text-xs ${done.has(w) ? "border-cc-aqua bg-cc-aqua/25 text-cc-aqua" : "border-cc-line text-cc-muted"}`}
+              >
+                {w}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </Card>
+  );
+}
