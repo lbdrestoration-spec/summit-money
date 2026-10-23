@@ -48,7 +48,16 @@ function BackupNudge({ state, onPlan }: { state: State; onPlan: () => void }) {
   );
 }
 
+/** The hero photo follows the clock: dawn, day, golden hour, night. */
+function skyFor(hour: number) {
+  if (hour >= 5 && hour < 9) return { id: "dawn", src: "/art/hero-dawn.webp", alt: "Dawn alpenglow over snowy pines near Whitefish, Montana" };
+  if (hour >= 9 && hour < 15) return { id: "day", src: "/art/hero.webp", alt: "Snow-covered pine forest below a pink alpenglow mountain near Whitefish, Montana" };
+  if (hour >= 15 && hour < 20) return { id: "gold", src: "/art/hero-gold.webp", alt: "Golden hour light through snowy pines near Whitefish, Montana" };
+  return { id: "night", src: "/art/hero-night.webp", alt: "Starry night over snowy pines near Whitefish, Montana" };
+}
+
 export function Home({ state, actions, onCasino, onPlan }: { state: State; actions: Actions; onCasino: () => void; onPlan: () => void }) {
+  const sky = skyFor(new Date().getHours());
   const m = monthStats(state);
   const series = savingsSeries(state);
   const totalSaved = state.buckets.reduce((a, b) => a + bucketSaved(b), 0);
@@ -73,8 +82,8 @@ export function Home({ state, actions, onCasino, onPlan }: { state: State; actio
   return (
     <div className="space-y-4">
       <div className="rise relative min-h-[340px] overflow-hidden rounded-2xl border border-cc-line">
-        <img src="/art/hero.webp" alt="Snow-covered pine forest below a pink alpenglow mountain near Whitefish, Montana" className="absolute inset-0 h-full w-full object-cover" />
-        <video className="hero-video absolute inset-0 h-full w-full object-cover" src="/art/hero-loop.mp4" poster="/art/hero.webp" autoPlay muted loop playsInline preload="auto" aria-hidden="true" />
+        <img src={sky.src} alt={sky.alt} className="absolute inset-0 h-full w-full object-cover" />
+        {sky.id === "day" && <video className="hero-video absolute inset-0 h-full w-full object-cover" src="/art/hero-loop.mp4" poster="/art/hero.webp" autoPlay muted loop playsInline preload="auto" aria-hidden="true" />}
         <div className="absolute inset-0 bg-gradient-to-t from-cc-night via-cc-night/55 to-transparent" />
         <div className="relative flex min-h-[340px] flex-col justify-end p-4">
           <div className={label}>Saved so far</div>
