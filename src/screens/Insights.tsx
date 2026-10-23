@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { addDays, billsBetween, daysBetween, endOfMonth, fridaysBetween, money, parse, paychecksBetween, startOfMonth, today } from "../calc";
+import { addDays, billsBetween, daysBetween, endOfMonth, fridaysBetween, money, monthStats, parse, paychecksBetween, startOfMonth, today } from "../calc";
 import { projectTo, totalSaved } from "../plan";
 import type { State } from "../types";
 import { iso } from "../calc";
@@ -309,6 +309,33 @@ export function Milestones({ state }: { state: State }) {
       <Progress value={(total - prev) / (next - prev)} tone="gold" />
       <div className="text-xs text-cc-muted">
         {when ? `At your pace of the last 8 weeks, around ${when} (${eta} days).` : "Add a deposit and I'll estimate the day you hit it."}
+      </div>
+    </Card>
+  );
+}
+
+/** This month's deposits against the monthly plan, and the share of income saved. */
+export function SavingsRate({ state }: { state: State }) {
+  const now = today();
+  const from = iso(startOfMonth(now));
+  const to = iso(endOfMonth(now));
+  const deposited = state.buckets.flatMap((b) => b.contributions).filter((c) => c.date >= from && c.date <= to).reduce((a, c) => a + c.amount, 0);
+  const planned = state.buckets.reduce((a, b) => a + b.monthlyPlan, 0);
+  const m = monthStats(state, now);
+  const income = m.paychecks + m.weekly + m.sideIncome;
+  if (planned <= 0 && deposited <= 0) return null;
+  const pct = income > 0 ? Math.round((deposited / income) * 100) : 0;
+  return (
+    <Card tone="lime" className="space-y-2">
+      <Heading tone="lime">Saved this month</Heading>
+      <div className="flex items-end justify-between">
+        <div className="font-cc text-4xl font-bold text-cc-lime">{money(deposited)}</div>
+        <div className={label}>{planned > 0 ? `of ${money(planned)} planned` : "no plan set"}</div>
+      </div>
+      {planned > 0 && <Progress value={Math.min(1, deposited / planned)} tone="lime" />}
+      <div className="text-xs text-cc-muted">
+        {income > 0 ? `That's ${pct}% of this month's income.` : ""}
+        {planned > 0 && deposited >= planned ? " Plan met. Anything more is a bonus." : planned > deposited ? ` ${money(planned - deposited)} left to hit the plan.` : ""}
       </div>
     </Card>
   );
