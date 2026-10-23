@@ -50,6 +50,13 @@ function BackupNudge({ state, onPlan }: { state: State; onPlan: () => void }) {
   );
 }
 
+const JUMPS = [
+  { id: "h-goals", label: "Deadlines" },
+  { id: "h-saving", label: "Saving" },
+  { id: "h-pay", label: "Pay plan" },
+  { id: "h-tools", label: "Tools" },
+];
+
 /** The hero photo follows the clock: dawn, day, golden hour, night. */
 function skyFor(hour: number) {
   if (hour >= 5 && hour < 9) return { id: "dawn", src: "/art/hero-dawn.webp", alt: "Dawn alpenglow over snowy pines near Whitefish, Montana" };
@@ -116,6 +123,18 @@ export function Home({ state, actions, onCasino, onPlan }: { state: State; actio
         </div>
       </div>
 
+      <nav className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1" aria-label="Jump to a section">
+        {JUMPS.map((j) => (
+          <button
+            key={j.id}
+            onClick={() => document.getElementById(j.id)?.scrollIntoView({ behavior: "smooth", block: "start" })}
+            className="min-h-11 shrink-0 rounded-full border border-cc-line bg-cc-panel/70 px-4 font-mono text-[11px] uppercase tracking-wider text-cc-aqua backdrop-blur"
+          >
+            {j.label}
+          </button>
+        ))}
+      </nav>
+
       <Countdowns state={state} />
 
       <p className="px-1 text-center font-cc text-xl italic leading-snug text-cc-snow/80">“{quoteOf(todayIso)}”</p>
@@ -128,6 +147,7 @@ export function Home({ state, actions, onCasino, onPlan }: { state: State; actio
 
       <DueSoon state={state} />
 
+      <div id="h-goals" className="scroll-mt-4" />
       <DeadlineCards state={state} />
 
       <div className="grid grid-cols-2 gap-3">
@@ -148,6 +168,7 @@ export function Home({ state, actions, onCasino, onPlan }: { state: State; actio
         </Button>
       )}
 
+      <div id="h-saving" className="scroll-mt-4" />
       <PayFirst state={state} actions={actions} />
       <SavingsRate state={state} />
       <Milestones state={state} />
@@ -165,6 +186,7 @@ export function Home({ state, actions, onCasino, onPlan }: { state: State; actio
         {totalSaved > 0 ? <StockChart series={series} /> : <Empty>Add your first savings bucket on the Plan tab, then put money in it. Your line starts here.</Empty>}
       </Card>
 
+      <div id="h-pay" className="scroll-mt-4" />
       <FridayPayCard state={state} actions={actions} />
 
       <WhatIf state={state} />
@@ -173,6 +195,7 @@ export function Home({ state, actions, onCasino, onPlan }: { state: State; actio
 
       <Timeline state={state} />
 
+      <div id="h-tools" className="scroll-mt-4" />
       <RunsCard state={state} />
 
       <Urge state={state} actions={actions} onCasino={onCasino} />
