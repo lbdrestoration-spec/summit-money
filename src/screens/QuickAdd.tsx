@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { iso, money, today } from "../calc";
+import { addDays, iso, money, today } from "../calc";
 import { buzz } from "../haptic";
 import type { Actions } from "../store";
 import type { State } from "../types";
@@ -12,10 +12,12 @@ export function QuickAdd({ state, actions }: { state: State; actions: Actions })
   const [amount, setAmount] = useState("");
   const [mode, setMode] = useState<"spend" | "save">("spend");
   const [bucketId, setBucketId] = useState("");
+  const [yesterday, setYesterday] = useState(false);
   const [category, setCategory] = useState(state.categories[0] ?? "Other");
   const ref = useRef<HTMLInputElement>(null);
   const target = bucketId || state.buckets[0]?.id || "";
   const targetName = state.buckets.find((b) => b.id === target)?.name ?? "";
+  const when = iso(yesterday ? addDays(today(), -1) : today());
   const valid = Number(amount) > 0 && (mode === "spend" || !!target);
 
   useEffect(() => {
@@ -33,10 +35,11 @@ export function QuickAdd({ state, actions }: { state: State; actions: Actions })
     if (!valid) return;
     if (mode === "save") {
       if (!target) return;
-      actions.contribute(target, Number(amount), iso(today()));
-    } else actions.addSpend({ amount: Number(amount), category, note: "", date: iso(today()) });
+      actions.contribute(target, Number(amount), when);
+    } else actions.addSpend({ amount: Number(amount), category, note: "", date: when });
     buzz(20);
     setAmount("");
+    setYesterday(false);
     setOpen(false);
   }
 
@@ -77,6 +80,13 @@ export function QuickAdd({ state, actions }: { state: State; actions: Actions })
               </button>
             </div>
             <input ref={ref} className={`${input} font-cc text-4xl`} inputMode="decimal" placeholder="$0" value={amount} onChange={(e) => setAmount(e.target.value)} aria-label="Quick amount" />
+            <div className="flex gap-2" role="group" aria-label="Which day">
+              {[false, true].map((y) => (
+                <button type="button" key={String(y)} onClick={() => setYesterday(y)} aria-pressed={yesterday === y} className={`min-h-10 flex-1 rounded-full border px-3 text-sm ${yesterday === y ? "border-cc-aqua bg-cc-aqua/15 text-cc-aqua" : "border-cc-line text-cc-muted"}`}>
+                  {y ? "Yesterday" : "Today"}
+                </button>
+              ))}
+            </div>
             <div className="flex gap-2">
               {[5, 10, 20, 50].map((n) => (
                 <button type="button" key={n} onClick={() => setAmount(String((Number(amount) || 0) + n))} className="min-h-11 flex-1 rounded-lg border border-cc-line bg-cc-night/40 font-cc text-lg">
