@@ -59,9 +59,9 @@ const JUMPS = [
 
 /** The hero photo follows the clock: dawn, day, golden hour, night. */
 function skyFor(hour: number): { id: string; src: string; alt: string; video?: string } {
-  if (hour >= 5 && hour < 9) return { id: "dawn", src: "/art/hero-dawn.webp", alt: "Dawn alpenglow over snowy pines near Whitefish, Montana" };
+  if (hour >= 5 && hour < 9) return { id: "dawn", video: "/art/hero-dawn-loop.mp4", src: "/art/hero-dawn.webp", alt: "Dawn alpenglow over snowy pines near Whitefish, Montana" };
   if (hour >= 9 && hour < 15) return { id: "day", video: "/art/hero-loop.mp4", src: "/art/hero.webp", alt: "Snow-covered pine forest below a pink alpenglow mountain near Whitefish, Montana" };
-  if (hour >= 15 && hour < 20) return { id: "gold", src: "/art/hero-gold.webp", alt: "Golden hour light through snowy pines near Whitefish, Montana" };
+  if (hour >= 15 && hour < 20) return { id: "gold", video: "/art/hero-gold-loop.mp4", src: "/art/hero-gold.webp", alt: "Golden hour light through snowy pines near Whitefish, Montana" };
   return { id: "night", video: "/art/hero-night-loop.mp4", src: "/art/hero-night.webp", alt: "Starry night over snowy pines near Whitefish, Montana" };
 }
 
