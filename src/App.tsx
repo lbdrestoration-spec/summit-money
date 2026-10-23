@@ -47,6 +47,9 @@ export default function App() {
     window.addEventListener("pointerdown", go, { once: true });
     return () => window.removeEventListener("pointerdown", go);
   }, []);
+  const reached = state.buckets.filter((b) => b.target && b.contributions.reduce((a, c) => a + c.amount, 0) >= b.target).map((b) => b.id);
+  const reachedKey = reached.join(",");
+  const seenGoals = useRef<string[]>(reached);
   const [toast, setToast] = useState<string | null>(null);
   const seen = useRef<{ chip: string | undefined; rank: string }>({ chip: state.chipLog[0]?.id, rank: rankOf(state).cur.name });
   const rankName = rankOf(state).cur.name;
@@ -62,6 +65,16 @@ export default function App() {
     }
     seen.current.chip = lastChip?.id;
   }, [rankName, lastChip]);
+  useEffect(() => {
+    const fresh = reached.filter((id) => !seenGoals.current.includes(id));
+    if (fresh.length) {
+      const b = state.buckets.find((x) => x.id === fresh[0]);
+      setToast(`Goal reached: ${b?.name ?? "nice work"}`);
+      buzz([60, 40, 60, 40, 90]);
+    }
+    seenGoals.current = reached;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reachedKey]);
   useEffect(() => {
     if (!toast) return;
     const t = window.setTimeout(() => setToast(null), 2600);
@@ -137,6 +150,7 @@ export default function App() {
             <li key={t.id} className="flex-1">
               <button
                 onClick={() => {
+                  buzz(8);
                   setTab(t.id);
                   window.scrollTo({ top: 0 });
                 }}

@@ -14,14 +14,14 @@ export function Goals({ state, actions }: { state: State; actions: Actions }) {
       <RankCard state={state} />
       <Heading tone="gold">Goals</Heading>
       {goals.length === 0 && <Empty>No goals yet. On the Plan tab, add a savings bucket with a target amount and it shows up here.</Empty>}
-      {goals.map((g) => {
+      {goals.map((g, gi) => {
         const saved = bucketSaved(g);
         const pct = saved / (g.target as number);
         const left = Math.max(0, (g.target as number) - saved);
         const daysLeft = g.targetDate ? daysBetween(today(), parse(g.targetDate)) : null;
         const perWeek = daysLeft && daysLeft > 0 ? left / Math.max(1, daysLeft / 7) : null;
         return (
-          <Card key={g.id} tone={pct >= 1 ? "lime" : "gold"} className="space-y-3">
+          <Card key={g.id} tone={pct >= 1 ? "lime" : "gold"} className="space-y-3" photo={["/art/lake.webp", "/art/road.webp", "/art/gondola.webp", "/art/ridge.webp"][gi % 4]}>
             <div className="flex items-end justify-between gap-2">
               <div className="font-cc text-2xl font-semibold uppercase">{g.name}</div>
               <div className="font-cc text-xl text-cc-gold">
