@@ -4,6 +4,8 @@ import type { Actions } from "../store";
 import type { State } from "../types";
 import { Button, Card, Empty, Heading, PhotoHeader, input, label } from "../ui";
 
+const EMOJI: Record<string, string> = { Food: "🍔", Gas: "⛽", Fun: "🎿", Business: "💼", Shopping: "🛍", Other: "📦" };
+
 export function Spend({ state, actions }: { state: State; actions: Actions }) {
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState(state.categories[0] ?? "Other");
@@ -46,6 +48,7 @@ export function Spend({ state, actions }: { state: State; actions: Actions }) {
                 onClick={() => setCategory(c)}
                 className={`min-h-10 rounded-full border px-3 text-sm ${category === c ? "border-cc-orange bg-cc-orange/20 text-cc-orange" : "border-cc-line text-cc-muted"}`}
               >
+                <span aria-hidden="true">{EMOJI[c] ? `${EMOJI[c]} ` : ""}</span>
                 {c}
               </button>
             ))}

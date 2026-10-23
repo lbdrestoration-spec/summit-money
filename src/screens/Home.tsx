@@ -4,7 +4,7 @@ import type { Actions } from "../store";
 import type { State } from "../types";
 import { rankOf } from "../rank";
 import { Button, Card, Empty, Heading, label, Stat } from "../ui";
-import { Runway, Timeline, WhatIf } from "./Insights";
+import { DueSoon, PaydaySplit, Runway, Timeline, WhatIf } from "./Insights";
 import { RunsCard } from "./Trail";
 import { Urge } from "./Urge";
 import { DeadlineCards, FridayPayCard } from "./Deadlines";
@@ -57,6 +57,9 @@ export function Home({ state, actions, onCasino }: { state: State; actions: Acti
         {rank.cur.mark} {rank.cur.name}
         {rank.next ? ` · ${money(rank.next.at - rank.saved)} to ${rank.next.name}` : ""}
       </div>
+
+      <PaydaySplit state={state} actions={actions} />
+      <DueSoon state={state} />
 
       <DeadlineCards state={state} />
       <FridayPayCard state={state} actions={actions} />

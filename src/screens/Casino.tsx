@@ -105,7 +105,7 @@ export function Casino({ state, actions }: { state: State; actions: Actions }) {
         ))}
       </div>
 
-      <Card>
+      <Card photo="/art/table.webp">
         {game === "blackjack" && <Blackjack chips={state.chips} adjust={actions.adjustChips} />}
         {game === "roulette" && <Roulette chips={state.chips} adjust={actions.adjustChips} />}
         {game === "poker" && <Poker chips={state.chips} tableStack={state.tableStack} adjust={actions.adjustChips} setTableStack={actions.setTableStack} />}

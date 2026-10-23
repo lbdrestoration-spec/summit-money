@@ -2,7 +2,9 @@ import { useState } from "react";
 import { addDays, billsBetween, fridaysBetween, money, parse, paychecksBetween, today } from "../calc";
 import { projectTo, totalSaved } from "../plan";
 import type { State } from "../types";
-import { Card, Heading, label } from "../ui";
+import { iso } from "../calc";
+import type { Actions } from "../store";
+import { Button, Card, Heading, label } from "../ui";
 
 /** Every dollar coming in or going out over the next two weeks. Read-only. */
 export function Timeline({ state }: { state: State }) {
@@ -116,6 +118,65 @@ export function Runway({ state }: { state: State }) {
         <div className="text-xs text-cc-muted">Days your savings would cover bills and spending if pay stopped</div>
       </div>
       <div className="font-cc text-4xl font-bold leading-none text-cc-gold">{days}</div>
+    </Card>
+  );
+}
+
+/** Bills landing in the next few days. */
+export function DueSoon({ state }: { state: State }) {
+  const now = today();
+  const due = billsBetween(state.bills, now, addDays(now, 4));
+  if (!due.length) return null;
+  return (
+    <Card tone="pink" className="space-y-1">
+      <Heading tone="pink">Bills due soon</Heading>
+      {due.map((b, i) => {
+        const days = Math.round((parse(b.date).getTime() - now.getTime()) / 86400000);
+        return (
+          <div key={`${b.name}-${i}`} className="flex items-center justify-between text-sm">
+            <span>
+              {b.name} <span className="text-cc-muted">· {days <= 0 ? "today" : days === 1 ? "tomorrow" : `in ${days} days`}</span>
+            </span>
+            <span className="font-cc text-xl text-cc-pink">{money(b.amount)}</span>
+          </div>
+        );
+      })}
+    </Card>
+  );
+}
+
+const PAYDAYS_PER_YEAR = 26 + 52;
+/** On a payday: a suggested move into each savings bucket, based on its monthly plan. Tap to log it. */
+export function PaydaySplit({ state, actions }: { state: State; actions: Actions }) {
+  const { settings, plan } = state;
+  if (!settings || !plan) return null;
+  const now = today();
+  const t = iso(now);
+  const wed = paychecksBetween(settings, now, now);
+  const fri = fridaysBetween(plan, now, now);
+  const landed = [...wed.map((p) => p.amount), ...fri.map((f) => f.amount)].reduce((a, b) => a + b, 0);
+  const picks = state.buckets
+    .filter((b) => b.monthlyPlan > 0)
+    .map((b) => ({ b, amt: Math.round((b.monthlyPlan * 12) / PAYDAYS_PER_YEAR), done: b.contributions.some((c) => c.date === t) }))
+    .filter((x) => x.amt > 0);
+  if (landed <= 0 || !picks.length) return null;
+  return (
+    <Card tone="lime" className="space-y-2">
+      <div>
+        <Heading tone="lime">Payday</Heading>
+        <p className="text-xs text-cc-muted">{money(landed)} landed today. Move this into your buckets first. Each tap logs it and earns chips.</p>
+      </div>
+      {picks.map(({ b, amt, done }) => (
+        <div key={b.id} className="flex items-center justify-between gap-2 rounded-lg border border-cc-line/70 bg-cc-night/40 px-3 py-1">
+          <span className="min-w-0 truncate text-sm">{b.name}</span>
+          <span className="flex items-center gap-2">
+            <span className="font-cc text-xl text-cc-lime">{money(amt)}</span>
+            <Button variant="lime" disabled={done} onClick={() => actions.contribute(b.id, amt, t)}>
+              {done ? "Done" : "Move it"}
+            </Button>
+          </span>
+        </div>
+      ))}
     </Card>
   );
 }
