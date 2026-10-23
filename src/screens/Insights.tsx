@@ -440,3 +440,53 @@ export function PayFirst({ state, actions }: { state: State; actions: Actions })
     </Card>
   );
 }
+
+/** Deposits per month for the last six months. */
+export function MonthlyBars({ state }: { state: State }) {
+  const now = today();
+  const months = Array.from({ length: 6 }, (_, i) => {
+    const d = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1);
+    const from = iso(startOfMonth(d));
+    const to = iso(endOfMonth(d));
+    const v = state.buckets.flatMap((b) => b.contributions).filter((c) => c.date >= from && c.date <= to).reduce((a, c) => a + c.amount, 0);
+    return { label: d.toLocaleDateString("en-US", { month: "short" }), v };
+  });
+  const max = Math.max(...months.map((m) => m.v), 1);
+  if (months.every((m) => m.v === 0)) return null;
+  const best = months.reduce((a, b) => (b.v > a.v ? b : a));
+  return (
+    <Card tone="aqua" className="space-y-2">
+      <Heading tone="aqua">Month by month</Heading>
+      <div className="flex h-32 items-end gap-2" role="img" aria-label={`Savings per month, best month ${best.label} at ${money(best.v)}`}>
+        {months.map((m, i) => (
+          <div key={i} className="flex h-full flex-1 flex-col items-center justify-end gap-1">
+            <span className="font-mono text-[9px] text-cc-muted">{m.v > 0 ? money(m.v) : ""}</span>
+            <div className={`w-full rounded-t-md ${i === 5 ? "bg-cc-lime" : "bg-cc-aqua/60"}`} style={{ height: `${Math.max(m.v > 0 ? 4 : 1, (m.v / max) * 100)}%` }} />
+            <span className={label}>{m.label}</span>
+          </div>
+        ))}
+      </div>
+      <div className="text-xs text-cc-muted">Best month: {best.label}, {money(best.v)}.</div>
+    </Card>
+  );
+}
+
+/** How many months of bills your savings could cover. */
+export function BillsCover({ state }: { state: State }) {
+  const bills = state.bills.reduce((a, b) => a + b.amount, 0);
+  const saved = totalSaved(state);
+  if (bills <= 0 || saved <= 0) return null;
+  const months = saved / bills;
+  const next = Math.floor(months) + 1;
+  return (
+    <Card tone="violet" className="space-y-2">
+      <Heading tone="violet">Bills cushion</Heading>
+      <div className="flex items-end justify-between">
+        <div className="font-cc text-4xl font-bold text-cc-violet">{months.toFixed(1)} months</div>
+        <div className={label}>of bills ({money(bills)}/mo)</div>
+      </div>
+      <Progress value={months - Math.floor(months)} tone="violet" />
+      <div className="text-xs text-cc-muted">{money(next * bills - saved)} more covers {next} month{next === 1 ? "" : "s"}. Three to six is the usual safety net.</div>
+    </Card>
+  );
+}
