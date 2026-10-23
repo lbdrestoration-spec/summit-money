@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ambienceOn, ambienceWanted, startAmbience, stopAmbience } from "./ambience";
+import { bucketPhoto } from "./bucketIcon";
 import { buzz } from "./haptic";
 import { QUEST_BONUS, rankOf, runsToday, trophies } from "./rank";
 import { Casino } from "./screens/Casino";
@@ -71,7 +72,7 @@ export default function App() {
     savedPrev.current = savedNow;
   }, [savedNow]);
   const seen = useRef<{ chip: string | undefined; rank: string; idx: number }>({ chip: state.chipLog[0]?.id, rank: rankOf(state).cur.name, idx: rankOf(state).index });
-  const [rankUp, setRankUp] = useState<{ name: string; index: number } | null>(null);
+  const [rankUp, setRankUp] = useState<{ kicker: string; name: string; image: string } | null>(null);
   const rankIdx = rankOf(state).index;
   const rankName = rankOf(state).cur.name;
   const lastChip = state.chipLog[0];
@@ -81,7 +82,7 @@ export default function App() {
       seen.current.rank = rankName;
       seen.current.idx = rankIdx;
       if (up) {
-        setRankUp({ name: rankName, index: rankIdx });
+        setRankUp({ kicker: "Rank up", name: rankName, image: `/art/rank-${rankIdx}.webp` });
         buzz([40, 30, 40, 30, 120]);
       }
     } else if (lastChip && lastChip.id !== seen.current.chip) {
@@ -100,6 +101,7 @@ export default function App() {
     if (fresh.length) {
       const b = state.buckets.find((x) => x.id === fresh[0]);
       setToast(`Goal reached: ${b?.name ?? "nice work"}`);
+      if (b) setRankUp({ kicker: "Goal reached", name: b.name, image: bucketPhoto(b.name, Math.max(0, state.buckets.filter((x) => x.target).findIndex((x) => x.id === b.id))) });
       buzz([60, 40, 60, 40, 90]);
     }
     seenGoals.current = reached;
@@ -144,11 +146,11 @@ export default function App() {
       {rankUp && (
         <button
           onClick={() => setRankUp(null)}
-          aria-label={`Rank up: ${rankUp.name}. Tap to continue`}
+          aria-label={`${rankUp.kicker}: ${rankUp.name}. Tap to continue`}
           className="rise fixed inset-0 z-40 flex flex-col items-center justify-end bg-cc-night bg-cover bg-center p-8 pb-24 text-center"
-          style={{ backgroundImage: `linear-gradient(to top, rgba(6,10,18,0.95), rgba(6,10,18,0.15) 60%), url(/art/rank-${rankUp.index}.webp)` }}
+          style={{ backgroundImage: `linear-gradient(to top, rgba(6,10,18,0.95), rgba(6,10,18,0.15) 60%), url(${rankUp.image})` }}
         >
-          <div className="font-mono text-xs uppercase tracking-[0.3em] text-cc-aqua">Rank up</div>
+          <div className="font-mono text-xs uppercase tracking-[0.3em] text-cc-aqua">{rankUp.kicker}</div>
           <div className="mt-2 font-cc text-6xl font-bold uppercase leading-none text-cc-lime">{rankUp.name}</div>
           <div className="mt-4 font-mono text-[10px] uppercase tracking-[0.2em] text-cc-muted">Tap to keep going</div>
         </button>
