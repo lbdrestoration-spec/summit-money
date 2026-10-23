@@ -10,7 +10,8 @@ import { Plan } from "./screens/Plan";
 import { QuickAdd } from "./screens/QuickAdd";
 import { Spend } from "./screens/Spend";
 import { Week } from "./screens/Week";
-import { Scene } from "./mountain";
+import { Burst, Scene } from "./mountain";
+import { totalSaved } from "./plan";
 import { useStore } from "./store";
 
 const tabs = [
@@ -51,6 +52,13 @@ export default function App() {
   const reachedKey = reached.join(",");
   const seenGoals = useRef<string[]>(reached);
   const [toast, setToast] = useState<string | null>(null);
+  const savedNow = totalSaved(state);
+  const savedPrev = useRef(savedNow);
+  const [burst, setBurst] = useState(0);
+  useEffect(() => {
+    if (savedNow > savedPrev.current) setBurst((n) => n + 1);
+    savedPrev.current = savedNow;
+  }, [savedNow]);
   const seen = useRef<{ chip: string | undefined; rank: string }>({ chip: state.chipLog[0]?.id, rank: rankOf(state).cur.name });
   const rankName = rankOf(state).cur.name;
   const lastChip = state.chipLog[0];
@@ -94,6 +102,7 @@ export default function App() {
   return (
     <div className="relative z-[1] mx-auto min-h-dvh max-w-md pb-24">
       <Scene />
+      {burst > 0 && <Burst key={burst} />}
       {toast && (
         <div role="status" className="rise pointer-events-none fixed inset-x-0 top-[max(0.75rem,env(safe-area-inset-top))] z-20 mx-auto w-fit max-w-[90vw] rounded-full border border-cc-gold/60 bg-cc-deep/95 px-4 py-2 font-cc text-lg uppercase tracking-wide text-cc-gold shadow-lg">
           {toast}

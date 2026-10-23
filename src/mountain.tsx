@@ -41,3 +41,23 @@ export function Scene() {
     </div>
   );
 }
+
+/** A short burst of snow when money goes into savings. Hidden for reduced-motion. */
+export function Burst() {
+  const bits = useMemo(
+    () =>
+      Array.from({ length: 28 }, (_, i) => {
+        const a = (i / 28) * Math.PI * 2 + (i % 3) * 0.2;
+        const d = 90 + (i % 5) * 38;
+        return { x: Math.cos(a) * d, y: Math.sin(a) * d - 60, s: 3 + (i % 4) * 1.5, delay: (i % 6) * 20 };
+      }),
+    [],
+  );
+  return (
+    <div className="burst pointer-events-none fixed left-1/2 top-[38%] z-10" aria-hidden="true">
+      {bits.map((b, i) => (
+        <span key={i} className="burst-bit" style={{ width: b.s, height: b.s, animationDelay: `${b.delay}ms`, ["--x" as string]: `${b.x}px`, ["--y" as string]: `${b.y}px` }} />
+      ))}
+    </div>
+  );
+}
