@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { bucketSaved, iso, money, today } from "../calc";
 import type { Actions } from "../store";
 import type { State } from "../types";
+import { bucketIcon } from "../bucketIcon";
 import { Button, Card, Empty, Heading, PhotoHeader, input, label } from "../ui";
 
 function Row({ title, sub, right, onDelete }: { title: string; sub?: string; right: string; onDelete: () => void }) {
@@ -155,7 +156,7 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
           {state.buckets.map((b) => (
             <Row
               key={b.id}
-              title={b.name}
+              title={`${bucketIcon(b.name)} ${b.name}`}
               sub={`${money(bucketSaved(b))} saved${b.monthlyPlan ? ` · ${money(b.monthlyPlan)}/mo planned` : ""}${b.target ? ` · goal ${money(b.target)}` : ""}`}
               right={money(bucketSaved(b))}
               onDelete={() => {

@@ -4,6 +4,7 @@ import { projectTo, totalSaved } from "../plan";
 import type { State } from "../types";
 import { iso } from "../calc";
 import type { Actions } from "../store";
+import { bucketIcon } from "../bucketIcon";
 import { Button, Card, Heading, Progress, label } from "../ui";
 
 /** Every dollar coming in or going out over the next two weeks. Read-only. */
@@ -275,7 +276,7 @@ export function SavingsSplit({ state }: { state: State }) {
           <div key={p.name} className="flex items-center justify-between gap-2 text-sm">
             <span className="flex min-w-0 items-center gap-2">
               <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: SLICES[i % SLICES.length] }} />
-              <span className="truncate">{p.name}</span>
+              <span className="truncate">{bucketIcon(p.name)} {p.name}</span>
             </span>
             <span className="font-cc text-lg">{money(p.v)}</span>
           </div>
@@ -401,6 +402,41 @@ export function Challenge({ state, actions }: { state: State; actions: Actions }
           </div>
         </div>
       )}
+    </Card>
+  );
+}
+
+/** One-tap deposits. Pay yourself first. */
+export function PayFirst({ state, actions }: { state: State; actions: Actions }) {
+  if (state.buckets.length === 0) return null;
+  return (
+    <Card tone="lime" className="space-y-3">
+      <div>
+        <Heading tone="lime">Pay yourself first</Heading>
+        <p className="text-xs text-cc-muted">Tap an amount to move it into a bucket today.</p>
+      </div>
+      {state.buckets.slice(0, 4).map((b) => (
+        <div key={b.id} className="space-y-1">
+          <div className="flex items-center justify-between text-sm">
+            <span className="truncate">
+              {bucketIcon(b.name)} {b.name}
+            </span>
+            <span className="font-cc text-lg text-cc-lime">{money(b.contributions.reduce((a, c) => a + c.amount, 0))}</span>
+          </div>
+          <div className="grid grid-cols-4 gap-1.5">
+            {[5, 20, 50, 100].map((n) => (
+              <button
+                key={n}
+                aria-label={`Add ${n} to ${b.name}`}
+                onClick={() => actions.contribute(b.id, n, iso(today()))}
+                className="min-h-11 rounded-lg border border-cc-line bg-cc-night/40 font-mono text-xs text-cc-snow active:scale-95"
+              >
+                +${n}
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
     </Card>
   );
 }
