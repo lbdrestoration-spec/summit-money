@@ -5,7 +5,7 @@ import { CardView } from "./CardView";
 import { canSplitPair, dealerPlay, isBlackjack, settle, value } from "./blackjack-logic";
 
 const CHIPS = [10, 50, 100, 500];
-type Phase = "bet" | "player" | "done";
+type Phase = "bet" | "insure" | "player" | "done";
 
 export function Blackjack({ chips, adjust }: { chips: number; adjust: (d: number) => void }) {
   const shoe = useRef<Card[]>([]);
@@ -18,6 +18,8 @@ export function Blackjack({ chips, adjust }: { chips: number; adjust: (d: number
   const [dealer, setDealer] = useState<Card[]>([]);
   const [msg, setMsg] = useState("");
   const [net, setNet] = useState(0);
+  /** Insurance chips already paid this round (lost unless the dealer has blackjack). */
+  const insRef = useRef(0);
 
   const draw = () => {
     if (shoe.current.length < 20) shoe.current = makeShoe(6);
@@ -25,7 +27,7 @@ export function Blackjack({ chips, adjust }: { chips: number; adjust: (d: number
   };
 
   /** Dealer plays (only if a hand is still alive), then every hand is settled. */
-  function resolveAll(hs: Card[][], sts: number[], d0: Card[], wasSplit: boolean) {
+  function resolveAll(hs: Card[][], sts: number[], d0: Card[], wasSplit: boolean, insBack = 0) {
     const alive = hs.some((h) => value(h).total <= 21);
     const d = alive ? dealerPlay(shoe.current, d0) : d0;
     let back = 0;
@@ -35,10 +37,11 @@ export function Blackjack({ chips, adjust }: { chips: number; adjust: (d: number
       back += r.back;
       msgs.push(r.msg);
     });
-    if (back > 0) adjust(back);
+    if (back + insBack > 0) adjust(back + insBack);
     const staked = sts.reduce((a, b) => a + b, 0);
-    setNet(back - staked);
-    setMsg(hs.length > 1 ? msgs.map((m, i) => `Hand ${i + 1}: ${m}`).join(" ") : msgs[0]);
+    setNet(back + insBack - staked - insRef.current);
+    const base = hs.length > 1 ? msgs.map((m, i) => `Hand ${i + 1}: ${m}`).join(" ") : msgs[0];
+    setMsg(insBack > 0 ? `${base} Insurance paid 2 to 1.` : insRef.current > 0 ? `${base} Insurance lost.` : base);
     setDealer(d);
     setHands(hs);
     setStakes(sts);
@@ -62,10 +65,22 @@ export function Blackjack({ chips, adjust }: { chips: number; adjust: (d: number
     setMsg("");
     setSplit(false);
     setIdx(0);
-    if (isBlackjack(p) || isBlackjack(d)) return resolveAll([p], [bet], d, false);
+    insRef.current = 0;
+    if (isBlackjack(p)) return resolveAll([p], [bet], d, false);
     setHands([p]);
     setStakes([bet]);
     setDealer(d);
+    // Dealer shows an ace and you can afford half your bet: offer insurance before the peek
+    if (d[0].r === 14 && chips - bet >= Math.floor(bet / 2) && Math.floor(bet / 2) > 0) return setPhase("insure");
+    if (isBlackjack(d)) return resolveAll([p], [bet], d, false);
+    setPhase("player");
+  }
+
+  function insure(take: boolean) {
+    const cost = take ? Math.floor(bet / 2) : 0;
+    if (cost > 0) adjust(-cost);
+    insRef.current = cost;
+    if (isBlackjack(dealer)) return resolveAll(hands, stakes, dealer, false, cost > 0 ? cost * 3 : 0);
     setPhase("player");
   }
 
@@ -105,7 +120,7 @@ export function Blackjack({ chips, adjust }: { chips: number; adjust: (d: number
     if (h[0].r === 14) resolveAll(hs, [st, st], dealer, true);
   }
 
-  const hideHole = phase === "player";
+  const hideHole = phase === "player" || phase === "insure";
   const dv = value(hideHole ? dealer.slice(0, 1) : dealer).total;
   const cur = hands[idx] ?? [];
   const canDouble = phase === "player" && chips >= (stakes[idx] ?? 0) && cur.length === 2;
@@ -163,7 +178,20 @@ export function Blackjack({ chips, adjust }: { chips: number; adjust: (d: number
         </div>
       )}
 
-      {phase !== "player" && (
+      {phase === "insure" && (
+        <div className="space-y-2 rounded-lg border border-cc-gold/50 p-3">
+          <div className="font-cc text-xl uppercase text-cc-gold">Dealer shows an ace</div>
+          <p className="text-xs text-cc-muted">Insurance costs {Math.floor(bet / 2)} chips and pays 2 to 1 if the dealer has blackjack.</p>
+          <div className="grid grid-cols-2 gap-2">
+            <Button variant="lime" onClick={() => insure(true)}>
+              Take insurance
+            </Button>
+            <Button onClick={() => insure(false)}>No thanks</Button>
+          </div>
+        </div>
+      )}
+
+      {phase !== "player" && phase !== "insure" && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <span className={label}>Your bet</span>
@@ -185,7 +213,7 @@ export function Blackjack({ chips, adjust }: { chips: number; adjust: (d: number
             </Button>
           </div>
           {bet > chips && <p className="text-xs text-cc-pink">That bet is more than your chips. Tap Clear and bet less.</p>}
-          <p className="text-xs text-cc-muted">Blackjack pays 3 to 2. Dealer stands on all 17s. You can double on any two cards and split a pair once. Split aces get one card each.</p>
+          <p className="text-xs text-cc-muted">Blackjack pays 3 to 2. Dealer stands on all 17s. Insurance is offered against an ace. You can double on any two cards and split a pair once. Split aces get one card each.</p>
         </div>
       )}
     </div>
