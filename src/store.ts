@@ -65,6 +65,17 @@ export function useStore() {
         buckets: s.buckets.map((b) => (b.id === bucketId ? { ...b, contributions: b.contributions.filter((c) => c.id !== contribId) } : b)),
         challenge: s.challenge.filter((c) => c.contribId !== contribId),
       })),
+    /** Move the round-up jar into a bucket. The jar is derived, so we only record how much has been moved. */
+    moveRoundUp: (bucketId: string, amount: number, date: string) =>
+      update((s) => {
+        if (amount <= 0 || !s.buckets.some((b) => b.id === bucketId)) return s;
+        const next = {
+          ...s,
+          roundMoved: s.roundMoved + amount,
+          buckets: s.buckets.map((b) => (b.id === bucketId ? { ...b, contributions: [...b.contributions, { id: uid(), date, amount }] } : b)),
+        };
+        return date === iso(today()) ? grant(next, amount * PER_DOLLAR, "Moved round-ups") : next;
+      }),
     removeBucket: (id: string) => update((s) => ({ ...s, buckets: s.buckets.filter((x) => x.id !== id) })),
     contribute: (bucketId: string, amount: number, date: string) =>
       update((s) => {

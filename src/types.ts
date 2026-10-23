@@ -71,6 +71,8 @@ export type State = {
   questDays: string[];
   challenge: ChallengeEntry[];
   challengeStep: number;
+  /** Round-up jar chips already moved into savings (the jar itself is derived from spends). */
+  roundMoved: number;
 };
 
 export const DEFAULT_CATEGORIES = ["Food", "Gas", "Fun", "Business", "Shopping", "Other"];
@@ -96,4 +98,5 @@ export const emptyState = (): State => ({
   questDays: [],
   challenge: [],
   challengeStep: 1,
+  roundMoved: 0,
 });

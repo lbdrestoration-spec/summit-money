@@ -490,3 +490,36 @@ export function BillsCover({ state }: { state: State }) {
     </Card>
   );
 }
+
+/** What every spend would add if it were rounded up to the next $5. */
+export const roundUpTotal = (state: State) => state.spends.reduce((a, s) => a + (Math.ceil(s.amount / 5) * 5 - s.amount), 0);
+
+/** Round-up jar: pretend each spend was rounded up to the next $5, then move the difference into savings. */
+export function RoundUpJar({ state, actions }: { state: State; actions: Actions }) {
+  const [bucketId, setBucketId] = useState("");
+  const jar = Math.max(0, Math.round((roundUpTotal(state) - state.roundMoved) * 100) / 100);
+  if (state.spends.length === 0 || state.buckets.length === 0) return null;
+  const target = bucketId || state.buckets[0].id;
+  return (
+    <Card tone="gold" className="space-y-2">
+      <Heading tone="gold">Round-up jar</Heading>
+      <div className="flex items-end justify-between">
+        <div className="font-cc text-4xl font-bold text-cc-gold">{money(jar, { cents: true })}</div>
+        <div className={label}>from {state.spends.length} spend{state.spends.length === 1 ? "" : "s"}</div>
+      </div>
+      <p className="text-xs text-cc-muted">If every spend were rounded up to the next $5, this is the difference. Move it into savings when you really transfer it.</p>
+      <div className="flex gap-2">
+        <select className="min-h-11 flex-1 rounded-lg border border-cc-line bg-cc-night/60 px-3" value={target} onChange={(e) => setBucketId(e.target.value)} aria-label="Round-up bucket">
+          {state.buckets.map((b) => (
+            <option key={b.id} value={b.id}>
+              {b.name}
+            </option>
+          ))}
+        </select>
+        <Button variant="lime" disabled={jar < 0.01} onClick={() => actions.moveRoundUp(target, jar, iso(today()))}>
+          Move {money(jar, { cents: true })}
+        </Button>
+      </div>
+    </Card>
+  );
+}

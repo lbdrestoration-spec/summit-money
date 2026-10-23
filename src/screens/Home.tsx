@@ -7,7 +7,7 @@ import { rankOf, savingWeekStreak } from "../rank";
 import { projectTo } from "../plan";
 import { Button, Card, Empty, Heading, label, Stat } from "../ui";
 import { makeShareCard, shareProgress } from "../shareCard";
-import { Countdowns, DueSoon, BillsCover, Challenge, Milestones, MonthlyBars, PayFirst, PaydaySplit, SavingsRate, Runway, SavingsSplit, Timeline, WhatIf } from "./Insights";
+import { Countdowns, DueSoon, BillsCover, Challenge, RoundUpJar, Milestones, MonthlyBars, PayFirst, PaydaySplit, SavingsRate, Runway, SavingsSplit, Timeline, WhatIf } from "./Insights";
 import { RunsCard } from "./Trail";
 import { Urge } from "./Urge";
 import { Weather } from "./Weather";
@@ -151,6 +151,7 @@ export function Home({ state, actions, onCasino, onPlan }: { state: State; actio
       <PayFirst state={state} actions={actions} />
       <SavingsRate state={state} />
       <Milestones state={state} />
+      <RoundUpJar state={state} actions={actions} />
       <BillsCover state={state} />
       <Challenge state={state} actions={actions} />
       <SavingsSplit state={state} />
