@@ -631,3 +631,30 @@ export function SaveHeat({ state }: { state: State }) {
     </Card>
   );
 }
+
+/** The category taking the most this month, and what a 20% trim would free up for savings. */
+export function BiggestLeak({ state }: { state: State }) {
+  const now = today();
+  const from = iso(startOfMonth(now));
+  const to = iso(endOfMonth(now));
+  const by = new Map<string, number>();
+  for (const s of state.spends) if (s.date >= from && s.date <= to) by.set(s.category, (by.get(s.category) ?? 0) + s.amount);
+  const rows = [...by.entries()].sort((a, b) => b[1] - a[1]);
+  if (rows.length === 0) return null;
+  const [name, amt] = rows[0];
+  const total = rows.reduce((a, r) => a + r[1], 0);
+  const free = amt * 0.2;
+  return (
+    <Card tone="orange" className="space-y-2">
+      <Heading tone="orange">Biggest leak this month</Heading>
+      <div className="flex items-end justify-between">
+        <div className="font-cc text-3xl font-bold uppercase text-cc-orange">{name}</div>
+        <div className="font-cc text-3xl font-bold">{money(amt)}</div>
+      </div>
+      <Progress value={total > 0 ? amt / total : 0} tone="orange" />
+      <div className="text-xs text-cc-muted">
+        {Math.round((amt / total) * 100)}% of what you spent. Trim it by 20% and {money(free)} could go to savings, about {money(free * 12)} over a year.
+      </div>
+    </Card>
+  );
+}
