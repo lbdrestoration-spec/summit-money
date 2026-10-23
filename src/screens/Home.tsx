@@ -3,6 +3,7 @@ import { StockChart } from "../Chart";
 import type { Actions } from "../store";
 import type { State } from "../types";
 import { rankOf } from "../rank";
+import { projectTo } from "../plan";
 import { Button, Card, Empty, Heading, label, Stat } from "../ui";
 import { Countdowns, DueSoon, PaydaySplit, Runway, Timeline, WhatIf } from "./Insights";
 import { RunsCard } from "./Trail";
@@ -56,9 +57,17 @@ export function Home({ state, actions, onCasino, onPlan }: { state: State; actio
   const checkedToday = state.checkins.includes(todayIso) || state.spends.some((s) => s.date === todayIso);
   const nextPay = m.checks.find((c) => c.date >= todayIso);
   const over = m.remaining < 0;
-  const daily = (state.plan?.weeklySpending ?? 0) / 7;
-  const report = over ? "Closed, avalanche danger" : daily > 0 && m.safeToday >= daily * 1.2 ? "Fresh powder" : daily > 0 && m.safeToday >= daily * 0.8 ? "Groomed corduroy" : "Thin cover, ski easy";
   const rank = rankOf(state);
+  // Nearest upcoming deadline and where you are headed for it
+  const nextDeadline = (state.plan?.deadlines ?? [])
+    .map((d) => ({ d, p: projectTo(state, d) }))
+    .filter((x) => x.p)
+    .sort((a, b) => a.d.date.localeCompare(b.d.date))[0];
+  const behind = (state.plan?.deadlines ?? []).some((d) => {
+    const p = projectTo(state, d);
+    return p && p.goalGap !== null && p.goalGap < 0;
+  });
+  const report = behind ? "Thin cover, keep stacking" : days >= 3 ? "Fresh powder" : "Groomed corduroy";
 
   return (
     <div className="space-y-4">
@@ -67,11 +76,13 @@ export function Home({ state, actions, onCasino, onPlan }: { state: State; actio
         <video className="hero-video absolute inset-0 h-full w-full object-cover" src="/art/hero-loop.mp4" poster="/art/hero.webp" autoPlay muted loop playsInline preload="auto" aria-hidden="true" />
         <div className="absolute inset-0 bg-gradient-to-t from-cc-night via-cc-night/55 to-transparent" />
         <div className="relative flex min-h-[340px] flex-col justify-end p-4">
-          <div className={label}>Safe to spend today</div>
-          <div className={`font-cc text-7xl font-bold leading-none drop-shadow ${over ? "text-cc-pink" : "text-cc-lime"}`}>{money(m.safeToday)}</div>
+          <div className={label}>Saved so far</div>
+          <div className="font-cc text-7xl font-bold leading-none text-cc-lime drop-shadow">{money(totalSaved)}</div>
           <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-cc-aqua">Mountain report · {report}</div>
           <div className="mt-1 text-xs text-cc-snow/80">
-            {over ? `Over budget by ${money(-m.remaining)} this month` : `${money(m.remaining)} left this month · ${m.daysLeft} days to go`}
+            {nextDeadline && nextDeadline.p
+              ? `${money(nextDeadline.p.projected)} projected by ${parse(nextDeadline.d.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })} · ${nextDeadline.p.days} days to go`
+              : "Put money in a bucket and watch the line climb"}
           </div>
         </div>
       </div>
