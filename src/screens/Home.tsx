@@ -7,7 +7,7 @@ import { rankOf, savingWeekStreak } from "../rank";
 import { projectTo } from "../plan";
 import { Button, Card, Empty, Heading, label, Stat } from "../ui";
 import { makeShareCard, shareProgress } from "../shareCard";
-import { Countdowns, DueSoon, BillsCover, Challenge, YearEnd, WeekNudge, LastWeek, RoundUpJar, Milestones, MonthlyBars, PayFirst, PaydaySplit, SavingsRate, Runway, SavingsSplit, Timeline, WhatIf } from "./Insights";
+import { Countdowns, DueSoon, BillsCover, Challenge, SaveHeat, YearEnd, WeekNudge, LastWeek, RoundUpJar, Milestones, MonthlyBars, PayFirst, PaydaySplit, SavingsRate, Runway, SavingsSplit, Timeline, WhatIf } from "./Insights";
 import { RunsCard } from "./Trail";
 import { Urge } from "./Urge";
 import { Weather } from "./Weather";
@@ -58,11 +58,11 @@ const JUMPS = [
 ];
 
 /** The hero photo follows the clock: dawn, day, golden hour, night. */
-function skyFor(hour: number) {
+function skyFor(hour: number): { id: string; src: string; alt: string; video?: string } {
   if (hour >= 5 && hour < 9) return { id: "dawn", src: "/art/hero-dawn.webp", alt: "Dawn alpenglow over snowy pines near Whitefish, Montana" };
-  if (hour >= 9 && hour < 15) return { id: "day", src: "/art/hero.webp", alt: "Snow-covered pine forest below a pink alpenglow mountain near Whitefish, Montana" };
+  if (hour >= 9 && hour < 15) return { id: "day", video: "/art/hero-loop.mp4", src: "/art/hero.webp", alt: "Snow-covered pine forest below a pink alpenglow mountain near Whitefish, Montana" };
   if (hour >= 15 && hour < 20) return { id: "gold", src: "/art/hero-gold.webp", alt: "Golden hour light through snowy pines near Whitefish, Montana" };
-  return { id: "night", src: "/art/hero-night.webp", alt: "Starry night over snowy pines near Whitefish, Montana" };
+  return { id: "night", video: "/art/hero-night-loop.mp4", src: "/art/hero-night.webp", alt: "Starry night over snowy pines near Whitefish, Montana" };
 }
 
 export function Home({ state, actions, onCasino, onPlan }: { state: State; actions: Actions; onCasino: () => void; onPlan: () => void }) {
@@ -93,7 +93,7 @@ export function Home({ state, actions, onCasino, onPlan }: { state: State; actio
     <div className="space-y-4">
       <div className="rise relative min-h-[340px] overflow-hidden rounded-2xl border border-cc-line">
         <img src={sky.src} alt={sky.alt} className="absolute inset-0 h-full w-full object-cover" />
-        {sky.id === "day" && <video className="hero-video absolute inset-0 h-full w-full object-cover" src="/art/hero-loop.mp4" poster="/art/hero.webp" autoPlay muted loop playsInline preload="auto" aria-hidden="true" />}
+        {sky.video && <video key={sky.video} className="hero-video absolute inset-0 h-full w-full object-cover" src={sky.video} poster={sky.src} autoPlay muted loop playsInline preload="auto" aria-hidden="true" />}
         <div className="absolute inset-0 bg-gradient-to-t from-cc-night via-cc-night/55 to-transparent" />
         <button
           className="absolute right-3 top-3 z-[1] min-h-11 rounded-full border border-cc-line bg-cc-night/60 px-4 font-mono text-[10px] uppercase tracking-wider text-cc-snow backdrop-blur"
@@ -181,6 +181,7 @@ export function Home({ state, actions, onCasino, onPlan }: { state: State; actio
       <Challenge state={state} actions={actions} />
       <SavingsSplit state={state} />
       <MonthlyBars state={state} />
+      <SaveHeat state={state} />
 
       <Card tone="lime">
         <div className="mb-2 flex items-end justify-between">

@@ -604,3 +604,30 @@ export function YearEnd({ state }: { state: State }) {
     </Card>
   );
 }
+
+/** Twelve weeks of deposit days, like a contribution graph. Darker green means a bigger deposit that day. */
+export function SaveHeat({ state }: { state: State }) {
+  const now = today();
+  const start = addDays(startOfWeek(now), -77);
+  const byDay = new Map<string, number>();
+  for (const c of state.buckets.flatMap((b) => b.contributions)) byDay.set(c.date, (byDay.get(c.date) ?? 0) + c.amount);
+  const days = Array.from({ length: 84 }, (_, i) => {
+    const d = addDays(start, i);
+    return { iso: iso(d), v: byDay.get(iso(d)) ?? 0, future: d > now };
+  });
+  const active = days.filter((d) => d.v > 0).length;
+  if (active === 0) return null;
+  const max = Math.max(...days.map((d) => d.v));
+  const shade = (v: number) => (v <= 0 ? "bg-cc-line/50" : v / max > 0.66 ? "bg-cc-lime" : v / max > 0.33 ? "bg-cc-lime/70" : "bg-cc-lime/40");
+  return (
+    <Card tone="lime" className="space-y-2">
+      <Heading tone="lime">Saving days</Heading>
+      <div className="grid grid-flow-col grid-rows-7 gap-1" role="img" aria-label={`You put money away on ${active} of the last 12 weeks' days`}>
+        {days.map((d) => (
+          <div key={d.iso} title={`${d.iso}: ${money(d.v)}`} className={`aspect-square rounded-[3px] ${d.future ? "opacity-0" : shade(d.v)}`} />
+        ))}
+      </div>
+      <div className="text-xs text-cc-muted">{active} saving day{active === 1 ? "" : "s"} in the last 12 weeks. Mondays on top.</div>
+    </Card>
+  );
+}
