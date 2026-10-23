@@ -62,12 +62,13 @@ export function Urge({ state, actions, onCasino }: { state: State; actions: Acti
       )}
 
       {(running || done) && (
-        <div className="rounded-xl border border-cc-line bg-cc-night/60 p-4 text-center">
-          <div className="font-cc text-6xl font-bold leading-none text-cc-aqua">{mm}</div>
-          <div className="mt-1 font-mono text-[11px] uppercase tracking-[0.2em] text-cc-muted">
+        <div className="relative overflow-hidden rounded-xl border border-cc-line bg-cc-night/60 p-4 text-center">
+          <video className="hero-video pointer-events-none absolute inset-0 h-full w-full object-cover opacity-40" src="/art/hero-night-loop.mp4" poster="/art/hero-night.webp" autoPlay muted loop playsInline aria-hidden="true" />
+          <div className="relative font-cc text-6xl font-bold leading-none text-cc-aqua">{mm}</div>
+          <div className="relative mt-1 font-mono text-[11px] uppercase tracking-[0.2em] text-cc-snow/80">
             {running ? breathe : "You made it. The urge has dropped."}
           </div>
-          <div className="mt-3 flex gap-2">
+          <div className="relative mt-3 flex gap-2">
             <Button className="flex-1" onClick={() => setLeft(null)}>
               {running ? "Stop" : "Close"}
             </Button>
