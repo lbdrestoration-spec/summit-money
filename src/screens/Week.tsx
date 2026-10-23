@@ -50,7 +50,7 @@ function Limits({ state, actions, spentBy }: { state: State; actions: Actions; s
               </div>
               {limit ? (
                 <>
-                  <Progress value={spent / limit} tone={over ? "pink" : "orange"} />
+                  <Progress value={spent / limit} tone={over ? "pink" : "orange"} name="Category limit used" />
                   <div className={`${label} ${over ? "!text-cc-pink" : ""}`}>
                     {money(spent)} of {money(limit)}
                   </div>
@@ -91,7 +91,7 @@ export function Week({ state, actions }: { state: State; actions: Actions }) {
               {money(w.spent)} of {money(w.weeklyAllowance)}
             </span>
           </div>
-          <Progress value={pct} tone={over ? "pink" : "lime"} />
+          <Progress value={pct} tone={over ? "pink" : "lime"} name="Weekly allowance used" />
         </div>
       </Card>
 

@@ -77,7 +77,7 @@ export function Casino({ state, actions }: { state: State; actions: Actions }) {
               {earned} / {WEEKLY_CAP}
             </span>
           </div>
-          <Progress value={earned / WEEKLY_CAP} tone="gold" />
+          <Progress value={earned / WEEKLY_CAP} tone="gold" name="Weekly chip earnings cap" />
         </div>
         <p className="text-xs text-cc-muted">
           Play money only. Chips can't be bought or cashed out. You earn {DAILY_LOG} for logging your day and {PER_DOLLAR} for every real dollar you save.

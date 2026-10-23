@@ -197,7 +197,7 @@ export function MonthCalendar({ state }: { state: State }) {
     const d = iso(new Date(now.getFullYear(), now.getMonth(), n));
     const spent = spentBy.get(d) ?? 0;
     const logged = state.checkins.includes(d) || spentBy.has(d);
-    if (n > todayN) return "border-cc-line/40 text-cc-muted/50";
+    if (n > todayN) return "border-cc-line/40 text-cc-muted/80";
     if (!logged) return "border-cc-line/70 text-cc-muted";
     if (spent === 0) return "border-cc-lime/60 bg-cc-lime/20 text-cc-lime";
     if (spent <= daily) return "border-cc-aqua/60 bg-cc-aqua/20 text-cc-aqua";
@@ -307,7 +307,7 @@ export function Milestones({ state }: { state: State }) {
         <div className="font-cc text-4xl font-bold text-cc-gold">{money(next)}</div>
         <div className={label}>{money(next - total)} to go</div>
       </div>
-      <Progress value={(total - prev) / (next - prev)} tone="gold" />
+      <Progress value={(total - prev) / (next - prev)} tone="gold" name="Progress to next milestone" />
       <div className="text-xs text-cc-muted">
         {when ? `At your pace of the last 8 weeks, around ${when} (${eta} days).` : "Add a deposit and I'll estimate the day you hit it."}
       </div>
@@ -333,7 +333,7 @@ export function SavingsRate({ state }: { state: State }) {
         <div className="font-cc text-4xl font-bold text-cc-lime">{money(deposited)}</div>
         <div className={label}>{planned > 0 ? `of ${money(planned)} planned` : "no plan set"}</div>
       </div>
-      {planned > 0 && <Progress value={Math.min(1, deposited / planned)} tone="lime" />}
+      {planned > 0 && <Progress value={Math.min(1, deposited / planned)} tone="lime" name="Saved this month versus plan" />}
       <div className="text-xs text-cc-muted">
         {income > 0 ? `That's ${pct}% of this month's income.` : ""}
         {planned > 0 && deposited >= planned ? " Plan met. Anything more is a bonus." : planned > deposited ? ` ${money(planned - deposited)} left to hit the plan.` : ""}
@@ -361,7 +361,7 @@ export function Challenge({ state, actions }: { state: State; actions: Actions }
       <div className="text-xs text-cc-muted">
         {done.size} of 52 weeks · {money(total)} of {money(goal)}
       </div>
-      <Progress value={total / goal} tone="aqua" />
+      <Progress value={total / goal} tone="aqua" name="52-week challenge progress" />
       {open && (
         <div className="space-y-3 pt-1">
           <p className="text-xs text-cc-muted">Week 1 saves {money(step)}, week 2 saves {money(2 * step)}, and so on. Tap a week to deposit it. Tap again to undo.</p>
@@ -485,7 +485,7 @@ export function BillsCover({ state }: { state: State }) {
         <div className="font-cc text-4xl font-bold text-cc-violet">{months.toFixed(1)} months</div>
         <div className={label}>of bills ({money(bills)}/mo)</div>
       </div>
-      <Progress value={months - Math.floor(months)} tone="violet" />
+      <Progress value={months - Math.floor(months)} tone="violet" name="Progress to next month of bills covered" />
       <div className="text-xs text-cc-muted">{money(next * bills - saved)} more covers {next} month{next === 1 ? "" : "s"}. Three to six is the usual safety net.</div>
     </Card>
   );
@@ -651,7 +651,7 @@ export function BiggestLeak({ state }: { state: State }) {
         <div className="font-cc text-3xl font-bold uppercase text-cc-orange">{name}</div>
         <div className="font-cc text-3xl font-bold">{money(amt)}</div>
       </div>
-      <Progress value={total > 0 ? amt / total : 0} tone="orange" />
+      <Progress value={total > 0 ? amt / total : 0} tone="orange" name="Share of this month's spending" />
       <div className="text-xs text-cc-muted">
         {Math.round((amt / total) * 100)}% of what you spent. Trim it by 20% and {money(free)} could go to savings, about {money(free * 12)} over a year.
       </div>

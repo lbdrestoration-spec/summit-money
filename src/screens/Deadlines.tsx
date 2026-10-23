@@ -30,7 +30,7 @@ export function DeadlineCards({ state }: { state: State }) {
             <div className={`font-cc text-5xl font-bold leading-none ${tone === "pink" ? "text-cc-pink" : "text-cc-lime"}`}>{money(p.projected)}</div>
             {d.goal ? (
               <div className="space-y-1">
-                <Progress value={p.projected / d.goal} tone={tone} />
+                <Progress value={p.projected / d.goal} tone={tone} name={`Projected savings toward ${d.name} goal`} />
                 <div className="text-xs text-cc-muted">
                   {short ? `${money(-(p.goalGap as number))} short of your ${money(d.goal)} goal` : `${money(p.goalGap as number)} over your ${money(d.goal)} goal`}
                 </div>

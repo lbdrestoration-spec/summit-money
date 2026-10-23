@@ -75,7 +75,7 @@ export function Goals({ state, actions }: { state: State; actions: Actions }) {
                 {money(saved)} <span className="text-cc-muted">/ {money(g.target as number)}</span>
               </div>
             </div>
-            <Progress value={pct} tone={pct >= 1 ? "lime" : "gold"} />
+            <Progress value={pct} tone={pct >= 1 ? "lime" : "gold"} name={`${g.name} goal progress`} />
             <div className="text-xs text-cc-muted">
               {pct >= 1
                 ? "Goal reached. Nice work."

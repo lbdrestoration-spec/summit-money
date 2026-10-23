@@ -83,10 +83,10 @@ export function Button({
   );
 }
 
-export function Progress({ value, tone = "aqua" }: { value: number; tone?: Tone }) {
+export function Progress({ value, tone = "aqua", name = "Progress" }: { value: number; tone?: Tone; name?: string }) {
   const pct = Math.max(0, Math.min(100, value * 100));
   return (
-    <div className="h-2 overflow-hidden rounded-full bg-cc-night/80" role="progressbar" aria-valuenow={Math.round(pct)}>
+    <div className="h-2 overflow-hidden rounded-full bg-cc-night/80" role="progressbar" aria-label={name} aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(pct)}>
       <div className={`h-full rounded-full ${toneBar[tone]} transition-[width] duration-700`} style={{ width: `${pct}%` }} />
     </div>
   );

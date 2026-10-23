@@ -19,7 +19,7 @@ export function RankCard({ state }: { state: State }) {
         </div>
         <div className="text-right text-xs text-cc-muted">{r.next ? `${money(r.next.at - r.saved)} to ${r.next.name}` : "Top of the mountain"}</div>
       </div>
-      <Progress value={r.progress} tone="gold" />
+      <Progress value={r.progress} tone="gold" name="Progress to next rank" />
       <div className="flex justify-between font-mono text-[9px] uppercase tracking-wider text-cc-muted">
         {RANKS.map((x) => (
           <span key={x.name} className={r.saved >= x.at ? "text-cc-gold" : ""}>
@@ -126,7 +126,7 @@ export function Checklist({ state, actions }: { state: State; actions: Actions }
           {done}/{LIST.length}
         </span>
       </div>
-      <Progress value={done / LIST.length} tone="violet" />
+      <Progress value={done / LIST.length} tone="violet" name="Checklist progress" />
       <ul className="space-y-1">
         {LIST.map((i) => {
           const on = state.packed.includes(i.id);
@@ -160,7 +160,7 @@ export function TrophyCase({ state }: { state: State }) {
       </div>
       <div className="grid grid-cols-2 gap-2">
         {t.map((x) => (
-          <div key={x.id} className={`rounded-xl border p-3 ${x.earned ? "border-cc-gold/50 bg-cc-gold/10" : "border-cc-line/70 bg-cc-night/40 opacity-60"}`}>
+          <div key={x.id} className={`rounded-xl border p-3 ${x.earned ? "border-cc-gold/50 bg-cc-gold/10" : "border-cc-line/70 bg-cc-night/40 opacity-80"}`}>
             <div className="text-xl" aria-hidden="true">
               {x.earned ? x.icon : "🔒"}
             </div>
