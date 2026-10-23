@@ -7,6 +7,7 @@ import { Goals } from "./screens/Goals";
 import { Home } from "./screens/Home";
 import { Personalize } from "./screens/Personalize";
 import { Plan } from "./screens/Plan";
+import { QuickAdd } from "./screens/QuickAdd";
 import { Spend } from "./screens/Spend";
 import { Week } from "./screens/Week";
 import { Scene } from "./mountain";
@@ -124,6 +125,8 @@ export default function App() {
           <Casino state={state} actions={actions} />
         </div>
       </main>
+
+      {tab !== "casino" && tab !== "spend" && <QuickAdd state={state} actions={actions} />}
 
       <nav
         className="fixed inset-x-0 bottom-0 z-10 border-t border-cc-line bg-cc-deep/95 pb-[env(safe-area-inset-bottom)] backdrop-blur"

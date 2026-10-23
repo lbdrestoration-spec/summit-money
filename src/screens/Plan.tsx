@@ -64,6 +64,20 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
   return (
     <div className="space-y-4">
       <PhotoHeader src="/art/lake.webp" title="My plan" sub="Bills, buckets, backup" />
+      <Card tone="aqua" className="space-y-2">
+        <Heading>What's new</Heading>
+        <ul className="space-y-1 text-sm text-cc-snow/90">
+          <li>Quick spend: the orange + button on every screen</li>
+          <li>Payday card suggests what to move into each bucket</li>
+          <li>Trail ranks, 13 trophies, daily runs for bonus chips</li>
+          <li>Feeling the urge? A 10-minute pause and a kept-in-pocket tally</li>
+          <li>Trip budgets for Dec 10 and July, plus a Montana checklist</li>
+          <li>What if slider, 14-day timeline, month calendar, runway</li>
+          <li>Casino: spinning wheel, blackjack split, lodge table, sounds</li>
+          <li>Snowflake button up top: cabin wind and fire ambience</li>
+          <li>Hold the app icon for shortcuts: Spend, Casino, Goals</li>
+        </ul>
+      </Card>
       <Card tone="lime">
         <Heading tone="lime">Side income</Heading>
         <p className="mt-1 text-xs text-cc-muted">Log what you make on your own each week.</p>
