@@ -68,6 +68,7 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
         <Heading>What's new</Heading>
         <ul className="space-y-1 text-sm text-cc-snow/90">
           <li>Quick spend: the orange + button on every screen</li>
+          <li>Live Whitefish temperature and 5-day snow forecast on Home</li>
           <li>Payday card suggests what to move into each bucket</li>
           <li>Trail ranks, 13 trophies, daily runs for bonus chips</li>
           <li>Feeling the urge? A 10-minute pause and a kept-in-pocket tally</li>

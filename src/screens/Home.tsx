@@ -7,6 +7,7 @@ import { Button, Card, Empty, Heading, label, Stat } from "../ui";
 import { Countdowns, DueSoon, PaydaySplit, Runway, Timeline, WhatIf } from "./Insights";
 import { RunsCard } from "./Trail";
 import { Urge } from "./Urge";
+import { Weather } from "./Weather";
 import { DeadlineCards, FridayPayCard } from "./Deadlines";
 
 const QUOTES = [
@@ -52,6 +53,7 @@ export function Home({ state, actions, onCasino }: { state: State; actions: Acti
         </div>
       </div>
 
+      <Weather />
       <Countdowns state={state} />
       <p className="px-1 text-center font-cc text-xl italic leading-snug text-cc-snow/80">“{quoteOf(todayIso)}”</p>
       <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-cc-muted">
