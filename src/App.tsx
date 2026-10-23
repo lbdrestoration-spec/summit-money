@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { ambienceOn, ambienceWanted, startAmbience, stopAmbience } from "./ambience";
 import { buzz } from "./haptic";
 import { QUEST_BONUS, rankOf, runsToday } from "./rank";
 import { Casino } from "./screens/Casino";
@@ -34,6 +35,17 @@ export default function App() {
     if (state.settings && runs.all && !state.questDays.includes(runs.t)) actions.claimQuests(runs.t, QUEST_BONUS);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [runs.all, runs.t, state.questDays]);
+  const [amb, setAmb] = useState(false);
+  useEffect(() => {
+    // browsers only allow sound after a tap, so a remembered "on" starts at the first tap
+    if (!ambienceWanted()) return;
+    const go = () => {
+      startAmbience();
+      setAmb(ambienceOn());
+    };
+    window.addEventListener("pointerdown", go, { once: true });
+    return () => window.removeEventListener("pointerdown", go);
+  }, []);
   const [toast, setToast] = useState<string | null>(null);
   const seen = useRef<{ chip: string | undefined; rank: string }>({ chip: state.chipLog[0]?.id, rank: rankOf(state).cur.name });
   const rankName = rankOf(state).cur.name;
@@ -78,6 +90,19 @@ export default function App() {
           <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-cc-muted">Whitefish · Montana</div>
           <h1 className="font-cc text-3xl font-bold uppercase leading-none tracking-wide">Summit Money</h1>
         </div>
+        <div className="flex items-center">
+        <button
+          onClick={() => {
+            if (amb) stopAmbience();
+            else startAmbience();
+            setAmb(ambienceOn());
+          }}
+          aria-pressed={amb}
+          aria-label="Cabin ambience: wind and fire"
+          className={`mr-2 min-h-11 min-w-11 rounded-full border text-lg ${amb ? "border-cc-orange/60 bg-cc-orange/15" : "border-cc-line text-cc-muted"}`}
+        >
+          {amb ? "🔥" : "❄"}
+        </button>
         <button
           onClick={() => setTab("casino")}
           className="min-h-11 rounded-full border border-cc-gold/50 bg-cc-gold/10 px-3 font-cc text-xl text-cc-gold"
@@ -85,6 +110,7 @@ export default function App() {
         >
           ● {state.chips.toLocaleString()}
         </button>
+        </div>
       </header>
 
       <main className="space-y-4 px-4">

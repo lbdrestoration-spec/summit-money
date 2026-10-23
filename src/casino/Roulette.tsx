@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Button, label } from "../ui";
 import { colorOf, payout } from "./roulette-logic";
 import { randInt } from "./rng";
+import { angleFor, Wheel } from "./Wheel";
 
 const SIZES = [10, 50, 100, 500];
 const numBg = { red: "bg-cc-pink/80 text-cc-snow", black: "bg-cc-night text-cc-snow border border-cc-line", green: "bg-cc-lime text-cc-night" } as const;
@@ -13,6 +14,7 @@ export function Roulette({ chips, adjust }: { chips: number; adjust: (d: number)
   const [shown, setShown] = useState<number | null>(null);
   const [history, setHistory] = useState<number[]>([]);
   const [msg, setMsg] = useState("");
+  const [rot, setRot] = useState(0);
   const timers = useRef<number[]>([]);
   useEffect(
     () => () =>
@@ -39,6 +41,7 @@ export function Roulette({ chips, adjust }: { chips: number; adjust: (d: number)
     adjust(-staked);
     setSpinning(true);
     setMsg("");
+    setRot((r) => (Math.floor(r / 360) + 6) * 360 + angleFor(result));
     const flick = window.setInterval(() => setShown(randInt(37)), 70);
     const done = window.setTimeout(() => {
       window.clearInterval(flick);
@@ -71,14 +74,11 @@ export function Roulette({ chips, adjust }: { chips: number; adjust: (d: number)
   );
 
   const rows = Array.from({ length: 12 }, (_, i) => [3 * i + 1, 3 * i + 2, 3 * i + 3]);
-  const shownColor = shown === null ? "black" : colorOf(shown);
 
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3">
-        <div className={`flex h-20 w-20 items-center justify-center rounded-full font-cc text-4xl font-bold ${shown === null ? "border border-dashed border-cc-line text-cc-muted" : numBg[shownColor]}`}>
-          {shown ?? "?"}
-        </div>
+        <Wheel rot={rot} spinning={spinning} shown={shown} />
         <div className="min-w-0 flex-1">
           <div className={label}>{spinning ? "No more bets" : msg || "Place your bets"}</div>
           <div className="mt-1 flex flex-wrap gap-1">

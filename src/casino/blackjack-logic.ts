@@ -26,10 +26,11 @@ export function dealerPlay(shoe: Card[], dealer: Card[]): Card[] {
 }
 
 /** Chips returned to the player (stake included) and a short message. */
-export function settle(player: Card[], dealer: Card[], stake: number): { back: number; msg: string } {
+/** `afterSplit`: a two-card 21 on a split hand is just 21, not a blackjack. */
+export function settle(player: Card[], dealer: Card[], stake: number, afterSplit = false): { back: number; msg: string } {
   const p = value(player).total;
   const d = value(dealer).total;
-  const pBJ = isBlackjack(player);
+  const pBJ = !afterSplit && isBlackjack(player);
   const dBJ = isBlackjack(dealer);
   if (pBJ && dBJ) return { back: stake, msg: "Both have blackjack. Push." };
   if (pBJ) return { back: stake + Math.floor(stake * 1.5), msg: "Blackjack! Pays 3 to 2." };
@@ -40,3 +41,6 @@ export function settle(player: Card[], dealer: Card[], stake: number): { back: n
   if (p === d) return { back: stake, msg: "Push." };
   return { back: 0, msg: "Dealer wins." };
 }
+
+/** Two cards of the same value (any two ten-value cards may be split). */
+export const canSplitPair = (h: Card[]) => h.length === 2 && Math.min(h[0].r, 10) === Math.min(h[1].r, 10);
