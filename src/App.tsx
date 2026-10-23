@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ambienceOn, ambienceWanted, startAmbience, stopAmbience } from "./ambience";
 import { bucketPhoto } from "./bucketIcon";
+import { money } from "./calc";
 import { buzz } from "./haptic";
 import { QUEST_BONUS, rankOf, runsToday, trophies } from "./rank";
 import { Casino } from "./screens/Casino";
@@ -67,6 +68,22 @@ export default function App() {
   const savedNow = totalSaved(state);
   const savedPrev = useRef(savedNow);
   const [burst, setBurst] = useState(0);
+  /** One-tap deposits are easy to mistap, so the newest one can be undone for a few seconds. */
+  const allIds = state.buckets.flatMap((b) => b.contributions.map((c) => c.id));
+  const knownIds = useRef<Set<string>>(new Set(allIds));
+  const [undo, setUndo] = useState<{ bucketId: string; id: string; amount: number; name: string } | null>(null);
+  const idKey = allIds.join(",");
+  useEffect(() => {
+    const fresh = state.buckets.flatMap((b) => b.contributions.filter((c) => !knownIds.current.has(c.id)).map((c) => ({ bucketId: b.id, id: c.id, amount: c.amount, name: b.name })));
+    knownIds.current = new Set(allIds);
+    if (fresh.length === 1 && fresh[0].amount > 0) setUndo(fresh[0]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [idKey]);
+  useEffect(() => {
+    if (!undo) return;
+    const t = window.setTimeout(() => setUndo(null), 5000);
+    return () => window.clearTimeout(t);
+  }, [undo]);
   useEffect(() => {
     if (savedNow > savedPrev.current) setBurst((n) => n + 1);
     savedPrev.current = savedNow;
@@ -143,6 +160,22 @@ export default function App() {
     <div className="relative z-[1] mx-auto min-h-dvh max-w-md pb-24">
       <Scene />
       {burst > 0 && <Burst key={burst} />}
+      {undo && (
+        <div role="status" className="rise fixed inset-x-0 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-20 mx-auto flex w-fit max-w-[92vw] items-center gap-3 rounded-full border border-cc-lime/50 bg-cc-deep/95 py-1 pl-4 pr-1 shadow-lg">
+          <span className="text-sm">
+            Saved {money(undo.amount, { cents: !Number.isInteger(undo.amount) })} to {undo.name}
+          </span>
+          <button
+            className="min-h-11 rounded-full bg-cc-lime/20 px-4 font-mono text-xs uppercase tracking-wider text-cc-lime"
+            onClick={() => {
+              actions.removeContribution(undo.bucketId, undo.id);
+              setUndo(null);
+            }}
+          >
+            Undo
+          </button>
+        </div>
+      )}
       {rankUp && (
         <button
           onClick={() => setRankUp(null)}
