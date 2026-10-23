@@ -95,3 +95,9 @@
     display: none;
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-video {
+    display: none;
+  }
+}

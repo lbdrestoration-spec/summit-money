@@ -21,7 +21,7 @@ export function rankOf(state: State) {
   const next = RANKS[i + 1] ?? null;
   const cur = RANKS[i];
   const progress = next ? (saved - cur.at) / (next.at - cur.at) : 1;
-  return { saved, cur, next, progress: Math.max(0, Math.min(1, progress)) };
+  return { saved, cur, index: i, next, progress: Math.max(0, Math.min(1, progress)) };
 }
 
 const loggedSet = (s: State) => new Set<string>([...s.checkins, ...s.spends.map((x) => x.date)]);

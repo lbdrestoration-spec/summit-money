@@ -2,7 +2,7 @@ import { useState } from "react";
 import { iso, money, parse, today } from "../calc";
 import type { Actions } from "../store";
 import type { State } from "../types";
-import { Button, Card, Empty, Heading, input, label } from "../ui";
+import { Button, Card, Empty, Heading, PhotoHeader, input, label } from "../ui";
 
 export function Spend({ state, actions }: { state: State; actions: Actions }) {
   const [amount, setAmount] = useState("");
@@ -21,6 +21,7 @@ export function Spend({ state, actions }: { state: State; actions: Actions }) {
 
   return (
     <div className="space-y-4">
+      <PhotoHeader src="/art/gondola.webp" title="Log it" sub="Every dollar has a place" />
       <Card tone="orange">
         <Heading tone="orange">Log spending</Heading>
         <form onSubmit={submit} className="mt-3 space-y-3">

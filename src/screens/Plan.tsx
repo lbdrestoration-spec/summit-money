@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { bucketSaved, iso, money, today } from "../calc";
 import type { Actions } from "../store";
 import type { State } from "../types";
-import { Button, Card, Empty, Heading, input, label } from "../ui";
+import { Button, Card, Empty, Heading, PhotoHeader, input, label } from "../ui";
 
 function Row({ title, sub, right, onDelete }: { title: string; sub?: string; right: string; onDelete: () => void }) {
   return (
@@ -63,6 +63,7 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
 
   return (
     <div className="space-y-4">
+      <PhotoHeader src="/art/lake.webp" title="My plan" sub="Bills, buckets, backup" />
       <Card tone="lime">
         <Heading tone="lime">Side income</Heading>
         <p className="mt-1 text-xs text-cc-muted">Log what you make on your own each week.</p>

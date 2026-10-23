@@ -43,6 +43,20 @@ export function Card({ children, tone, className = "", photo }: { children: Reac
   );
 }
 
+/** Photo banner at the top of a screen */
+export function PhotoHeader({ src, title, sub }: { src: string; title: string; sub?: string }) {
+  return (
+    <div className="rise relative h-36 overflow-hidden rounded-2xl border border-cc-line">
+      <img src={src} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover" />
+      <div className="absolute inset-0 bg-gradient-to-t from-cc-night via-cc-night/40 to-transparent" />
+      <div className="absolute inset-x-4 bottom-3">
+        <h2 className="font-cc text-4xl font-bold uppercase leading-none tracking-wide text-cc-snow">{title}</h2>
+        {sub && <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-cc-aqua">{sub}</div>}
+      </div>
+    </div>
+  );
+}
+
 export function Heading({ children, tone = "aqua" }: { children: ReactNode; tone?: Tone }) {
   return <h2 className={`font-cc text-2xl font-semibold uppercase tracking-wide ${toneText[tone]}`}>{children}</h2>;
 }

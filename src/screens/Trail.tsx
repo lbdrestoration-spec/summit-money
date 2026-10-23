@@ -9,7 +9,7 @@ import { Button, Card, Empty, Heading, Progress, input, label } from "../ui";
 export function RankCard({ state }: { state: State }) {
   const r = rankOf(state);
   return (
-    <Card tone="gold" className="space-y-2" photo="/art/lock.webp">
+    <Card tone="gold" className="space-y-2" photo={`/art/rank-${r.index}.webp`}>
       <div className="flex items-end justify-between gap-2">
         <div>
           <div className={label}>Trail rank</div>

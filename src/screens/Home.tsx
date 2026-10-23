@@ -40,6 +40,7 @@ export function Home({ state, actions, onCasino }: { state: State; actions: Acti
     <div className="space-y-4">
       <div className="rise relative min-h-[340px] overflow-hidden rounded-2xl border border-cc-line">
         <img src="/art/hero.webp" alt="Snow-covered pine forest below a pink alpenglow mountain near Whitefish, Montana" className="absolute inset-0 h-full w-full object-cover" />
+        <video className="hero-video absolute inset-0 h-full w-full object-cover" src="/art/hero-loop.mp4" poster="/art/hero.webp" autoPlay muted loop playsInline preload="auto" aria-hidden="true" />
         <div className="absolute inset-0 bg-gradient-to-t from-cc-night via-cc-night/55 to-transparent" />
         <div className="relative flex min-h-[340px] flex-col justify-end p-4">
           <div className={label}>Safe to spend today</div>
