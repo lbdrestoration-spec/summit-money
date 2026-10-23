@@ -93,6 +93,22 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
       /* ignore */
     }
   }
+  function exportCsv() {
+    const q = (v: string | number) => `"${String(v).replace(/"/g, '""')}"`;
+    const rows = [
+      ["type", "date", "amount", "category_or_bucket", "note"],
+      ...state.spends.map((x) => ["spend", x.date, x.amount, x.category, x.note]),
+      ...state.incomes.map((x) => ["income", x.date, x.amount, "", x.note]),
+      ...state.buckets.flatMap((b) => b.contributions.map((c) => ["deposit", c.date, c.amount, b.name, ""])),
+    ];
+    const body = [rows[0], ...rows.slice(1).sort((a, b) => String(b[1]).localeCompare(String(a[1])))].map((r) => r.map(q).join(",")).join("\n");
+    const blob = new Blob([body], { type: "text/csv" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `summit-money-history-${iso(today())}.csv`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
   function importData(file: File) {
     file.text().then((t) => {
       try {
@@ -323,6 +339,9 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
           </Button>
           <Button className="flex-1" onClick={() => fileRef.current?.click()}>
             Restore
+          </Button>
+          <Button className="flex-1" onClick={exportCsv}>
+            Export CSV
           </Button>
           <input ref={fileRef} type="file" accept="application/json" hidden onChange={(e) => e.target.files?.[0] && importData(e.target.files[0])} />
         </div>
