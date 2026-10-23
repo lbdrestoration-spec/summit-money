@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { addDays, billsBetween, daysBetween, endOfMonth, fridaysBetween, money, monthStats, parse, paychecksBetween, startOfMonth, today } from "../calc";
+import { addDays, billsBetween, daysBetween, endOfMonth, fridaysBetween, money, monthStats, startOfWeek, parse, paychecksBetween, startOfMonth, today } from "../calc";
 import { projectTo, totalSaved } from "../plan";
 import type { State } from "../types";
 import { iso } from "../calc";
@@ -520,6 +520,44 @@ export function RoundUpJar({ state, actions }: { state: State; actions: Actions 
           Move {money(jar, { cents: true })}
         </Button>
       </div>
+    </Card>
+  );
+}
+
+/** Last Monday-to-Sunday at a glance: what went into savings, what was spent, how many days you logged. */
+export function LastWeek({ state }: { state: State }) {
+  const now = today();
+  const start = addDays(startOfWeek(now), -7);
+  const end = addDays(start, 6);
+  const a = iso(start);
+  const z = iso(end);
+  const saved = state.buckets.flatMap((b) => b.contributions).filter((c) => c.date >= a && c.date <= z).reduce((x, c) => x + c.amount, 0);
+  const spent = state.spends.filter((s) => s.date >= a && s.date <= z).reduce((x, s) => x + s.amount, 0);
+  const logged = new Set([...state.checkins, ...state.spends.map((s) => s.date)].filter((d) => d >= a && d <= z)).size;
+  if (saved === 0 && spent === 0 && logged === 0) return null;
+  const fmt = (d: Date) => d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  const verdict = saved > spent ? "You saved more than you spent. That's the goal." : saved > 0 ? "You put money away. Try to beat it this week." : "Nothing went into savings. Fix it with one tap below.";
+  return (
+    <Card tone="violet" className="space-y-2">
+      <Heading tone="violet">Last week</Heading>
+      <div className={label}>
+        {fmt(start)} to {fmt(end)}
+      </div>
+      <div className="grid grid-cols-3 gap-2 text-center">
+        <div>
+          <div className="font-cc text-3xl font-bold text-cc-lime">{money(saved)}</div>
+          <div className={label}>Saved</div>
+        </div>
+        <div>
+          <div className="font-cc text-3xl font-bold text-cc-orange">{money(spent)}</div>
+          <div className={label}>Spent</div>
+        </div>
+        <div>
+          <div className="font-cc text-3xl font-bold text-cc-aqua">{logged}/7</div>
+          <div className={label}>Days logged</div>
+        </div>
+      </div>
+      <div className="text-xs text-cc-muted">{verdict}</div>
     </Card>
   );
 }
