@@ -2,12 +2,26 @@ import { bucketSaved, money, monthStats, savingsSeries, streak, today, iso } fro
 import { StockChart } from "../Chart";
 import type { Actions } from "../store";
 import type { State } from "../types";
-import { ForestRidge } from "../mountain";
 import { rankOf } from "../rank";
 import { Button, Card, Empty, Heading, label, Stat } from "../ui";
-import { Timeline, WhatIf } from "./Insights";
+import { Runway, Timeline, WhatIf } from "./Insights";
+import { RunsCard } from "./Trail";
 import { Urge } from "./Urge";
 import { DeadlineCards, FridayPayCard } from "./Deadlines";
+
+const QUOTES = [
+  "Fresh tracks come to the ones who show up early.",
+  "The mountain doesn't care how you feel. Make the run anyway.",
+  "Small turns, every day. That's how you get down a big line.",
+  "Cold hands, warm pocket. Keep the cash.",
+  "Winter is built in the fall. So is the bankroll.",
+  "A steady line beats a wild one.",
+  "Every dollar kept is a lift ticket earned.",
+  "Pines grow slow and stand through everything.",
+  "You don't need the bet. You need the view from the top.",
+  "Hold the edge. The urge fades before the run ends.",
+];
+const quoteOf = (d: string) => QUOTES[[...d].reduce((a, c) => a + c.charCodeAt(0), 0) % QUOTES.length];
 
 export function Home({ state, actions, onCasino }: { state: State; actions: Actions; onCasino: () => void }) {
   const m = monthStats(state);
@@ -24,16 +38,20 @@ export function Home({ state, actions, onCasino }: { state: State; actions: Acti
 
   return (
     <div className="space-y-4">
-      <div className="relative overflow-hidden rounded-2xl border border-cc-line bg-gradient-to-b from-cc-panel to-cc-deep p-4 pb-28 rise">
-        <div className={label}>Safe to spend today</div>
-        <div className={`font-cc text-6xl font-bold leading-none ${over ? "text-cc-pink" : "text-cc-lime"}`}>{money(m.safeToday)}</div>
-        <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-cc-aqua">Mountain report · {report}</div>
-        <div className="mt-1 text-xs text-cc-muted">
-          {over ? `Over budget by ${money(-m.remaining)} this month` : `${money(m.remaining)} left this month · ${m.daysLeft} days to go`}
+      <div className="rise relative min-h-[340px] overflow-hidden rounded-2xl border border-cc-line">
+        <img src="/art/hero.webp" alt="Snow-covered pine forest below a pink alpenglow mountain near Whitefish, Montana" className="absolute inset-0 h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-cc-night via-cc-night/55 to-transparent" />
+        <div className="relative flex min-h-[340px] flex-col justify-end p-4">
+          <div className={label}>Safe to spend today</div>
+          <div className={`font-cc text-7xl font-bold leading-none drop-shadow ${over ? "text-cc-pink" : "text-cc-lime"}`}>{money(m.safeToday)}</div>
+          <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-cc-aqua">Mountain report · {report}</div>
+          <div className="mt-1 text-xs text-cc-snow/80">
+            {over ? `Over budget by ${money(-m.remaining)} this month` : `${money(m.remaining)} left this month · ${m.daysLeft} days to go`}
+          </div>
         </div>
-        <ForestRidge />
       </div>
 
+      <p className="px-1 text-center font-cc text-xl italic leading-snug text-cc-snow/80">“{quoteOf(todayIso)}”</p>
       <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-cc-muted">
         {rank.cur.mark} {rank.cur.name}
         {rank.next ? ` · ${money(rank.next.at - rank.saved)} to ${rank.next.name}` : ""}
@@ -42,6 +60,7 @@ export function Home({ state, actions, onCasino }: { state: State; actions: Acti
       <DeadlineCards state={state} />
       <FridayPayCard state={state} actions={actions} />
       <WhatIf state={state} />
+      <Runway state={state} />
       <Timeline state={state} />
 
       <div className="grid grid-cols-2 gap-3">
@@ -58,6 +77,8 @@ export function Home({ state, actions, onCasino }: { state: State; actions: Acti
           Log a no-spend day
         </Button>
       )}
+
+      <RunsCard state={state} />
 
       <Urge state={state} actions={actions} onCasino={onCasino} />
 

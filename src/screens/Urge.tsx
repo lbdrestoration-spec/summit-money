@@ -54,7 +54,7 @@ export function Urge({ state, actions, onCasino }: { state: State; actions: Acti
             Start 10-min pause
           </Button>
           <Button variant="lime" onClick={onCasino}>
-            Play chips instead
+            Open casino
           </Button>
         </div>
       )}

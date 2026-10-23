@@ -25,7 +25,7 @@ export function Spend({ state, actions }: { state: State; actions: Actions }) {
         <Heading tone="orange">Log spending</Heading>
         <form onSubmit={submit} className="mt-3 space-y-3">
           <input className={`${input} font-cc text-3xl`} inputMode="decimal" placeholder="$0" value={amount} onChange={(e) => setAmount(e.target.value)} aria-label="Amount" />
-          <div className="flex gap-2" aria-label="Quick amounts">
+          <div className="flex gap-2" role="group" aria-label="Quick add">
             {[5, 10, 20, 50].map((n) => (
               <button
                 type="button"

@@ -64,6 +64,10 @@ export type State = {
   notes: Note[];
   /** Items checked off the trip checklist, keyed by item id */
   packed: string[];
+  /** Optional weekly limit per spending category */
+  catLimits: Record<string, number>;
+  /** Days (ISO) the daily runs were completed and the bonus paid */
+  questDays: string[];
 };
 
 export const DEFAULT_CATEGORIES = ["Food", "Gas", "Fun", "Business", "Shopping", "Other"];
@@ -85,4 +89,6 @@ export const emptyState = (): State => ({
   costs: {},
   notes: [],
   packed: [],
+  catLimits: {},
+  questDays: [],
 });

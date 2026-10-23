@@ -1,4 +1,5 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { isMuted, play, setMuted } from "../sound";
 import { Blackjack } from "../casino/Blackjack";
 import { Poker } from "../casino/Poker";
 import { Roulette } from "../casino/Roulette";
@@ -23,10 +24,27 @@ export function Casino({ state, actions }: { state: State; actions: Actions }) {
   const sessionNet = inPlay - sessionStart.current.held - (totalEarned - sessionStart.current.earned);
   const earned = earnedThisWeek(state);
   const broke = state.chips === 0 && state.tableStack === 0;
+  const [muted, setMute] = useState(isMuted());
+  // Win/loss sounds: only when chips moved and it wasn't from earning
+  const prev = useRef({ held: inPlay, logged: state.chipLog.length });
+  useEffect(() => {
+    const p = prev.current;
+    if (state.chipLog.length === p.logged && inPlay !== p.held) {
+      const d = inPlay - p.held;
+      // bets leave the wallet the moment they are placed, so only payouts make a sound
+      if (d > 0) play(d >= 500 ? "big" : "win");
+    }
+    prev.current = { held: inPlay, logged: state.chipLog.length };
+  }, [inPlay, state.chipLog.length]);
 
   return (
-    <div className="space-y-4">
-      <Card tone="gold" className="space-y-3">
+    <div
+      className="space-y-4"
+      onClickCapture={(e) => {
+        if ((e.target as HTMLElement).closest("button") && !(e.target as HTMLElement).closest("[data-mute]")) play("tick");
+      }}
+    >
+      <Card tone="gold" className="space-y-3" photo="/art/lodge.webp">
         <div className="flex items-end justify-between">
           <div>
             <div className={label}>Chip wallet</div>
@@ -34,6 +52,17 @@ export function Casino({ state, actions }: { state: State; actions: Actions }) {
             {state.tableStack > 0 && <div className="text-xs text-cc-muted">+ {state.tableStack} at the poker table</div>}
           </div>
           <div className="text-right">
+            <button
+              data-mute
+              className="mb-1 min-h-11 font-mono text-[10px] uppercase tracking-wider text-cc-aqua"
+              onClick={() => {
+                setMuted(!muted);
+                setMute(!muted);
+              }}
+              aria-pressed={muted}
+            >
+              Sound {muted ? "off" : "on"}
+            </button>
             <div className={label}>Games this visit</div>
             <div className={`font-cc text-2xl ${sessionNet > 0 ? "text-cc-lime" : sessionNet < 0 ? "text-cc-pink" : "text-cc-muted"}`}>
               {sessionNet > 0 ? "+" : ""}

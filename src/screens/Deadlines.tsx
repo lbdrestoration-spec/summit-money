@@ -12,12 +12,12 @@ export function DeadlineCards({ state }: { state: State }) {
   const cards = (state.plan?.deadlines ?? []).map((d) => ({ d, p: projectTo(state, d) })).filter((x) => x.p);
   return (
     <>
-      {cards.map(({ d, p }) => {
+      {cards.map(({ d, p }, idx) => {
         if (!p) return null;
         const short = p.goalGap !== null && p.goalGap < 0;
         const tone = p.projected < 0 || short ? "pink" : "lime";
         return (
-          <Card key={d.id} tone={tone} className="space-y-2">
+          <Card key={d.id} tone={tone} className="space-y-2" photo={idx % 2 === 0 ? "/art/ridge.webp" : "/art/lodge.webp"}>
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
                 <div className="truncate font-cc text-2xl font-semibold uppercase">{d.name}</div>

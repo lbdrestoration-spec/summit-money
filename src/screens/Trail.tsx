@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { money, parse } from "../calc";
 import { projectTo } from "../plan";
-import { RANKS, rankOf, trophies } from "../rank";
+import { QUEST_BONUS, RANKS, rankOf, runsToday, trophies } from "../rank";
 import type { Actions } from "../store";
 import type { State } from "../types";
 import { Button, Card, Empty, Heading, Progress, input, label } from "../ui";
@@ -9,7 +9,7 @@ import { Button, Card, Empty, Heading, Progress, input, label } from "../ui";
 export function RankCard({ state }: { state: State }) {
   const r = rankOf(state);
   return (
-    <Card tone="gold" className="space-y-2">
+    <Card tone="gold" className="space-y-2" photo="/art/lock.webp">
       <div className="flex items-end justify-between gap-2">
         <div>
           <div className={label}>Trail rank</div>
@@ -77,7 +77,7 @@ export function BudgetCards({ state, actions }: { state: State; actions: Actions
             >
               <input className={input} placeholder="Item" aria-label="Item name" value={v.n} onChange={(e) => setDraft((s) => ({ ...s, [d.id]: { ...v, n: e.target.value } }))} />
               <input className={`${input} !w-24`} inputMode="decimal" placeholder="$" aria-label="Cost" value={v.a} onChange={(e) => setDraft((s) => ({ ...s, [d.id]: { ...v, a: e.target.value } }))} />
-              <Button type="submit">Add</Button>
+              <Button type="submit">Add cost</Button>
             </form>
             {p && (
               <div className="grid grid-cols-3 gap-2 border-t border-cc-line/60 pt-3">
@@ -207,6 +207,29 @@ export function Journal({ state, actions }: { state: State; actions: Actions }) 
           </li>
         ))}
       </ul>
+    </Card>
+  );
+}
+
+export function RunsCard({ state }: { state: State }) {
+  const r = runsToday(state);
+  const done = r.items.filter((i) => i.done).length;
+  const paid = state.questDays.includes(r.t);
+  return (
+    <Card tone="lime" className="space-y-2">
+      <div className="flex items-end justify-between">
+        <Heading tone="lime">Today's runs</Heading>
+        <span className="font-cc text-xl text-cc-lime">{done}/3</span>
+      </div>
+      <ul className="space-y-1">
+        {r.items.map((i) => (
+          <li key={i.id} className={`flex min-h-11 items-center gap-3 rounded-lg border px-3 text-sm ${i.done ? "border-cc-lime/50 bg-cc-lime/10 text-cc-muted line-through" : "border-cc-line/70 bg-cc-night/40"}`}>
+            <span aria-hidden="true">{i.done ? "☑" : "☐"}</span>
+            {i.name}
+          </li>
+        ))}
+      </ul>
+      <div className={label}>{paid ? `All three done. +${QUEST_BONUS} chips paid` : `Finish all three for +${QUEST_BONUS} chips`}</div>
     </Card>
   );
 }

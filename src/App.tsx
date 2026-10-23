@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { buzz } from "./haptic";
+import { QUEST_BONUS, rankOf, runsToday } from "./rank";
 import { Casino } from "./screens/Casino";
 import { Goals } from "./screens/Goals";
 import { Home } from "./screens/Home";
@@ -21,8 +23,37 @@ type Tab = (typeof tabs)[number]["id"];
 
 export default function App() {
   const { state, actions } = useStore();
-  const [tab, setTab] = useState<Tab>("home");
+  const [tab, setTab] = useState<Tab>(() => {
+    const q = new URLSearchParams(window.location.search).get("tab");
+    return tabs.some((t) => t.id === q) ? (q as Tab) : "home";
+  });
   const [editingPlan, setEditingPlan] = useState(false);
+
+  const runs = runsToday(state);
+  useEffect(() => {
+    if (state.settings && runs.all && !state.questDays.includes(runs.t)) actions.claimQuests(runs.t, QUEST_BONUS);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [runs.all, runs.t, state.questDays]);
+  const [toast, setToast] = useState<string | null>(null);
+  const seen = useRef<{ chip: string | undefined; rank: string }>({ chip: state.chipLog[0]?.id, rank: rankOf(state).cur.name });
+  const rankName = rankOf(state).cur.name;
+  const lastChip = state.chipLog[0];
+  useEffect(() => {
+    if (rankName !== seen.current.rank) {
+      seen.current.rank = rankName;
+      setToast(`Rank up: ${rankName}`);
+      buzz([40, 30, 40]);
+    } else if (lastChip && lastChip.id !== seen.current.chip) {
+      setToast(`+${lastChip.amount} chips · ${lastChip.reason}`);
+      buzz(20);
+    }
+    seen.current.chip = lastChip?.id;
+  }, [rankName, lastChip]);
+  useEffect(() => {
+    if (!toast) return;
+    const t = window.setTimeout(() => setToast(null), 2600);
+    return () => window.clearTimeout(t);
+  }, [toast]);
 
   if (!state.settings || !state.plan || editingPlan)
     return (
@@ -37,6 +68,11 @@ export default function App() {
   return (
     <div className="relative z-[1] mx-auto min-h-dvh max-w-md pb-24">
       <Scene />
+      {toast && (
+        <div role="status" className="rise pointer-events-none fixed inset-x-0 top-[max(0.75rem,env(safe-area-inset-top))] z-20 mx-auto w-fit max-w-[90vw] rounded-full border border-cc-gold/60 bg-cc-deep/95 px-4 py-2 font-cc text-lg uppercase tracking-wide text-cc-gold shadow-lg">
+          {toast}
+        </div>
+      )}
       <header className="flex items-end justify-between px-4 pb-2 pt-[max(1rem,env(safe-area-inset-top))]">
         <div>
           <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-cc-muted">Whitefish · Montana</div>
@@ -54,7 +90,7 @@ export default function App() {
       <main className="space-y-4 px-4">
         {tab === "home" && <Home state={state} actions={actions} onCasino={() => setTab("casino")} />}
         {tab === "spend" && <Spend state={state} actions={actions} />}
-        {tab === "week" && <Week state={state} />}
+        {tab === "week" && <Week state={state} actions={actions} />}
         {tab === "goals" && <Goals state={state} actions={actions} />}
         {tab === "plan" && <Plan state={state} actions={actions} onEditPlan={() => setEditingPlan(true)} />}
         {/* Casino stays mounted so a hand in progress survives switching tabs */}

@@ -72,3 +72,15 @@ export function trophies(s: State): Trophy[] {
     { id: "habit", name: "Steady Saver", desc: "Put money in a bucket 5 times", icon: "⚑", earned: wedIsh },
   ];
 }
+
+export const QUEST_BONUS = 50;
+/** Three small habits for today. Derived from what you've already logged. */
+export function runsToday(s: State, now = today()) {
+  const t = iso(now);
+  const items = [
+    { id: "log", name: "Log your day", done: s.checkins.includes(t) || s.spends.some((x) => x.date === t) },
+    { id: "save", name: "Put money in a bucket", done: s.buckets.some((b) => b.contributions.some((c) => c.date === t)) },
+    { id: "win", name: "Write one win", done: s.notes.some((n) => n.date === t) },
+  ];
+  return { items, all: items.every((i) => i.done), t };
+}

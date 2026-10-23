@@ -91,6 +91,16 @@ export function useStore() {
     removeNote: (id: string) => update((s) => ({ ...s, notes: s.notes.filter((n) => n.id !== id) })),
     togglePacked: (id: string) =>
       update((s) => ({ ...s, packed: s.packed.includes(id) ? s.packed.filter((x) => x !== id) : [...s.packed, id] })),
+    setLimit: (cat: string, amount: number | null) =>
+      update((s) => {
+        const next = { ...s.catLimits };
+        if (amount === null || !(amount > 0)) delete next[cat];
+        else next[cat] = amount;
+        return { ...s, catLimits: next };
+      }),
+    /** Pay the daily-runs bonus once per day */
+    claimQuests: (date: string, bonus: number) =>
+      update((s) => (s.questDays.includes(date) ? s : grant({ ...s, questDays: [...s.questDays, date] }, bonus, "Finished today's runs"))),
     replaceAll: (next: State) => setState({ ...emptyState(), ...next }),
   };
 

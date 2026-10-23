@@ -1,18 +1,18 @@
 @import "tailwindcss";
 
 @theme {
-  --color-cc-night: #07100d;
-  --color-cc-deep: #0b1a15;
-  --color-cc-panel: #112720;
-  --color-cc-line: #214236;
-  --color-cc-snow: #eef6f1;
-  --color-cc-muted: #8aa89a;
-  --color-cc-orange: #f59a3c;
-  --color-cc-lime: #9ee06b;
-  --color-cc-aqua: #6fd8d0;
-  --color-cc-violet: #b08ae0;
-  --color-cc-pink: #ff6b7d;
-  --color-cc-gold: #f3c85a;
+  --color-cc-night: #060a12;
+  --color-cc-deep: #0a121e;
+  --color-cc-panel: #0f1a2a;
+  --color-cc-line: #243852;
+  --color-cc-snow: #f1f6fb;
+  --color-cc-muted: #94a9c2;
+  --color-cc-orange: #ff9d6e;
+  --color-cc-lime: #9fe870;
+  --color-cc-aqua: #8ddef2;
+  --color-cc-violet: #a99bff;
+  --color-cc-pink: #ff6f8e;
+  --color-cc-gold: #f4c95d;
 
   --font-sans: "Inter Tight", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
@@ -72,15 +72,16 @@
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(120% 60% at 50% -10%, rgba(111, 216, 208, 0.16), transparent 60%),
-    radial-gradient(80% 50% at 90% 10%, rgba(176, 138, 224, 0.1), transparent 60%),
-    linear-gradient(180deg, #0a1a16 0%, #07100d 55%, #050b09 100%);
+    linear-gradient(180deg, rgba(6, 10, 18, 0.35) 0%, rgba(6, 10, 18, 0.62) 40%, rgba(6, 10, 18, 0.9) 100%),
+    url("/art/bg.webp") center top / cover no-repeat,
+    #060a12;
 }
 .flake {
   position: absolute;
   top: -10px;
   border-radius: 9999px;
-  background: #eef6f1;
+  background: #f1f6fb;
+  box-shadow: 0 0 6px 1px rgba(241, 246, 251, 0.5);
   animation: fall linear infinite;
 }
 @keyframes fall {

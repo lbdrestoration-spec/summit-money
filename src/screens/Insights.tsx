@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { addDays, billsBetween, fridaysBetween, money, parse, paychecksBetween, today } from "../calc";
-import { projectTo } from "../plan";
+import { projectTo, totalSaved } from "../plan";
 import type { State } from "../types";
 import { Card, Heading, label } from "../ui";
 
@@ -100,3 +100,22 @@ export function WhatIf({ state }: { state: State }) {
   );
 }
 
+
+/** How long what you've saved would cover your bills and spending if the pay stopped. */
+export function Runway({ state }: { state: State }) {
+  const plan = state.plan;
+  if (!plan) return null;
+  const monthly = state.bills.reduce((a, b) => a + b.amount, 0) + (plan.weeklySpending * 52) / 12;
+  if (monthly <= 0) return null;
+  const saved = totalSaved(state);
+  const days = Math.floor((saved / monthly) * 30);
+  return (
+    <Card tone="gold" className="flex items-center justify-between gap-3">
+      <div className="min-w-0">
+        <div className={label}>Runway</div>
+        <div className="text-xs text-cc-muted">Days your savings would cover bills and spending if pay stopped</div>
+      </div>
+      <div className="font-cc text-4xl font-bold leading-none text-cc-gold">{days}</div>
+    </Card>
+  );
+}
