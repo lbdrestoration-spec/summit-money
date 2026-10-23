@@ -2,9 +2,48 @@ import { useState } from "react";
 import { addDays, bucketSaved, daysBetween, iso, money, parse, today } from "../calc";
 import { bucketIcon, bucketPhoto } from "../bucketIcon";
 import type { Actions } from "../store";
-import type { State } from "../types";
+import type { Bucket, State } from "../types";
 import { Button, Card, Empty, Heading, Progress, input, label } from "../ui";
 import { BudgetCards, Checklist, Journal, RankCard, TrophyCase } from "./Trail";
+
+/** Balance over time for one goal, plus its latest deposits. */
+function GoalHistory({ bucket }: { bucket: Bucket }) {
+  const [open, setOpen] = useState(false);
+  const sorted = [...bucket.contributions].sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+  if (sorted.length === 0) return null;
+  let run = 0;
+  const pts = sorted.map((c) => (run += c.amount));
+  const max = Math.max(...pts, bucket.target ?? 0, 1);
+  const W = 300;
+  const H = 70;
+  const path = pts.map((v, i) => `${i === 0 ? "M" : "L"}${pts.length === 1 ? W / 2 : (i / (pts.length - 1)) * W},${H - (Math.max(0, v) / max) * (H - 6) - 3}`).join(" ");
+  return (
+    <div className="space-y-2">
+      <button className="min-h-11 font-mono text-[10px] uppercase tracking-wider text-cc-aqua" onClick={() => setOpen(!open)} aria-expanded={open} aria-label={`${open ? "Hide" : "Show"} history for ${bucket.name}`}>
+        {open ? "Hide history" : `History · ${sorted.length} entr${sorted.length === 1 ? "y" : "ies"}`}
+      </button>
+      {open && (
+        <div className="space-y-2">
+          <svg viewBox={`0 0 ${W} ${H}`} className="h-20 w-full" role="img" aria-label={`${bucket.name} balance over time`}>
+            {bucket.target ? <line x1="0" x2={W} y1={H - (bucket.target / max) * (H - 6) - 3} y2={H - (bucket.target / max) * (H - 6) - 3} stroke="var(--color-cc-gold)" strokeDasharray="4 4" strokeWidth="1" opacity="0.7" /> : null}
+            <path d={path} fill="none" stroke="var(--color-cc-lime)" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
+          </svg>
+          <div className="space-y-1">
+            {[...sorted].reverse().slice(0, 6).map((c) => (
+              <div key={c.id} className="flex justify-between font-mono text-[11px] text-cc-muted">
+                <span>{c.date}</span>
+                <span className={c.amount < 0 ? "text-cc-orange" : "text-cc-lime"}>
+                  {c.amount < 0 ? "−" : "+"}
+                  {money(Math.abs(c.amount), { cents: true })}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function Goals({ state, actions }: { state: State; actions: Actions }) {
   const goals = state.buckets.filter((b) => b.target);
@@ -70,6 +109,7 @@ export function Goals({ state, actions }: { state: State; actions: Actions }) {
                 Add
               </Button>
             </form>
+            <GoalHistory bucket={g} />
             <span className={label}>Saved so far counts toward your yearly line on Home</span>
           </Card>
         );
