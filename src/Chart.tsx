@@ -1,9 +1,10 @@
-import { useId } from "react";
+import { useId, useState } from "react";
 import { money, type SeriesPoint } from "./calc";
 
 /** Stock-style area chart of total saved this year */
 export function StockChart({ series }: { series: SeriesPoint[] }) {
   const id = useId();
+  const [hover, setHover] = useState<number | null>(null);
   const W = 340;
   const H = 150;
   const pad = { l: 6, r: 6, t: 12, b: 18 };
@@ -15,9 +16,24 @@ export function StockChart({ series }: { series: SeriesPoint[] }) {
   const area = `${line} L${x(series.length - 1).toFixed(1)} ${H - pad.b} L${x(0).toFixed(1)} ${H - pad.b} Z`;
   const last = series[series.length - 1];
   const up = values.length > 1 && last.value > values[0];
+  const at = (e: React.PointerEvent<SVGSVGElement>) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    const px = ((e.clientX - r.left) / r.width) * W;
+    const i = Math.round(((px - pad.l) / (W - pad.l - pad.r)) * (series.length - 1));
+    setHover(Math.max(0, Math.min(series.length - 1, i)));
+  };
+  const hp = hover === null ? null : series[hover];
 
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label={`Total saved this year: ${money(last?.value ?? 0)}`}>
+    <svg
+      viewBox={`0 0 ${W} ${H}`}
+      className="w-full touch-pan-y"
+      role="img"
+      aria-label={`Total saved this year: ${money(last?.value ?? 0)}`}
+      onPointerMove={series.length > 1 ? at : undefined}
+      onPointerDown={series.length > 1 ? at : undefined}
+      onPointerLeave={() => setHover(null)}
+    >
       <defs>
         <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="var(--color-cc-lime)" stopOpacity="0.35" />
@@ -29,6 +45,15 @@ export function StockChart({ series }: { series: SeriesPoint[] }) {
       ))}
       {series.length > 1 && <path d={area} fill={`url(#${id})`} />}
       {series.length > 1 && <path d={line} fill="none" stroke={up ? "var(--color-cc-lime)" : "var(--color-cc-aqua)"} strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />}
+      {hp && hover !== null && (
+        <g>
+          <line x1={x(hover)} x2={x(hover)} y1={pad.t} y2={H - pad.b} stroke="var(--color-cc-snow)" strokeOpacity="0.5" strokeDasharray="3 3" />
+          <circle cx={x(hover)} cy={y(hp.value)} r="5" fill="var(--color-cc-snow)" />
+          <text x={Math.min(Math.max(x(hover), 50), W - 50)} y={pad.t + 2} textAnchor="middle" fontSize="11" fill="var(--color-cc-snow)" fontFamily="var(--font-mono)">
+            {money(hp.value)} · {hp.date.slice(5)}
+          </text>
+        </g>
+      )}
       {last && <circle cx={x(series.length - 1)} cy={y(last.value)} r="4.5" fill="var(--color-cc-lime)" />}
       <text x={pad.l} y={H - 3} fontSize="9" fill="var(--color-cc-muted)" fontFamily="var(--font-mono)">JAN</text>
       <text x={W - pad.r} y={H - 3} fontSize="9" textAnchor="end" fill="var(--color-cc-muted)" fontFamily="var(--font-mono)">TODAY</text>

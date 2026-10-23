@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { addDays, billsBetween, fridaysBetween, money, parse, paychecksBetween, today } from "../calc";
+import { addDays, billsBetween, daysBetween, endOfMonth, fridaysBetween, money, parse, paychecksBetween, startOfMonth, today } from "../calc";
 import { projectTo, totalSaved } from "../plan";
 import type { State } from "../types";
 import { iso } from "../calc";
@@ -178,5 +178,72 @@ export function PaydaySplit({ state, actions }: { state: State; actions: Actions
         </div>
       ))}
     </Card>
+  );
+}
+
+/** Every day this month: logged, no-spend, heavy spend, or not logged yet. */
+export function MonthCalendar({ state }: { state: State }) {
+  const now = today();
+  const first = startOfMonth(now);
+  const last = endOfMonth(now).getDate();
+  const lead = (first.getDay() + 6) % 7; // Monday first
+  const spentBy = new Map<string, number>();
+  state.spends.forEach((x) => spentBy.set(x.date, (spentBy.get(x.date) ?? 0) + x.amount));
+  const daily = Math.max(1, (state.plan?.weeklySpending ?? 150) / 7);
+  const cells = Array.from({ length: lead + last }, (_, i) => (i < lead ? null : i - lead + 1));
+  const todayN = now.getDate();
+  const cls = (n: number) => {
+    const d = iso(new Date(now.getFullYear(), now.getMonth(), n));
+    const spent = spentBy.get(d) ?? 0;
+    const logged = state.checkins.includes(d) || spentBy.has(d);
+    if (n > todayN) return "border-cc-line/40 text-cc-muted/50";
+    if (!logged) return "border-cc-line/70 text-cc-muted";
+    if (spent === 0) return "border-cc-lime/60 bg-cc-lime/20 text-cc-lime";
+    if (spent <= daily) return "border-cc-aqua/60 bg-cc-aqua/20 text-cc-aqua";
+    if (spent <= daily * 2) return "border-cc-orange/60 bg-cc-orange/20 text-cc-orange";
+    return "border-cc-pink/60 bg-cc-pink/20 text-cc-pink";
+  };
+  return (
+    <Card tone="lime" className="space-y-2">
+      <Heading tone="lime">{now.toLocaleDateString("en-US", { month: "long" })} at a glance</Heading>
+      <div className="grid grid-cols-7 gap-1.5 text-center">
+        {["M", "T", "W", "T", "F", "S", "S"].map((d, i) => (
+          <span key={i} className="font-mono text-[10px] text-cc-muted">
+            {d}
+          </span>
+        ))}
+        {cells.map((n, i) =>
+          n === null ? (
+            <span key={i} />
+          ) : (
+            <span key={i} className={`flex aspect-square items-center justify-center rounded-md border font-cc text-base ${cls(n)} ${n === todayN ? "ring-1 ring-cc-snow" : ""}`}>
+              {n}
+            </span>
+          ),
+        )}
+      </div>
+      <div className="flex flex-wrap gap-x-3 gap-y-1 font-mono text-[10px] uppercase tracking-wider text-cc-muted">
+        <span className="text-cc-lime">■ no spend</span>
+        <span className="text-cc-aqua">■ on pace</span>
+        <span className="text-cc-orange">■ heavy</span>
+        <span className="text-cc-pink">■ big</span>
+      </div>
+    </Card>
+  );
+}
+
+/** Days until each deadline, as small pills. */
+export function Countdowns({ state }: { state: State }) {
+  const now = today();
+  const items = (state.plan?.deadlines ?? []).map((d) => ({ d, n: daysBetween(now, parse(d.date)) })).filter((x) => x.n >= 0);
+  if (!items.length) return null;
+  return (
+    <div className="flex flex-wrap justify-center gap-2">
+      {items.map(({ d, n }) => (
+        <span key={d.id} className="rounded-full border border-cc-aqua/40 bg-cc-aqua/10 px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-cc-aqua">
+          <span className="font-cc text-lg font-bold">{n}</span> days · {d.name}
+        </span>
+      ))}
+    </div>
   );
 }

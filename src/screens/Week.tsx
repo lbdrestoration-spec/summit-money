@@ -3,6 +3,7 @@ import { WeekBars } from "../Chart";
 import { useState } from "react";
 import type { Actions } from "../store";
 import type { State } from "../types";
+import { MonthCalendar } from "./Insights";
 import { Button, Card, Empty, Heading, PhotoHeader, Progress, Stat, input, label, toneBar } from "../ui";
 
 const palette = ["orange", "aqua", "violet", "pink", "gold", "lime"] as const;
@@ -103,6 +104,8 @@ export function Week({ state, actions }: { state: State; actions: Actions }) {
           {w.days.filter((d) => d.logged).length} of 7 days logged · current streak {days}
         </p>
       </Card>
+
+      <MonthCalendar state={state} />
 
       <Card>
         <Heading tone="violet">Where it went</Heading>

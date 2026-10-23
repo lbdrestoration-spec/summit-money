@@ -4,7 +4,7 @@ import type { Actions } from "../store";
 import type { State } from "../types";
 import { rankOf } from "../rank";
 import { Button, Card, Empty, Heading, label, Stat } from "../ui";
-import { DueSoon, PaydaySplit, Runway, Timeline, WhatIf } from "./Insights";
+import { Countdowns, DueSoon, PaydaySplit, Runway, Timeline, WhatIf } from "./Insights";
 import { RunsCard } from "./Trail";
 import { Urge } from "./Urge";
 import { DeadlineCards, FridayPayCard } from "./Deadlines";
@@ -52,6 +52,7 @@ export function Home({ state, actions, onCasino }: { state: State; actions: Acti
         </div>
       </div>
 
+      <Countdowns state={state} />
       <p className="px-1 text-center font-cc text-xl italic leading-snug text-cc-snow/80">“{quoteOf(todayIso)}”</p>
       <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-cc-muted">
         {rank.cur.mark} {rank.cur.name}
