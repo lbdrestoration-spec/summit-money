@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { bucketSaved, money, monthStats, parse, savingsSeries, streak, today, iso } from "../calc";
 import { StockChart } from "../Chart";
 import type { Actions } from "../store";
@@ -5,6 +6,7 @@ import type { State } from "../types";
 import { rankOf, savingWeekStreak } from "../rank";
 import { projectTo } from "../plan";
 import { Button, Card, Empty, Heading, label, Stat } from "../ui";
+import { makeShareCard, shareProgress } from "../shareCard";
 import { Countdowns, DueSoon, BillsCover, Challenge, Milestones, MonthlyBars, PayFirst, PaydaySplit, SavingsRate, Runway, SavingsSplit, Timeline, WhatIf } from "./Insights";
 import { RunsCard } from "./Trail";
 import { Urge } from "./Urge";
@@ -58,6 +60,7 @@ function skyFor(hour: number) {
 
 export function Home({ state, actions, onCasino, onPlan }: { state: State; actions: Actions; onCasino: () => void; onPlan: () => void }) {
   const sky = skyFor(new Date().getHours());
+  const [shareNote, setShareNote] = useState("");
   const m = monthStats(state);
   const series = savingsSeries(state);
   const totalSaved = state.buckets.reduce((a, b) => a + bucketSaved(b), 0);
@@ -85,6 +88,22 @@ export function Home({ state, actions, onCasino, onPlan }: { state: State; actio
         <img src={sky.src} alt={sky.alt} className="absolute inset-0 h-full w-full object-cover" />
         {sky.id === "day" && <video className="hero-video absolute inset-0 h-full w-full object-cover" src="/art/hero-loop.mp4" poster="/art/hero.webp" autoPlay muted loop playsInline preload="auto" aria-hidden="true" />}
         <div className="absolute inset-0 bg-gradient-to-t from-cc-night via-cc-night/55 to-transparent" />
+        <button
+          className="absolute right-3 top-3 z-[1] min-h-11 rounded-full border border-cc-line bg-cc-night/60 px-4 font-mono text-[10px] uppercase tracking-wider text-cc-snow backdrop-blur"
+          aria-label="Share my progress picture"
+          onClick={async () => {
+            try {
+              const blob = await makeShareCard({ photo: sky.src, saved: totalSaved, rank: rank.cur.name, line: savingWeeks > 0 ? `${savingWeeks} wk saving streak` : "Stacking it up" });
+              const r = await shareProgress(blob, `summit-money-${iso(today())}.png`);
+              setShareNote(r === "shared" ? "" : "Picture saved");
+            } catch (e) {
+              if ((e as Error).name !== "AbortError") setShareNote("Couldn't make the picture");
+            }
+          }}
+        >
+          Share
+        </button>
+        {shareNote && <div role="status" className="absolute left-3 top-4 z-[1] rounded-full bg-cc-night/80 px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-cc-aqua">{shareNote}</div>}
         <div className="relative flex min-h-[340px] flex-col justify-end p-4">
           <div className={label}>Saved so far</div>
           <div className="font-cc text-7xl font-bold leading-none text-cc-lime drop-shadow">{money(totalSaved)}</div>
