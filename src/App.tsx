@@ -70,20 +70,31 @@ export default function App() {
     if (savedNow > savedPrev.current) setBurst((n) => n + 1);
     savedPrev.current = savedNow;
   }, [savedNow]);
-  const seen = useRef<{ chip: string | undefined; rank: string }>({ chip: state.chipLog[0]?.id, rank: rankOf(state).cur.name });
+  const seen = useRef<{ chip: string | undefined; rank: string; idx: number }>({ chip: state.chipLog[0]?.id, rank: rankOf(state).cur.name, idx: rankOf(state).index });
+  const [rankUp, setRankUp] = useState<{ name: string; index: number } | null>(null);
+  const rankIdx = rankOf(state).index;
   const rankName = rankOf(state).cur.name;
   const lastChip = state.chipLog[0];
   useEffect(() => {
     if (rankName !== seen.current.rank) {
+      const up = rankIdx > seen.current.idx;
       seen.current.rank = rankName;
-      setToast(`Rank up: ${rankName}`);
-      buzz([40, 30, 40]);
+      seen.current.idx = rankIdx;
+      if (up) {
+        setRankUp({ name: rankName, index: rankIdx });
+        buzz([40, 30, 40, 30, 120]);
+      }
     } else if (lastChip && lastChip.id !== seen.current.chip) {
       setToast(`+${lastChip.amount} chips · ${lastChip.reason}`);
       buzz(20);
     }
     seen.current.chip = lastChip?.id;
   }, [rankName, lastChip]);
+  useEffect(() => {
+    if (!rankUp) return;
+    const t = window.setTimeout(() => setRankUp(null), 4500);
+    return () => window.clearTimeout(t);
+  }, [rankUp]);
   useEffect(() => {
     const fresh = reached.filter((id) => !seenGoals.current.includes(id));
     if (fresh.length) {
@@ -130,6 +141,18 @@ export default function App() {
     <div className="relative z-[1] mx-auto min-h-dvh max-w-md pb-24">
       <Scene />
       {burst > 0 && <Burst key={burst} />}
+      {rankUp && (
+        <button
+          onClick={() => setRankUp(null)}
+          aria-label={`Rank up: ${rankUp.name}. Tap to continue`}
+          className="rise fixed inset-0 z-40 flex flex-col items-center justify-end bg-cc-night bg-cover bg-center p-8 pb-24 text-center"
+          style={{ backgroundImage: `linear-gradient(to top, rgba(6,10,18,0.95), rgba(6,10,18,0.15) 60%), url(/art/rank-${rankUp.index}.webp)` }}
+        >
+          <div className="font-mono text-xs uppercase tracking-[0.3em] text-cc-aqua">Rank up</div>
+          <div className="mt-2 font-cc text-6xl font-bold uppercase leading-none text-cc-lime">{rankUp.name}</div>
+          <div className="mt-4 font-mono text-[10px] uppercase tracking-[0.2em] text-cc-muted">Tap to keep going</div>
+        </button>
+      )}
       {toast && (
         <div role="status" className="rise pointer-events-none fixed inset-x-0 top-[max(0.75rem,env(safe-area-inset-top))] z-20 mx-auto w-fit max-w-[90vw] rounded-full border border-cc-gold/60 bg-cc-deep/95 px-4 py-2 font-cc text-lg uppercase tracking-wide text-cc-gold shadow-lg">
           {toast}
