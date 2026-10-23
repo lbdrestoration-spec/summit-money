@@ -658,3 +658,28 @@ export function BiggestLeak({ state }: { state: State }) {
     </Card>
   );
 }
+
+/** Small ring: this week's deposits against one week's share of your monthly plan. */
+export function WeekRing({ state }: { state: State }) {
+  const now = today();
+  const from = iso(startOfWeek(now));
+  const saved = state.buckets.flatMap((b) => b.contributions).filter((c) => c.date >= from && c.date <= iso(now)).reduce((a, c) => a + c.amount, 0);
+  const planned = state.buckets.reduce((a, b) => a + b.monthlyPlan, 0);
+  if (planned <= 0) return null;
+  const goal = (planned * 12) / 52;
+  const pct = Math.max(0, Math.min(1, saved / goal));
+  const R = 15;
+  const C = 2 * Math.PI * R;
+  return (
+    <div className="flex items-center gap-2 rounded-full border border-cc-line bg-cc-night/60 py-1 pl-1 pr-3 backdrop-blur" role="img" aria-label={`This week: ${money(Math.max(0, saved))} of ${money(goal)} weekly saving target`}>
+      <svg viewBox="0 0 40 40" className="h-9 w-9 -rotate-90">
+        <circle cx="20" cy="20" r={R} fill="none" stroke="var(--color-cc-line)" strokeWidth="5" />
+        <circle cx="20" cy="20" r={R} fill="none" stroke={pct >= 1 ? "var(--color-cc-lime)" : "var(--color-cc-gold)"} strokeWidth="5" strokeLinecap="round" strokeDasharray={`${pct * C} ${C}`} />
+      </svg>
+      <span className="font-mono text-[10px] uppercase leading-tight tracking-wider text-cc-snow">
+        {money(Math.max(0, saved))}
+        <span className="block text-cc-muted">of {money(goal)} this week</span>
+      </span>
+    </div>
+  );
+}

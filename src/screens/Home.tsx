@@ -7,7 +7,7 @@ import { rankOf, savingWeekStreak } from "../rank";
 import { projectTo } from "../plan";
 import { Button, Card, Empty, Heading, label, Stat } from "../ui";
 import { makeShareCard, shareProgress } from "../shareCard";
-import { Countdowns, DueSoon, BillsCover, BiggestLeak, Challenge, SaveHeat, YearEnd, WeekNudge, LastWeek, RoundUpJar, Milestones, MonthlyBars, PayFirst, PaydaySplit, SavingsRate, Runway, SavingsSplit, Timeline, WhatIf } from "./Insights";
+import { Countdowns, DueSoon, BillsCover, BiggestLeak, WeekRing, Challenge, SaveHeat, YearEnd, WeekNudge, LastWeek, RoundUpJar, Milestones, MonthlyBars, PayFirst, PaydaySplit, SavingsRate, Runway, SavingsSplit, Timeline, WhatIf } from "./Insights";
 import { RunsCard } from "./Trail";
 import { Urge } from "./Urge";
 import { Weather } from "./Weather";
@@ -110,7 +110,10 @@ export function Home({ state, actions, onCasino, onPlan }: { state: State; actio
         >
           Share
         </button>
-        {shareNote && <div role="status" className="absolute left-3 top-4 z-[1] rounded-full bg-cc-night/80 px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-cc-aqua">{shareNote}</div>}
+        <div className="absolute left-3 top-3 z-[1]">
+          <WeekRing state={state} />
+        </div>
+        {shareNote && <div role="status" className="absolute left-1/2 top-16 z-[1] -translate-x-1/2 rounded-full bg-cc-night/80 px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-cc-aqua">{shareNote}</div>}
         <div className="relative flex min-h-[340px] flex-col justify-end p-4">
           <div className={label}>Saved so far</div>
           <div className="font-cc text-7xl font-bold leading-none text-cc-lime drop-shadow">{money(totalSaved)}</div>
