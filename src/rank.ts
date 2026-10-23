@@ -84,6 +84,8 @@ export function trophies(s: State): Trophy[] {
     { id: "r10", name: "Ten Skips", desc: "Skip 10 real-money bets", icon: "🛡", earned: resists >= 10 },
     { id: "k500", name: "Kept $500", desc: "Keep $500 in your pocket", icon: "💰", earned: kept >= 500 },
     { id: "w4", name: "Month Of Saving", desc: "Save 4 weeks in a row", icon: "📈", earned: savingWeekStreak(s) >= 4 },
+    { id: "d10000", name: "Ten Grand", desc: "Save $10,000", icon: "▲", earned: saved >= 10000 },
+    { id: "w12", name: "Season Of Saving", desc: "Save 12 weeks in a row", icon: "🌨", earned: savingWeekStreak(s) >= 12 },
     { id: "habit", name: "Steady Saver", desc: "Put money in a bucket 5 times", icon: "⚑", earned: wedIsh },
   ];
 }

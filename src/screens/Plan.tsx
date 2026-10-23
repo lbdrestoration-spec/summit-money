@@ -72,10 +72,11 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
       <Card tone="aqua" className="space-y-2">
         <Heading>What's new</Heading>
         <ul className="space-y-1 text-sm text-cc-snow/90">
+          <li>Home leads with saving: milestone ETA, saving streak, split by bucket</li>
           <li>Quick spend: the orange + button on every screen</li>
           <li>Live Whitefish temperature and 5-day snow forecast on Home</li>
           <li>Payday card suggests what to move into each bucket</li>
-          <li>Trail ranks, 13 trophies, daily runs for bonus chips</li>
+          <li>Trail ranks, 16 trophies, daily runs for bonus chips</li>
           <li>Feeling the urge? A 10-minute pause and a kept-in-pocket tally</li>
           <li>Trip budgets for Dec 10 and July, plus a Montana checklist</li>
           <li>What if slider, 14-day timeline, month calendar, runway</li>
