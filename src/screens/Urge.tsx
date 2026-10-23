@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { buzz } from "../haptic";
 import { keptInPocket } from "../rank";
-import { money } from "../calc";
+import { iso, money, today } from "../calc";
 import type { Actions } from "../store";
 import type { State } from "../types";
 import { Button, Card, Heading, input, label } from "../ui";
@@ -13,6 +13,8 @@ export function Urge({ state, actions, onCasino }: { state: State; actions: Acti
   const [left, setLeft] = useState<number | null>(null);
   const [amt, setAmt] = useState("");
   const [open, setOpen] = useState(false);
+  const [moveIt, setMoveIt] = useState(false);
+  const [bucketId, setBucketId] = useState("");
   const timer = useRef<number | null>(null);
 
   useEffect(() => {
@@ -84,12 +86,15 @@ export function Urge({ state, actions, onCasino }: { state: State; actions: Acti
 
       {open && (
         <form
-          className="flex gap-2"
+          className="space-y-2"
           onSubmit={(e) => {
             e.preventDefault();
             const n = Number(amt);
             if (n > 0) {
               actions.addResist(n, "");
+              const target = bucketId || state.buckets[0]?.id;
+              if (moveIt && target) actions.contribute(target, n, iso(today()));
+              setMoveIt(false);
               buzz([30, 30, 30]);
               setAmt("");
               setOpen(false);
@@ -100,10 +105,29 @@ export function Urge({ state, actions, onCasino }: { state: State; actions: Acti
           <label className="sr-only" htmlFor="skip-amt">
             How much you would have bet
           </label>
-          <input id="skip-amt" className={input} inputMode="decimal" placeholder="How much you would have bet" value={amt} onChange={(e) => setAmt(e.target.value)} />
-          <Button variant="lime" type="submit">
-            Keep it
-          </Button>
+          <div className="flex gap-2">
+            <input id="skip-amt" className={input} inputMode="decimal" placeholder="How much you would have bet" value={amt} onChange={(e) => setAmt(e.target.value)} />
+            <Button variant="lime" type="submit">
+              Keep it
+            </Button>
+          </div>
+          {state.buckets.length > 0 && (
+            <div className="space-y-2">
+              <label className="flex min-h-11 items-center gap-2 text-sm">
+                <input type="checkbox" checked={moveIt} onChange={(e) => setMoveIt(e.target.checked)} className="h-5 w-5" />
+                I really moved that money into savings
+              </label>
+              {moveIt && (
+                <select className="min-h-11 w-full rounded-lg border border-cc-line bg-cc-night/60 px-3" value={bucketId || state.buckets[0].id} onChange={(e) => setBucketId(e.target.value)} aria-label="Savings bucket for skipped bet">
+                  {state.buckets.map((b) => (
+                    <option key={b.id} value={b.id}>
+                      {b.name}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+          )}
         </form>
       )}
       {state.resisted.length > 0 && (
