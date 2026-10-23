@@ -581,3 +581,26 @@ export function WeekNudge({ state, actions }: { state: State; actions: Actions }
     </Card>
   );
 }
+
+/** Where you land on Dec 31 if the last 8 weeks of saving simply continue. */
+export function YearEnd({ state }: { state: State }) {
+  const now = today();
+  const end = new Date(now.getFullYear(), 11, 31);
+  const left = daysBetween(now, end);
+  const total = totalSaved(state);
+  const from = iso(addDays(now, -56));
+  const recent = state.buckets.flatMap((b) => b.contributions).filter((c) => c.date >= from && c.date <= iso(now)).reduce((a, c) => a + c.amount, 0);
+  if (left <= 0 || recent <= 0) return null;
+  const projected = total + (recent / 56) * left;
+  const perWeek = recent / 8;
+  return (
+    <Card tone="aqua" className="space-y-1">
+      <Heading tone="aqua">Year-end forecast</Heading>
+      <div className="flex items-end justify-between">
+        <div className="font-cc text-4xl font-bold text-cc-aqua">{money(projected)}</div>
+        <div className={label}>by Dec 31 · {left} days</div>
+      </div>
+      <div className="text-xs text-cc-muted">If you keep saving about {money(perWeek)} a week, like the last 8 weeks. Every extra $10 a week adds about {money((10 * left) / 7)}.</div>
+    </Card>
+  );
+}
