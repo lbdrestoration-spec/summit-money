@@ -247,3 +247,40 @@ export function Countdowns({ state }: { state: State }) {
     </div>
   );
 }
+
+const SLICES = ["var(--color-cc-lime)", "var(--color-cc-aqua)", "var(--color-cc-gold)", "var(--color-cc-violet)", "var(--color-cc-orange)", "var(--color-cc-pink)"];
+
+/** Where your savings sit, as a donut. */
+export function SavingsSplit({ state }: { state: State }) {
+  const parts = state.buckets.map((b) => ({ name: b.name, v: b.contributions.reduce((a, c) => a + c.amount, 0) })).filter((x) => x.v > 0);
+  const total = parts.reduce((a, b) => a + b.v, 0);
+  if (!total) return null;
+  const R = 42;
+  const C = 2 * Math.PI * R;
+  let acc = 0;
+  return (
+    <Card tone="lime" className="flex items-center gap-4">
+      <svg viewBox="0 0 120 120" className="h-28 w-28 shrink-0 -rotate-90" role="img" aria-label="Savings by bucket">
+        <circle cx="60" cy="60" r={R} fill="none" stroke="var(--color-cc-line)" strokeWidth="14" />
+        {parts.map((p, i) => {
+          const len = (p.v / total) * C;
+          const el = <circle key={p.name} cx="60" cy="60" r={R} fill="none" stroke={SLICES[i % SLICES.length]} strokeWidth="14" strokeDasharray={`${Math.max(0, len - 1.5)} ${C}`} strokeDashoffset={-acc} />;
+          acc += len;
+          return el;
+        })}
+      </svg>
+      <div className="min-w-0 flex-1 space-y-1">
+        <Heading tone="lime">Where it sits</Heading>
+        {parts.map((p, i) => (
+          <div key={p.name} className="flex items-center justify-between gap-2 text-sm">
+            <span className="flex min-w-0 items-center gap-2">
+              <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: SLICES[i % SLICES.length] }} />
+              <span className="truncate">{p.name}</span>
+            </span>
+            <span className="font-cc text-lg">{money(p.v)}</span>
+          </div>
+        ))}
+      </div>
+    </Card>
+  );
+}

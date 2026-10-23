@@ -2,10 +2,10 @@ import { bucketSaved, money, monthStats, parse, savingsSeries, streak, today, is
 import { StockChart } from "../Chart";
 import type { Actions } from "../store";
 import type { State } from "../types";
-import { rankOf } from "../rank";
+import { rankOf, savingWeekStreak } from "../rank";
 import { projectTo } from "../plan";
 import { Button, Card, Empty, Heading, label, Stat } from "../ui";
-import { Countdowns, DueSoon, PaydaySplit, Runway, Timeline, WhatIf } from "./Insights";
+import { Countdowns, DueSoon, PaydaySplit, Runway, SavingsSplit, Timeline, WhatIf } from "./Insights";
 import { RunsCard } from "./Trail";
 import { Urge } from "./Urge";
 import { Weather } from "./Weather";
@@ -58,6 +58,7 @@ export function Home({ state, actions, onCasino, onPlan }: { state: State; actio
   const nextPay = m.checks.find((c) => c.date >= todayIso);
   const over = m.remaining < 0;
   const rank = rankOf(state);
+  const savingWeeks = savingWeekStreak(state);
   // Nearest upcoming deadline and where you are headed for it
   const nextDeadline = (state.plan?.deadlines ?? [])
     .map((d) => ({ d, p: projectTo(state, d) }))
@@ -87,9 +88,8 @@ export function Home({ state, actions, onCasino, onPlan }: { state: State; actio
         </div>
       </div>
 
-      <BackupNudge state={state} onPlan={onPlan} />
-      <Weather />
       <Countdowns state={state} />
+
       <p className="px-1 text-center font-cc text-xl italic leading-snug text-cc-snow/80">“{quoteOf(todayIso)}”</p>
       <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-cc-muted">
         {rank.cur.mark} {rank.cur.name}
@@ -97,15 +97,15 @@ export function Home({ state, actions, onCasino, onPlan }: { state: State; actio
       </div>
 
       <PaydaySplit state={state} actions={actions} />
+
       <DueSoon state={state} />
 
       <DeadlineCards state={state} />
-      <FridayPayCard state={state} actions={actions} />
-      <WhatIf state={state} />
-      <Runway state={state} />
-      <Timeline state={state} />
 
       <div className="grid grid-cols-2 gap-3">
+        <Card tone="lime" className="col-span-2">
+          <Stat title="Saving streak" value={`${savingWeeks} wk${savingWeeks === 1 ? "" : "s"}`} tone="lime" hint={savingWeeks > 0 ? "Weeks in a row you saved" : "Save this week to start"} />
+        </Card>
         <Card tone="orange">
           <Stat title="Streak" value={`${days} day${days === 1 ? "" : "s"}`} tone="orange" hint={checkedToday ? "Logged today" : "Log today to keep it"} />
         </Card>
@@ -120,9 +120,7 @@ export function Home({ state, actions, onCasino, onPlan }: { state: State; actio
         </Button>
       )}
 
-      <RunsCard state={state} />
-
-      <Urge state={state} actions={actions} onCasino={onCasino} />
+      <SavingsSplit state={state} />
 
       <Card tone="lime">
         <div className="mb-2 flex items-end justify-between">
@@ -131,6 +129,22 @@ export function Home({ state, actions, onCasino, onPlan }: { state: State; actio
         </div>
         {totalSaved > 0 ? <StockChart series={series} /> : <Empty>Add your first savings bucket on the Plan tab, then put money in it. Your line starts here.</Empty>}
       </Card>
+
+      <FridayPayCard state={state} actions={actions} />
+
+      <WhatIf state={state} />
+
+      <Runway state={state} />
+
+      <Timeline state={state} />
+
+      <RunsCard state={state} />
+
+      <Urge state={state} actions={actions} onCasino={onCasino} />
+
+      <Weather />
+
+      <BackupNudge state={state} onPlan={onPlan} />
 
       <Card>
         <Heading tone="aqua">This month</Heading>

@@ -1,4 +1,4 @@
-import { addDays, iso, parse, today } from "./calc";
+import { addDays, iso, parse, startOfWeek, today } from "./calc";
 import { totalSaved } from "./plan";
 import type { State } from "./types";
 
@@ -47,6 +47,20 @@ export function daysClean(s: State) {
   return Math.max(0, Math.round((today().getTime() - parse(days[0]).getTime()) / 86400000)) + 1;
 }
 
+/** Consecutive weeks (Mon to Sun) with at least one deposit into a bucket, counting back from this week or last. */
+export function savingWeekStreak(s: State, now = today()) {
+  const weeks = new Set<string>();
+  s.buckets.forEach((b) => b.contributions.forEach((c) => weeks.add(iso(startOfWeek(parse(c.date))))));
+  let cursor = startOfWeek(now);
+  if (!weeks.has(iso(cursor))) cursor = addDays(cursor, -7);
+  let n = 0;
+  while (weeks.has(iso(cursor))) {
+    n++;
+    cursor = addDays(cursor, -7);
+  }
+  return n;
+}
+
 export const keptInPocket = (s: State) => s.resisted.reduce((a, r) => a + r.amount, 0);
 
 export type Trophy = { id: string; name: string; desc: string; icon: string; earned: boolean };
@@ -69,6 +83,7 @@ export function trophies(s: State): Trophy[] {
     { id: "r1", name: "Held The Line", desc: "Skip a real-money bet", icon: "✋", earned: resists >= 1 },
     { id: "r10", name: "Ten Skips", desc: "Skip 10 real-money bets", icon: "🛡", earned: resists >= 10 },
     { id: "k500", name: "Kept $500", desc: "Keep $500 in your pocket", icon: "💰", earned: kept >= 500 },
+    { id: "w4", name: "Month Of Saving", desc: "Save 4 weeks in a row", icon: "📈", earned: savingWeekStreak(s) >= 4 },
     { id: "habit", name: "Steady Saver", desc: "Put money in a bucket 5 times", icon: "⚑", earned: wedIsh },
   ];
 }
