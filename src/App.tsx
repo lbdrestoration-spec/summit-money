@@ -6,6 +6,7 @@ import { Personalize } from "./screens/Personalize";
 import { Plan } from "./screens/Plan";
 import { Spend } from "./screens/Spend";
 import { Week } from "./screens/Week";
+import { Scene } from "./mountain";
 import { useStore } from "./store";
 
 const tabs = [
@@ -24,13 +25,21 @@ export default function App() {
   const [editingPlan, setEditingPlan] = useState(false);
 
   if (!state.settings || !state.plan || editingPlan)
-    return <Personalize state={state} actions={actions} editing={editingPlan} onDone={() => setEditingPlan(false)} />;
+    return (
+      <>
+        <Scene />
+        <div className="relative z-[1]">
+          <Personalize state={state} actions={actions} editing={editingPlan} onDone={() => setEditingPlan(false)} />
+        </div>
+      </>
+    );
 
   return (
-    <div className="mx-auto min-h-dvh max-w-md pb-24">
+    <div className="relative z-[1] mx-auto min-h-dvh max-w-md pb-24">
+      <Scene />
       <header className="flex items-end justify-between px-4 pb-2 pt-[max(1rem,env(safe-area-inset-top))]">
         <div>
-          <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-cc-muted">Command Center</div>
+          <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-cc-muted">Whitefish · Montana</div>
           <h1 className="font-cc text-3xl font-bold uppercase leading-none tracking-wide">Summit Money</h1>
         </div>
         <button

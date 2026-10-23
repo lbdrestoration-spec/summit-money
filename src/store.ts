@@ -80,6 +80,17 @@ export function useStore() {
     /** Casino wallet: games call this to take bets and pay out wins. Never goes below zero. */
     adjustChips: (delta: number) => update((s) => ({ ...s, chips: Math.max(0, s.chips + Math.round(delta)) })),
     setTableStack: (n: number) => update((s) => ({ ...s, tableStack: Math.max(0, Math.round(n)) })),
+    addResist: (amount: number, note: string) =>
+      update((s) => ({ ...s, resisted: [{ id: uid(), date: iso(today()), amount, note }, ...s.resisted] })),
+    removeResist: (id: string) => update((s) => ({ ...s, resisted: s.resisted.filter((x) => x.id !== id) })),
+    addCost: (deadlineId: string, name: string, amount: number) =>
+      update((s) => ({ ...s, costs: { ...s.costs, [deadlineId]: [...(s.costs[deadlineId] ?? []), { id: uid(), name, amount }] } })),
+    removeCost: (deadlineId: string, id: string) =>
+      update((s) => ({ ...s, costs: { ...s.costs, [deadlineId]: (s.costs[deadlineId] ?? []).filter((c) => c.id !== id) } })),
+    addNote: (text: string) => update((s) => ({ ...s, notes: [{ id: uid(), date: iso(today()), text }, ...s.notes].slice(0, 200) })),
+    removeNote: (id: string) => update((s) => ({ ...s, notes: s.notes.filter((n) => n.id !== id) })),
+    togglePacked: (id: string) =>
+      update((s) => ({ ...s, packed: s.packed.includes(id) ? s.packed.filter((x) => x !== id) : [...s.packed, id] })),
     replaceAll: (next: State) => setState({ ...emptyState(), ...next }),
   };
 

@@ -33,6 +33,12 @@ export type Plan = {
   deadlines: Deadline[];
 };
 export type ChipEntry = { id: string; date: string; amount: number; reason: string };
+/** A time you wanted to place a real-money bet and didn't */
+export type Resist = { id: string; date: string; amount: number; note: string };
+/** A planned cost for a deadline (lift tickets, gas, deposit) */
+export type CostItem = { id: string; name: string; amount: number };
+/** One line in the journal */
+export type Note = { id: string; date: string; text: string };
 export type State = {
   version: 1;
   settings: Settings | null;
@@ -50,6 +56,14 @@ export type State = {
   chipLog: ChipEntry[];
   /** Chips currently sitting at the poker table */
   tableStack: number;
+  /** Real-money bets skipped. Pure tally; no chips for it. */
+  resisted: Resist[];
+  /** Planned costs per deadline id */
+  costs: Record<string, CostItem[]>;
+  /** Wins journal */
+  notes: Note[];
+  /** Items checked off the trip checklist, keyed by item id */
+  packed: string[];
 };
 
 export const DEFAULT_CATEGORIES = ["Food", "Gas", "Fun", "Business", "Shopping", "Other"];
@@ -67,4 +81,8 @@ export const emptyState = (): State => ({
   chips: 500,
   chipLog: [],
   tableStack: 0,
+  resisted: [],
+  costs: {},
+  notes: [],
+  packed: [],
 });

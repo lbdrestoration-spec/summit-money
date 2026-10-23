@@ -2,19 +2,12 @@ import { bucketSaved, money, monthStats, savingsSeries, streak, today, iso } fro
 import { StockChart } from "../Chart";
 import type { Actions } from "../store";
 import type { State } from "../types";
+import { ForestRidge } from "../mountain";
+import { rankOf } from "../rank";
 import { Button, Card, Empty, Heading, label, Stat } from "../ui";
+import { Timeline, WhatIf } from "./Insights";
+import { Urge } from "./Urge";
 import { DeadlineCards, FridayPayCard } from "./Deadlines";
-
-function Ridge() {
-  return (
-    <svg viewBox="0 0 400 90" className="absolute inset-x-0 bottom-0 w-full opacity-90" aria-hidden="true" preserveAspectRatio="none">
-      <path d="M0 90 L0 62 L70 30 L110 52 L170 12 L230 55 L290 28 L350 58 L400 38 L400 90 Z" fill="var(--color-cc-line)" opacity="0.55" />
-      <path d="M0 90 L0 74 L60 52 L120 70 L190 40 L260 72 L330 50 L400 72 L400 90 Z" fill="var(--color-cc-deep)" />
-      <path d="M170 12 L186 33 L176 30 L170 42 L163 29 L153 33 Z" fill="var(--color-cc-snow)" opacity="0.9" />
-      <path d="M290 28 L302 45 L294 43 L290 52 L285 42 L277 45 Z" fill="var(--color-cc-snow)" opacity="0.8" />
-    </svg>
-  );
-}
 
 export function Home({ state, actions, onCasino }: { state: State; actions: Actions; onCasino: () => void }) {
   const m = monthStats(state);
@@ -25,20 +18,31 @@ export function Home({ state, actions, onCasino }: { state: State; actions: Acti
   const checkedToday = state.checkins.includes(todayIso) || state.spends.some((s) => s.date === todayIso);
   const nextPay = m.checks.find((c) => c.date >= todayIso);
   const over = m.remaining < 0;
+  const daily = (state.plan?.weeklySpending ?? 0) / 7;
+  const report = over ? "Closed, avalanche danger" : daily > 0 && m.safeToday >= daily * 1.2 ? "Fresh powder" : daily > 0 && m.safeToday >= daily * 0.8 ? "Groomed corduroy" : "Thin cover, ski easy";
+  const rank = rankOf(state);
 
   return (
     <div className="space-y-4">
-      <div className="relative overflow-hidden rounded-2xl border border-cc-line bg-gradient-to-b from-cc-panel to-cc-deep p-4 pb-20 rise">
+      <div className="relative overflow-hidden rounded-2xl border border-cc-line bg-gradient-to-b from-cc-panel to-cc-deep p-4 pb-28 rise">
         <div className={label}>Safe to spend today</div>
         <div className={`font-cc text-6xl font-bold leading-none ${over ? "text-cc-pink" : "text-cc-lime"}`}>{money(m.safeToday)}</div>
+        <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-cc-aqua">Mountain report · {report}</div>
         <div className="mt-1 text-xs text-cc-muted">
           {over ? `Over budget by ${money(-m.remaining)} this month` : `${money(m.remaining)} left this month · ${m.daysLeft} days to go`}
         </div>
-        <Ridge />
+        <ForestRidge />
+      </div>
+
+      <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-cc-muted">
+        {rank.cur.mark} {rank.cur.name}
+        {rank.next ? ` · ${money(rank.next.at - rank.saved)} to ${rank.next.name}` : ""}
       </div>
 
       <DeadlineCards state={state} />
       <FridayPayCard state={state} actions={actions} />
+      <WhatIf state={state} />
+      <Timeline state={state} />
 
       <div className="grid grid-cols-2 gap-3">
         <Card tone="orange">
@@ -55,15 +59,7 @@ export function Home({ state, actions, onCasino }: { state: State; actions: Acti
         </Button>
       )}
 
-      <Card tone="pink" className="flex items-center justify-between gap-3">
-        <div className="min-w-0">
-          <div className="font-cc text-2xl font-semibold uppercase text-cc-pink">Feeling the urge?</div>
-          <div className="text-xs text-cc-muted">Play your chips instead. Real money stays put.</div>
-        </div>
-        <Button variant="lime" className="shrink-0" onClick={onCasino}>
-          Open casino
-        </Button>
-      </Card>
+      <Urge state={state} actions={actions} onCasino={onCasino} />
 
       <Card tone="lime">
         <div className="mb-2 flex items-end justify-between">

@@ -3,6 +3,7 @@ import { bucketSaved, daysBetween, iso, money, parse, today } from "../calc";
 import type { Actions } from "../store";
 import type { State } from "../types";
 import { Button, Card, Empty, Heading, Progress, input, label } from "../ui";
+import { BudgetCards, Checklist, Journal, RankCard, TrophyCase } from "./Trail";
 
 export function Goals({ state, actions }: { state: State; actions: Actions }) {
   const goals = state.buckets.filter((b) => b.target);
@@ -10,6 +11,7 @@ export function Goals({ state, actions }: { state: State; actions: Actions }) {
 
   return (
     <div className="space-y-4">
+      <RankCard state={state} />
       <Heading tone="gold">Goals</Heading>
       {goals.length === 0 && <Empty>No goals yet. On the Plan tab, add a savings bucket with a target amount and it shows up here.</Empty>}
       {goals.map((g) => {
@@ -57,6 +59,10 @@ export function Goals({ state, actions }: { state: State; actions: Actions }) {
           </Card>
         );
       })}
+      <BudgetCards state={state} actions={actions} />
+      <Checklist state={state} actions={actions} />
+      <TrophyCase state={state} />
+      <Journal state={state} actions={actions} />
     </div>
   );
 }
