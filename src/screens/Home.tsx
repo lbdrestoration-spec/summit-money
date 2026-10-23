@@ -7,7 +7,7 @@ import { rankOf, savingWeekStreak } from "../rank";
 import { projectTo } from "../plan";
 import { Button, Card, Empty, Heading, label, Stat } from "../ui";
 import { makeShareCard, shareProgress } from "../shareCard";
-import { Countdowns, DueSoon, BillsCover, Challenge, LastWeek, RoundUpJar, Milestones, MonthlyBars, PayFirst, PaydaySplit, SavingsRate, Runway, SavingsSplit, Timeline, WhatIf } from "./Insights";
+import { Countdowns, DueSoon, BillsCover, Challenge, WeekNudge, LastWeek, RoundUpJar, Milestones, MonthlyBars, PayFirst, PaydaySplit, SavingsRate, Runway, SavingsSplit, Timeline, WhatIf } from "./Insights";
 import { RunsCard } from "./Trail";
 import { Urge } from "./Urge";
 import { Weather } from "./Weather";
@@ -134,6 +134,8 @@ export function Home({ state, actions, onCasino, onPlan }: { state: State; actio
           </button>
         ))}
       </nav>
+
+      <WeekNudge state={state} actions={actions} />
 
       <Countdowns state={state} />
 

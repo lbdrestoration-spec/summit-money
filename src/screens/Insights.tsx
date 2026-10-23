@@ -561,3 +561,23 @@ export function LastWeek({ state }: { state: State }) {
     </Card>
   );
 }
+
+/** Shows only when nothing has gone into savings yet this week. One tap puts the usual weekly amount in. */
+export function WeekNudge({ state, actions }: { state: State; actions: Actions }) {
+  const now = today();
+  const from = iso(startOfWeek(now));
+  const thisWeek = state.buckets.some((b) => b.contributions.some((c) => c.date >= from && c.date <= iso(now)));
+  if (state.buckets.length === 0 || thisWeek) return null;
+  const planned = state.buckets.reduce((a, b) => a + b.monthlyPlan, 0);
+  const weekly = planned > 0 ? Math.max(5, Math.round((planned * 12) / 52 / 5) * 5) : 20;
+  const target = state.buckets.find((b) => b.monthlyPlan > 0) ?? state.buckets[0];
+  return (
+    <Card tone="orange" className="space-y-2">
+      <Heading tone="orange">Nothing saved this week yet</Heading>
+      <p className="text-xs text-cc-muted">Keep the saving streak alive. Put the usual {money(weekly)} into {target.name} now.</p>
+      <Button variant="lime" className="w-full" onClick={() => actions.contribute(target.id, weekly, iso(today()))}>
+        Save {money(weekly)} to {target.name}
+      </Button>
+    </Card>
+  );
+}
