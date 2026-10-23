@@ -5,7 +5,7 @@ import type { Bucket, State } from "../types";
 import { bucketIcon } from "../bucketIcon";
 import { Button, Card, Empty, Heading, PhotoHeader, input, label } from "../ui";
 
-function Row({ title, sub, right, onDelete }: { title: string; sub?: string; right: string; onDelete: () => void }) {
+function Row({ title, sub, right, onDelete, deleteLabel }: { title: string; sub?: string; right: string; onDelete: () => void; deleteLabel?: string }) {
   return (
     <div className="flex items-center justify-between gap-3 rounded-lg border border-cc-line/70 bg-cc-night/40 px-3 py-2">
       <div className="min-w-0">
@@ -14,7 +14,7 @@ function Row({ title, sub, right, onDelete }: { title: string; sub?: string; rig
       </div>
       <div className="flex items-center gap-1">
         <span className="font-cc text-xl">{right}</span>
-        <button className="min-h-11 min-w-11 text-cc-muted" onClick={onDelete} aria-label={`Delete ${title}`}>
+        <button className="min-h-11 min-w-11 text-cc-muted" onClick={onDelete} aria-label={deleteLabel ?? `Delete ${title}`}>
           ✕
         </button>
       </div>
@@ -75,6 +75,10 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
 
   const billsTotal = state.bills.reduce((a, b) => a + b.amount, 0);
   const recentIncome = state.incomes.slice(0, 5);
+  const deposits = state.buckets
+    .flatMap((b) => b.contributions.map((c) => ({ ...c, bucket: b.name, bucketId: b.id })))
+    .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0))
+    .slice(0, 8);
 
   function exportData() {
     const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
@@ -248,6 +252,17 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
             Add bucket
           </Button>
         </form>
+      </Card>
+
+      <Card tone="lime">
+        <Heading tone="lime">Recent deposits</Heading>
+        <p className="mt-1 text-xs text-cc-muted">Tap ✕ to remove a deposit you entered by mistake.</p>
+        <div className="mt-3 space-y-2">
+          {deposits.length === 0 && <Empty>No deposits yet.</Empty>}
+          {deposits.map((d) => (
+            <Row key={d.id} title={`${bucketIcon(d.bucket)} ${d.bucket}`} sub={d.date} right={money(d.amount, { cents: true })} onDelete={() => actions.removeContribution(d.bucketId, d.id)} deleteLabel={`Remove ${money(d.amount, { cents: true })} deposit on ${d.date} from ${d.bucket}`} />
+          ))}
+        </div>
       </Card>
 
       <Card>

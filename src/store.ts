@@ -58,6 +58,13 @@ export function useStore() {
       update((s) => ({ ...s, buckets: [...s.buckets, { ...x, id: uid(), contributions: [] }] })),
     updateBucket: (id: string, patch: Partial<Pick<Bucket, "name" | "monthlyPlan" | "target" | "targetDate">>) =>
       update((s) => ({ ...s, buckets: s.buckets.map((b) => (b.id === id ? { ...b, ...patch } : b)) })),
+    /** Remove one deposit (for a typo). If it came from the 52-week challenge, that week reopens. */
+    removeContribution: (bucketId: string, contribId: string) =>
+      update((s) => ({
+        ...s,
+        buckets: s.buckets.map((b) => (b.id === bucketId ? { ...b, contributions: b.contributions.filter((c) => c.id !== contribId) } : b)),
+        challenge: s.challenge.filter((c) => c.contribId !== contribId),
+      })),
     removeBucket: (id: string) => update((s) => ({ ...s, buckets: s.buckets.filter((x) => x.id !== id) })),
     contribute: (bucketId: string, amount: number, date: string) =>
       update((s) => {
