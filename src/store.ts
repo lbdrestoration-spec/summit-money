@@ -56,6 +56,8 @@ export function useStore() {
     removeBill: (id: string) => update((s) => ({ ...s, bills: s.bills.filter((x) => x.id !== id) })),
     addBucket: (x: Omit<Bucket, "id" | "contributions">) =>
       update((s) => ({ ...s, buckets: [...s.buckets, { ...x, id: uid(), contributions: [] }] })),
+    updateBucket: (id: string, patch: Partial<Pick<Bucket, "name" | "monthlyPlan" | "target" | "targetDate">>) =>
+      update((s) => ({ ...s, buckets: s.buckets.map((b) => (b.id === id ? { ...b, ...patch } : b)) })),
     removeBucket: (id: string) => update((s) => ({ ...s, buckets: s.buckets.filter((x) => x.id !== id) })),
     contribute: (bucketId: string, amount: number, date: string) =>
       update((s) => {

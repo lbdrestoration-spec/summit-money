@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { bucketSaved, iso, money, today } from "../calc";
 import type { Actions } from "../store";
-import type { State } from "../types";
+import type { Bucket, State } from "../types";
 import { bucketIcon } from "../bucketIcon";
 import { Button, Card, Empty, Heading, PhotoHeader, input, label } from "../ui";
 
@@ -22,6 +22,39 @@ function Row({ title, sub, right, onDelete }: { title: string; sub?: string; rig
   );
 }
 
+
+function BucketEditor({ bucket, onSave, onCancel }: { bucket: Bucket; onSave: (p: Partial<Pick<Bucket, "name" | "monthlyPlan" | "target" | "targetDate">>) => void; onCancel: () => void }) {
+  const [name, setName] = useState(bucket.name);
+  const [plan, setPlan] = useState(String(bucket.monthlyPlan || ""));
+  const [target, setTarget] = useState(bucket.target ? String(bucket.target) : "");
+  const [date, setDate] = useState(bucket.targetDate ?? "");
+  return (
+    <form
+      className="space-y-2 rounded-lg border border-cc-gold/50 bg-cc-night/40 p-3"
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (!name.trim()) return;
+        onSave({ name: name.trim(), monthlyPlan: Number(plan) || 0, target: Number(target) > 0 ? Number(target) : undefined, targetDate: date || undefined });
+      }}
+    >
+      <input className={input} value={name} onChange={(e) => setName(e.target.value)} aria-label="Bucket name" />
+      <div className="flex gap-2">
+        <input className={input} inputMode="decimal" placeholder="Per month" value={plan} onChange={(e) => setPlan(e.target.value)} aria-label="Edit planned monthly amount" />
+        <input className={input} inputMode="decimal" placeholder="Goal" value={target} onChange={(e) => setTarget(e.target.value)} aria-label="Edit goal amount" />
+      </div>
+      <input className={input} type="date" value={date} onChange={(e) => setDate(e.target.value)} aria-label="Edit goal date" />
+      <div className="flex gap-2">
+        <Button variant="lime" type="submit" className="flex-1">
+          Save changes
+        </Button>
+        <Button type="button" className="flex-1" onClick={onCancel}>
+          Cancel
+        </Button>
+      </div>
+    </form>
+  );
+}
+
 export function Plan({ state, actions, onEditPlan }: { state: State; actions: Actions; onEditPlan: () => void }) {
   /* side income */
   const [incAmt, setIncAmt] = useState("");
@@ -37,6 +70,7 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
   const [bDate, setBDate] = useState("");
   /* categories */
   const [cat, setCat] = useState("");
+  const [editing, setEditing] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const billsTotal = state.bills.reduce((a, b) => a + b.amount, 0);
@@ -156,17 +190,33 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
         <p className="mt-1 text-xs text-cc-muted">Give a bucket a target and it becomes a goal.</p>
         <div className="mt-3 space-y-2">
           {state.buckets.length === 0 && <Empty>No buckets yet.</Empty>}
-          {state.buckets.map((b) => (
-            <Row
-              key={b.id}
-              title={`${bucketIcon(b.name)} ${b.name}`}
-              sub={`${money(bucketSaved(b))} saved${b.monthlyPlan ? ` · ${money(b.monthlyPlan)}/mo planned` : ""}${b.target ? ` · goal ${money(b.target)}` : ""}`}
-              right={money(bucketSaved(b))}
-              onDelete={() => {
-                if (confirm(`Delete "${b.name}" and its saved history?`)) actions.removeBucket(b.id);
-              }}
-            />
-          ))}
+          {state.buckets.map((b) =>
+            editing === b.id ? (
+              <BucketEditor
+                key={b.id}
+                bucket={b}
+                onCancel={() => setEditing(null)}
+                onSave={(patch) => {
+                  actions.updateBucket(b.id, patch);
+                  setEditing(null);
+                }}
+              />
+            ) : (
+              <div key={b.id}>
+                <Row
+                  title={`${bucketIcon(b.name)} ${b.name}`}
+                  sub={`${money(bucketSaved(b))} saved${b.monthlyPlan ? ` · ${money(b.monthlyPlan)}/mo planned` : ""}${b.target ? ` · goal ${money(b.target)}` : ""}`}
+                  right={money(bucketSaved(b))}
+                  onDelete={() => {
+                    if (confirm(`Delete "${b.name}" and its saved history?`)) actions.removeBucket(b.id);
+                  }}
+                />
+                <button className="min-h-11 px-3 font-mono text-[10px] uppercase tracking-wider text-cc-aqua" onClick={() => setEditing(b.id)} aria-label={`Edit ${b.name}`}>
+                  Edit
+                </button>
+              </div>
+            ),
+          )}
         </div>
         <form
           className="mt-3 space-y-2"
