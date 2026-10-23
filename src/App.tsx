@@ -51,7 +51,18 @@ export default function App() {
   const reached = state.buckets.filter((b) => b.target && b.contributions.reduce((a, c) => a + c.amount, 0) >= b.target).map((b) => b.id);
   const reachedKey = reached.join(",");
   const seenGoals = useRef<string[]>(reached);
-  const [toast, setToast] = useState<string | null>(null);
+  /** Toasts wait in line so two events in one tap both get seen. */
+  const [queue, setQueue] = useState<string[]>([]);
+  const toast = queue[0] ?? null;
+  const headShown = useRef(false);
+  /** Milestones (rank, goal, trophy) go before chip toasts; a toast already on screen keeps its place. */
+  const setToast = (m: string) =>
+    setQueue((q) => {
+      if (q.includes(m)) return q;
+      const head = headShown.current ? q.slice(0, 1) : [];
+      const rest = [...q.slice(head.length), m].sort((a, b) => Number(a.startsWith("+")) - Number(b.startsWith("+")));
+      return [...head, ...rest].slice(-4);
+    });
   const savedNow = totalSaved(state);
   const savedPrev = useRef(savedNow);
   const [burst, setBurst] = useState(0);
@@ -97,7 +108,11 @@ export default function App() {
   }, [earnedKey]);
   useEffect(() => {
     if (!toast) return;
-    const t = window.setTimeout(() => setToast(null), 2600);
+    headShown.current = true;
+    const t = window.setTimeout(() => {
+      headShown.current = false;
+      setQueue((q) => q.slice(1));
+    }, 2600);
     return () => window.clearTimeout(t);
   }, [toast]);
 
