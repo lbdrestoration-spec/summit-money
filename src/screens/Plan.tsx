@@ -138,7 +138,9 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
           <li>Round-up jar, bills cushion, year-end forecast, saving days grid</li>
           <li>Plan tab: edit buckets, take money out, remove a mistaken deposit, export CSV</li>
           <li>Share a picture of your progress from the Home photo</li>
-          <li>Rank-up celebration and trophy toasts</li>
+          <li>Rank-up and goal-reached celebrations, trophy toasts</li>
+          <li>Undo button after any deposit, weekly saving ring on the photo</li>
+          <li>Goal history charts, biggest-leak card, works offline</li>
           <li>Quick spend: the orange + button on every screen</li>
           <li>Live Whitefish temperature and 5-day snow forecast on Home</li>
           <li>Payday card suggests what to move into each bucket</li>
