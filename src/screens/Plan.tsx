@@ -74,6 +74,9 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
         <Heading>What's new</Heading>
         <ul className="space-y-1 text-sm text-cc-snow/90">
           <li>Home leads with saving: milestone ETA, saving streak, split by bucket</li>
+          <li>52-week challenge, one-tap Pay yourself first, snow burst on every deposit</li>
+          <li>Goals show your pace and finish date; skipped bets can move into savings</li>
+          <li>Blackjack insurance when the dealer shows an ace</li>
           <li>Quick spend: the orange + button on every screen</li>
           <li>Live Whitefish temperature and 5-day snow forecast on Home</li>
           <li>Payday card suggests what to move into each bucket</li>
