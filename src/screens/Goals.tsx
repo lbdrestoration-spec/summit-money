@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { addDays, bucketSaved, daysBetween, iso, money, parse, today } from "../calc";
-import { bucketIcon } from "../bucketIcon";
+import { bucketIcon, bucketPhoto } from "../bucketIcon";
 import type { Actions } from "../store";
 import type { State } from "../types";
 import { Button, Card, Empty, Heading, Progress, input, label } from "../ui";
@@ -27,7 +27,7 @@ export function Goals({ state, actions }: { state: State; actions: Actions }) {
         const etaDate = etaDays !== null ? addDays(today(), etaDays) : null;
         const onPace = etaDate && g.targetDate ? iso(etaDate) <= g.targetDate : null;
         return (
-          <Card key={g.id} tone={pct >= 1 ? "lime" : "gold"} className="space-y-3" photo={["/art/lake.webp", "/art/road.webp", "/art/gondola.webp", "/art/ridge.webp"][gi % 4]}>
+          <Card key={g.id} tone={pct >= 1 ? "lime" : "gold"} className="space-y-3" photo={bucketPhoto(g.name, gi)}>
             <div className="flex items-end justify-between gap-2">
               <div className="font-cc text-2xl font-semibold uppercase">
                 {bucketIcon(g.name)} {g.name}
