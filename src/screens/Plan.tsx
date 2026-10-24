@@ -10,6 +10,7 @@ import { buzz, hapticsOn, setHaptics } from "../haptic";
 import { Recap } from "./Recap";
 import { YearReview } from "./YearReview";
 import { RideDays } from "./RideDays";
+import { Windfall } from "./Windfall";
 import { Afford } from "./Afford";
 import { BillsYear } from "./BillsYear";
 import { RecurringCard } from "./RecurringCard";
@@ -126,6 +127,7 @@ const NEWS: string[] = [
   "Blackjack Coach: turn it on and it names the best move and why",
   "Casino \"Your highs\": biggest payout, big wins and best visit",
   "Ride days: what a season on the hill costs in weeks of saving",
+  "Windfall split: a lump sum fills your goals in proportion, one tap to apply",
 ];
 const NEWS_SHOWN = 8;
 
@@ -223,6 +225,7 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
       <Recap state={state} />
       <YearReview state={state} />
       <Afford state={state} />
+      <Windfall state={state} actions={actions} />
       <RideDays state={state} />
       <BillsYear state={state} />
       <RecurringCard state={state} actions={actions} />
