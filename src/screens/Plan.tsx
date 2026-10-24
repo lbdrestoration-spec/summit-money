@@ -183,6 +183,7 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
           <li>Gondola Run keeps your last 10 scores; 8 more Whitefish list ideas</li>
           <li>Plan tab has its own cabin-window video</li>
           <li>Snow Slots and a free daily scratch card in the Casino</li>
+          <li>Poker School: practice calling the winner of a showdown</li>
           <li>Days on snow: count your rides and see the cost per day</li>
           <li>Bills per year, with what dropping one would free up</li>
         </ul>

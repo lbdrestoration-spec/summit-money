@@ -4,6 +4,7 @@ import { Blackjack } from "../casino/Blackjack";
 import { GondolaRun } from "../casino/GondolaRun";
 import { HiLo } from "../casino/HiLo";
 import { Slots } from "../casino/Slots";
+import { PokerSchool } from "../casino/PokerSchool";
 import { ScratchCard } from "../casino/ScratchCard";
 import { Lobby } from "../casino/Lobby";
 import { find as findItem } from "../casino/shop";
@@ -24,6 +25,7 @@ const games = [
   { id: "vp", name: "Video", icon: "♥" },
   { id: "hilo", name: "Hi-Lo", icon: "↕" },
   { id: "slots", name: "Slots", icon: "❄" },
+  { id: "school", name: "School", icon: "🎓" },
   { id: "run", name: "Run", icon: "⛷" },
 ] as const;
 type Game = (typeof games)[number]["id"];
@@ -133,6 +135,7 @@ export function Casino({ state, actions, active }: { state: State; actions: Acti
         {game === "vp" && <VideoPoker chips={state.chips} adjust={actions.adjustChips} />}
         {game === "hilo" && <HiLo chips={state.chips} adjust={actions.adjustChips} />}
         {game === "slots" && <Slots chips={state.chips} adjust={actions.adjustChips} />}
+        {game === "school" && <PokerSchool />}
         {game === "run" && active && <GondolaRun state={state} actions={actions} />}
         {game === "poker" && <Poker chips={state.chips} tableStack={state.tableStack} adjust={actions.adjustChips} setTableStack={actions.setTableStack} />}
       </Card>
