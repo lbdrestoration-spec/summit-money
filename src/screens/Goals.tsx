@@ -45,14 +45,46 @@ function GoalHistory({ bucket }: { bucket: Bucket }) {
   );
 }
 
+type Sort = "plan" | "close" | "date";
+const SORTS: { id: Sort; label: string }[] = [
+  { id: "plan", label: "My order" },
+  { id: "close", label: "Closest to done" },
+  { id: "date", label: "Soonest date" },
+];
+
+export function sortGoals(goals: Bucket[], by: Sort): Bucket[] {
+  const g = [...goals];
+  if (by === "close") g.sort((a, b) => bucketSaved(b) / (b.target as number) - bucketSaved(a) / (a.target as number));
+  if (by === "date") g.sort((a, b) => (a.targetDate ?? "9999-12-31") < (b.targetDate ?? "9999-12-31") ? -1 : (a.targetDate ?? "9999-12-31") > (b.targetDate ?? "9999-12-31") ? 1 : 0);
+  return g;
+}
+
 export function Goals({ state, actions }: { state: State; actions: Actions }) {
-  const goals = state.buckets.filter((b) => b.target);
+  const [sort, setSort] = useState<Sort>("plan");
+  const goals = sortGoals(
+    state.buckets.filter((b) => b.target),
+    sort,
+  );
   const [amounts, setAmounts] = useState<Record<string, string>>({});
 
   return (
     <div className="space-y-4">
       <RankCard state={state} />
       <PhotoHeader src="/art/tab-goals.webp" video="/art/tab-goals-loop.mp4" title="Goals" sub="Every bucket, one summit" />
+      {goals.length > 1 && (
+        <div className="flex flex-wrap gap-2" role="group" aria-label="Sort goals">
+          {SORTS.map((x) => (
+            <button
+              key={x.id}
+              aria-pressed={sort === x.id}
+              onClick={() => setSort(x.id)}
+              className={`min-h-11 rounded-full border px-3 font-mono text-[10px] uppercase tracking-wider ${sort === x.id ? "border-cc-gold bg-cc-gold/15 text-cc-gold" : "border-cc-line text-cc-muted"}`}
+            >
+              {x.label}
+            </button>
+          ))}
+        </div>
+      )}
       {goals.length === 0 && <Empty>No goals yet. On the Plan tab, add a savings bucket with a target amount and it shows up here.</Empty>}
       {goals.map((g, gi) => {
         const saved = bucketSaved(g);

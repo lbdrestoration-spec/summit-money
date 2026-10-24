@@ -6,6 +6,7 @@ import { bucketIcon } from "../bucketIcon";
 import { Button, Card, Empty, Heading, PhotoHeader, input, label } from "../ui";
 import { events, toIcs } from "../ics";
 import { History } from "./History";
+import { buzz, hapticsOn, setHaptics } from "../haptic";
 import { Recap } from "./Recap";
 import { YearReview } from "./YearReview";
 import { Afford } from "./Afford";
@@ -190,6 +191,7 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
           <li>The + button offers your usual spends and saves in one tap</li>
           <li>Year so far: best month, top category, and a share picture</li>
           <li>Trip readiness gauge in the last 60 days before the ski trip</li>
+          <li>Vibration on/off switch in the Sound card; sort goals by progress or date</li>
           <li>Home photo turns to a snowstorm when it's snowing in Whitefish</li>
           <li>Days on snow: count your rides and see the cost per day</li>
           <li>Bills per year, with what dropping one would free up</li>
@@ -442,6 +444,7 @@ function SoundCard() {
   const [amb, setAmb] = useState(Math.round(ambienceVolume() * 100));
   const [mus, setMus] = useState(Math.round(musicVolume() * 100));
   const [playing, setPlaying] = useState(musicOn());
+  const [vib, setVib] = useState(hapticsOn());
   return (
     <Card tone="aqua" className="space-y-3">
       <Heading tone="aqua">Sound</Heading>
@@ -503,6 +506,20 @@ function SoundCard() {
           setMusicVolume(v / 100);
         }}
       />
+      <div className="flex items-center justify-between gap-3">
+        <span className={label}>Vibration on taps and wins</span>
+        <Button
+          variant={vib ? "lime" : "ghost"}
+          aria-label={vib ? "Vibration on" : "Vibration off"}
+          onClick={() => {
+            setHaptics(!vib);
+            setVib(!vib);
+            if (!vib) buzz(30);
+          }}
+        >
+          {vib ? "On" : "Off"}
+        </Button>
+      </div>
       <p className="text-xs text-cc-muted">Turn the cabin ambience on with the snowflake button at the top.</p>
     </Card>
   );
