@@ -20,6 +20,30 @@ const remember = (on: boolean) => {
   }
 };
 
+const VOL_KEY = "summit-money:ambvol";
+/** Ambience volume, 0 to 1 (default 0.5). */
+export const ambienceVolume = () => {
+  try {
+    const raw = localStorage.getItem(VOL_KEY);
+    const v = Number(raw);
+    return raw === null || !Number.isFinite(v) ? 0.5 : Math.min(1, Math.max(0, v));
+  } catch {
+    return 0.5;
+  }
+};
+export const setAmbienceVolume = (v: number) => {
+  try {
+    localStorage.setItem(VOL_KEY, String(Math.min(1, Math.max(0, v))));
+  } catch {
+    /* ignore */
+  }
+  if (master && ctx) {
+    master.gain.cancelScheduledValues(ctx.currentTime);
+    master.gain.setValueAtTime(master.gain.value, ctx.currentTime);
+    master.gain.linearRampToValueAtTime(v, ctx.currentTime + 0.15);
+  }
+};
+
 function noiseBuffer(c: AudioContext, seconds: number) {
   const buf = c.createBuffer(1, c.sampleRate * seconds, c.sampleRate);
   const d = buf.getChannelData(0);
@@ -40,7 +64,7 @@ export function startAmbience() {
     const c = ctx;
     master = c.createGain();
     master.gain.value = 0;
-    master.gain.linearRampToValueAtTime(0.5, c.currentTime + 2);
+    master.gain.linearRampToValueAtTime(ambienceVolume(), c.currentTime + 2);
     master.connect(c.destination);
 
     // wind: looping brown noise, band-limited, with a slow breathing volume

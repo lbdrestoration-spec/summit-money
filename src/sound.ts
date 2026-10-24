@@ -17,6 +17,24 @@ export const setMuted = (m: boolean) => {
   }
 };
 
+const VOL_KEY = "summit-money:volume";
+/** Effects volume, 0 to 1 (default 1). Remembered on this phone. */
+export const getVolume = () => {
+  try {
+    const v = Number(localStorage.getItem(VOL_KEY));
+    return localStorage.getItem(VOL_KEY) === null || !Number.isFinite(v) ? 1 : Math.min(1, Math.max(0, v));
+  } catch {
+    return 1;
+  }
+};
+export const setVolume = (v: number) => {
+  try {
+    localStorage.setItem(VOL_KEY, String(Math.min(1, Math.max(0, v))));
+  } catch {
+    /* ignore */
+  }
+};
+
 function tone(freq: number, start: number, dur: number, type: OscillatorType = "triangle", vol = 0.08) {
   if (!ctx) return;
   const o = ctx.createOscillator();
@@ -24,7 +42,7 @@ function tone(freq: number, start: number, dur: number, type: OscillatorType = "
   o.type = type;
   o.frequency.value = freq;
   g.gain.setValueAtTime(0.0001, ctx.currentTime + start);
-  g.gain.exponentialRampToValueAtTime(vol, ctx.currentTime + start + 0.01);
+  g.gain.exponentialRampToValueAtTime(Math.max(0.0002, vol * getVolume()), ctx.currentTime + start + 0.01);
   g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + start + dur);
   o.connect(g).connect(ctx.destination);
   o.start(ctx.currentTime + start);
@@ -32,7 +50,7 @@ function tone(freq: number, start: number, dur: number, type: OscillatorType = "
 }
 
 export function play(kind: "tick" | "win" | "lose" | "big") {
-  if (isMuted()) return;
+  if (isMuted() || getVolume() === 0) return;
   try {
     ctx ??= new AudioContext();
     if (ctx.state === "suspended") void ctx.resume();

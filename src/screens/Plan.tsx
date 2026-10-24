@@ -4,6 +4,8 @@ import type { Actions } from "../store";
 import type { Bucket, State } from "../types";
 import { bucketIcon } from "../bucketIcon";
 import { Button, Card, Empty, Heading, PhotoHeader, input, label } from "../ui";
+import { ambienceVolume, setAmbienceVolume } from "../ambience";
+import { getVolume, play, setVolume } from "../sound";
 
 function Row({ title, sub, right, onDelete, deleteLabel }: { title: string; sub?: string; right: string; onDelete: () => void; deleteLabel?: string }) {
   return (
@@ -150,9 +152,15 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
           <li>What if slider, 14-day timeline, month calendar, runway</li>
           <li>Casino: spinning wheel, blackjack split, lodge table, sounds</li>
           <li>Snowflake button up top: cabin wind and fire ambience</li>
-          <li>Hold the app icon for shortcuts: Spend, Casino, Goals</li>
+          <li>Hold the app icon for shortcuts: Save, Spend, Casino, Goals</li>
+          <li>Whitefish Mountain card: summit snow, wind, forecast, sun times</li>
+          <li>Board prep: 5-minute daily circuit and Dec 10 countdown</li>
+          <li>Casino: Gondola Run game, daily wheel, missions and chest</li>
+          <li>Poker bots with different styles, live hand name and pot odds</li>
+          <li>Sound sliders on this tab</li>
         </ul>
       </Card>
+      <SoundCard />
       <Card tone="lime">
         <Heading tone="lime">Side income</Heading>
         <p className="mt-1 text-xs text-cc-muted">Log what you make on your own each week.</p>
@@ -379,5 +387,47 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
         </div>
       </Card>
     </div>
+  );
+}
+
+function SoundCard() {
+  const [fx, setFx] = useState(Math.round(getVolume() * 100));
+  const [amb, setAmb] = useState(Math.round(ambienceVolume() * 100));
+  return (
+    <Card tone="aqua" className="space-y-3">
+      <Heading tone="aqua">Sound</Heading>
+      <label className="block text-sm">
+        <span className={label}>Game sounds {fx}%</span>
+        <input
+          type="range"
+          min={0}
+          max={100}
+          value={fx}
+          className="mt-1 w-full accent-cc-aqua"
+          onChange={(e) => {
+            const v = Number(e.target.value);
+            setFx(v);
+            setVolume(v / 100);
+          }}
+          onPointerUp={() => play("win")}
+        />
+      </label>
+      <label className="block text-sm">
+        <span className={label}>Cabin ambience {amb}%</span>
+        <input
+          type="range"
+          min={0}
+          max={100}
+          value={amb}
+          className="mt-1 w-full accent-cc-aqua"
+          onChange={(e) => {
+            const v = Number(e.target.value);
+            setAmb(v);
+            setAmbienceVolume(v / 100);
+          }}
+        />
+      </label>
+      <p className="text-xs text-cc-muted">Turn the ambience on with the snowflake button at the top.</p>
+    </Card>
   );
 }
