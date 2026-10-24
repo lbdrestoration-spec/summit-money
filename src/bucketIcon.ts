@@ -15,7 +15,12 @@ const RULES: [RegExp, string][] = [
 /** A friendly icon picked from the bucket's name. Display only, never saved. */
 export const bucketIcon = (name: string) => RULES.find(([r]) => r.test(name))?.[1] ?? "🌲";
 
-const PHOTOS: Record<string, string> = { "🛻": "/art/goal-truck.webp", "🏠": "/art/goal-cabin.webp", "🛟": "/art/goal-lantern.webp" };
+const PHOTOS: Record<string, string> = { "🛻": "/art/goal-truck.webp", "🏠": "/art/goal-cabin.webp", "🛟": "/art/goal-lantern.webp",
+  "🎿": "/art/goal-ski.webp",
+  "✈️": "/art/goal-trip.webp",
+  "🎁": "/art/goal-gift.webp",
+  "💻": "/art/goal-tech.webp",
+};
 const SPARE = ["/art/lake.webp", "/art/road.webp", "/art/gondola.webp", "/art/ridge.webp"];
 /** A photo that suits the bucket; others rotate through the Montana scenes. */
 export const bucketPhoto = (name: string, i: number) => PHOTOS[bucketIcon(name)] ?? SPARE[i % SPARE.length];
