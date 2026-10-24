@@ -7,6 +7,7 @@ import { Button, Card, Empty, Heading, PhotoHeader, input, label } from "../ui";
 import { events, toIcs } from "../ics";
 import { History } from "./History";
 import { Recap } from "./Recap";
+import { YearReview } from "./YearReview";
 import { Afford } from "./Afford";
 import { BillsYear } from "./BillsYear";
 import { TaxSetAside } from "./TaxSetAside";
@@ -187,6 +188,7 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
           <li>Poker School: practice calling the winner of a showdown</li>
           <li>Avalanche: a snow-tile cash-out game in the Casino</li>
           <li>The + button offers your usual spends and saves in one tap</li>
+          <li>Year so far: best month, top category, and a share picture</li>
           <li>Home photo turns to a snowstorm when it's snowing in Whitefish</li>
           <li>Days on snow: count your rides and see the cost per day</li>
           <li>Bills per year, with what dropping one would free up</li>
@@ -194,6 +196,7 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
         </ul>
       </Card>
       <Recap state={state} />
+      <YearReview state={state} />
       <Afford state={state} />
       <BillsYear state={state} />
       <History state={state} />
