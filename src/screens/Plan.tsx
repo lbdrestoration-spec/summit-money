@@ -116,6 +116,9 @@ const NEWS: string[] = [
   "Days on snow: count your rides and see the cost per day",
   "Bills per year, with what dropping one would free up",
   "Tax set-aside estimate for side income, one tap into a Tax bucket",
+  "Casino: games come first, and it remembers your last game",
+  "New photos for investing, fun and wedding goals",
+  "Next move: one plain nudge on Home (bill due, behind pace, log, save)",
 ];
 const NEWS_SHOWN = 8;
 

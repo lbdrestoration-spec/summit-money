@@ -39,7 +39,22 @@ const games = [
 type Game = (typeof games)[number]["id"];
 
 export function Casino({ state, actions, active }: { state: State; actions: Actions; active: boolean }) {
-  const [game, setGame] = useState<Game>("blackjack");
+  const [game, setGameState] = useState<Game>(() => {
+    try {
+      const saved = localStorage.getItem("summit-money:lastgame");
+      return games.some((g) => g.id === saved) ? (saved as Game) : "blackjack";
+    } catch {
+      return "blackjack";
+    }
+  });
+  const setGame = (g: Game) => {
+    setGameState(g);
+    try {
+      localStorage.setItem("summit-money:lastgame", g);
+    } catch {
+      /* ignore */
+    }
+  };
   // Game results since you opened the app. Chips you earn from the money habits don't count here.
   const totalEarned = state.chipLog.reduce((a, e) => a + e.amount, 0);
   const sessionStart = useRef({ held: state.chips + state.tableStack, earned: totalEarned, shop: state.shop.spent });
@@ -119,10 +134,6 @@ export function Casino({ state, actions, active }: { state: State; actions: Acti
         </Card>
       )}
 
-      <Lobby state={state} actions={actions} />
-      <ScratchCard state={state} actions={actions} />
-      <Trivia state={state} actions={actions} />
-
       <div className="grid grid-cols-4 gap-1.5">
         {games.map((g) => (
           <button
@@ -151,6 +162,10 @@ export function Casino({ state, actions, active }: { state: State; actions: Acti
         {game === "run" && active && <GondolaRun state={state} actions={actions} />}
         {game === "poker" && <Poker chips={state.chips} tableStack={state.tableStack} adjust={actions.adjustChips} setTableStack={actions.setTableStack} />}
       </Card>
+
+      <Lobby state={state} actions={actions} />
+      <ScratchCard state={state} actions={actions} />
+      <Trivia state={state} actions={actions} />
 
       <Shop state={state} actions={actions} />
 

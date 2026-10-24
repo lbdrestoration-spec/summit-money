@@ -20,6 +20,9 @@ const PHOTOS: Record<string, string> = { "🛻": "/art/goal-truck.webp", "🏠":
   "✈️": "/art/goal-trip.webp",
   "🎁": "/art/goal-gift.webp",
   "💻": "/art/goal-tech.webp",
+  "📈": "/art/goal-invest.webp",
+  "🎉": "/art/goal-fun.webp",
+  "💍": "/art/goal-ring.webp",
 };
 const SPARE = ["/art/lake.webp", "/art/road.webp", "/art/gondola.webp", "/art/ridge.webp"];
 /** A photo that suits the bucket; others rotate through the Montana scenes. */

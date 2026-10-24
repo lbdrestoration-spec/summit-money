@@ -15,6 +15,7 @@ import { Interest } from "./Interest";
 import { TodayStrip } from "./TodayStrip";
 import { Local } from "./Local";
 import { readSnowing } from "../sky";
+import { NextMove } from "./NextMove";
 import { SnowDays } from "./SnowDays";
 import { TripReady } from "./TripReady";
 import { Prep } from "./Prep";
@@ -83,6 +84,7 @@ export const HOME_SECTIONS: { id: string; label: string }[] = [
   { id: "urge", label: "Urge toolkit" },
   { id: "prep", label: "Board prep" },
   { id: "snowdays", label: "Days on snow" },
+  { id: "nextmove", label: "Next move" },
   { id: "tripready", label: "Trip readiness" },
   { id: "mountain", label: "Whitefish Mountain" },
   { id: "local", label: "Whitefish list" },
@@ -105,7 +107,7 @@ function skyFor(hour: number, storm = false): { id: string; src: string; alt: st
   return { id: "night", video: "/art/hero-night-loop.mp4", src: "/art/hero-night.webp", alt: "Starry night over snowy pines near Whitefish, Montana" };
 }
 
-export function Home({ state, actions, onCasino, onPlan }: { state: State; actions: Actions; onCasino: () => void; onPlan: () => void }) {
+export function Home({ state, actions, onCasino, onPlan, onTab }: { state: State; actions: Actions; onCasino: () => void; onPlan: () => void; onTab: (t: "spend" | "goals" | "plan" | "week") => void }) {
   const on = (id: string) => !state.hidden.includes(id);
   const sky = skyFor(new Date().getHours(), readSnowing());
   const [shareNote, setShareNote] = useState("");
@@ -180,6 +182,7 @@ export function Home({ state, actions, onCasino, onPlan }: { state: State; actio
       </nav>
 
       <TodayStrip state={state} onCasino={onCasino} />
+      {on("nextmove") && <NextMove state={state} go={onTab} />}
 
       {on("weeknudge") && <WeekNudge state={state} actions={actions} />}
 
