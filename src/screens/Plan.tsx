@@ -184,6 +184,7 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
           <li>Plan tab has its own cabin-window video</li>
           <li>Snow Slots and a free daily scratch card in the Casino</li>
           <li>Poker School: practice calling the winner of a showdown</li>
+          <li>Home photo turns to a snowstorm when it's snowing in Whitefish</li>
           <li>Days on snow: count your rides and see the cost per day</li>
           <li>Bills per year, with what dropping one would free up</li>
         </ul>

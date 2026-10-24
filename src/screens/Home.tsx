@@ -14,6 +14,7 @@ import { Mountain } from "./Mountain";
 import { Interest } from "./Interest";
 import { TodayStrip } from "./TodayStrip";
 import { Local } from "./Local";
+import { readSnowing } from "../sky";
 import { SnowDays } from "./SnowDays";
 import { Prep } from "./Prep";
 import { Weather } from "./Weather";
@@ -94,7 +95,8 @@ const JUMPS = [
 ];
 
 /** The hero photo follows the clock: dawn, day, golden hour, night. */
-function skyFor(hour: number): { id: string; src: string; alt: string; video?: string } {
+function skyFor(hour: number, storm = false): { id: string; src: string; alt: string; video?: string } {
+  if (storm && hour >= 5 && hour < 20) return { id: "storm", video: "/art/hero-storm-loop.mp4", src: "/art/hero-storm.webp", alt: "Heavy snowfall over the pine forest near Whitefish, Montana" };
   if (hour >= 5 && hour < 9) return { id: "dawn", video: "/art/hero-dawn-loop.mp4", src: "/art/hero-dawn.webp", alt: "Dawn alpenglow over snowy pines near Whitefish, Montana" };
   if (hour >= 9 && hour < 15) return { id: "day", video: "/art/hero-loop.mp4", src: "/art/hero.webp", alt: "Snow-covered pine forest below a pink alpenglow mountain near Whitefish, Montana" };
   if (hour >= 15 && hour < 20) return { id: "gold", video: "/art/hero-gold-loop.mp4", src: "/art/hero-gold.webp", alt: "Golden hour light through snowy pines near Whitefish, Montana" };
@@ -103,7 +105,7 @@ function skyFor(hour: number): { id: string; src: string; alt: string; video?: s
 
 export function Home({ state, actions, onCasino, onPlan }: { state: State; actions: Actions; onCasino: () => void; onPlan: () => void }) {
   const on = (id: string) => !state.hidden.includes(id);
-  const sky = skyFor(new Date().getHours());
+  const sky = skyFor(new Date().getHours(), readSnowing());
   const [shareNote, setShareNote] = useState("");
   const m = monthStats(state);
   const series = savingsSeries(state);
