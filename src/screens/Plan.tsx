@@ -12,6 +12,7 @@ import { YearReview } from "./YearReview";
 import { RideDays } from "./RideDays";
 import { Windfall } from "./Windfall";
 import { Weekday } from "./Weekday";
+import { Records } from "./Records";
 import { Afford } from "./Afford";
 import { BillsYear } from "./BillsYear";
 import { RecurringCard } from "./RecurringCard";
@@ -131,6 +132,7 @@ const NEWS: string[] = [
   "Windfall split: a lump sum fills your goals in proportion, one tap to apply",
   "New casino game: Powder Drop, a ten-row peg board with three risk levels",
   "Spending by weekday: see which day of the week costs you most",
+  "Personal bests: best saving week, biggest deposit, longest log streak",
 ];
 const NEWS_SHOWN = 8;
 
@@ -226,6 +228,7 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
         </button>
       </Card>
       <Recap state={state} />
+      <Records state={state} />
       <YearReview state={state} />
       <Afford state={state} />
       <Windfall state={state} actions={actions} />
