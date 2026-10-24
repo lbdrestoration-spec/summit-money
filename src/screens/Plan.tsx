@@ -134,6 +134,7 @@ const NEWS: string[] = [
   "Spending by weekday: see which day of the week costs you most",
   "Personal bests: best saving week, biggest deposit, longest log streak",
   "New casino game: Summit Wheel, 24 slots and one big 8x",
+  "Tip for today: one saving habit a day on Home",
 ];
 const NEWS_SHOWN = 8;
 

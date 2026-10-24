@@ -16,6 +16,7 @@ import { TodayStrip } from "./TodayStrip";
 import { Local } from "./Local";
 import { readSnowing } from "../sky";
 import { NextMove } from "./NextMove";
+import { Tip } from "./Tip";
 import { SnowDays } from "./SnowDays";
 import { TripReady } from "./TripReady";
 import { Prep } from "./Prep";
@@ -85,6 +86,7 @@ export const HOME_SECTIONS: { id: string; label: string }[] = [
   { id: "prep", label: "Board prep" },
   { id: "snowdays", label: "Days on snow" },
   { id: "nextmove", label: "Next move" },
+  { id: "tip", label: "Tip for today" },
   { id: "tripready", label: "Trip readiness" },
   { id: "mountain", label: "Whitefish Mountain" },
   { id: "local", label: "Whitefish list" },
@@ -256,6 +258,7 @@ export function Home({ state, actions, onCasino, onPlan, onTab }: { state: State
 
       {on("urge") && <Urge state={state} actions={actions} onCasino={onCasino} />}
 
+      {on("tip") && <Tip />}
       {on("tripready") && <TripReady state={state} />}
       {on("prep") && <Prep state={state} actions={actions} />}
       {on("snowdays") && <SnowDays state={state} actions={actions} />}
