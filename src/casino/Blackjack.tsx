@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { Button, label } from "../ui";
 import { makeShoe, type Card } from "./cards";
 import { CardView } from "./CardView";
+import { advise } from "./strategy";
 import { canSplitPair, dealerPlay, isBlackjack, settle, value } from "./blackjack-logic";
 
 const CHIPS = [10, 50, 100, 500];
@@ -18,6 +19,7 @@ export function Blackjack({ chips, adjust }: { chips: number; adjust: (d: number
   const [dealer, setDealer] = useState<Card[]>([]);
   const [msg, setMsg] = useState("");
   const [net, setNet] = useState(0);
+  const [coach, setCoach] = useState(false);
   /** Insurance chips already paid this round (lost unless the dealer has blackjack). */
   const insRef = useRef(0);
 
@@ -126,6 +128,7 @@ export function Blackjack({ chips, adjust }: { chips: number; adjust: (d: number
   const canDouble = phase === "player" && chips >= (stakes[idx] ?? 0) && cur.length === 2;
   const canSplit = phase === "player" && !split && hands.length === 1 && canSplitPair(cur) && chips >= (stakes[0] ?? 0);
   const onTable = stakes.reduce((a, b) => a + b, 0);
+  const tip = coach && phase === "player" && cur.length > 0 && dealer.length > 0 ? advise(cur, dealer[0].r, canDouble, canSplit) : null;
 
   return (
     <div className="space-y-4">
@@ -163,6 +166,11 @@ export function Blackjack({ chips, adjust }: { chips: number; adjust: (d: number
         </div>
       )}
 
+      {tip && (
+        <div className="rounded-lg border border-cc-aqua/50 p-2 text-xs text-cc-aqua" aria-live="polite">
+          Coach says <span className="font-cc text-base uppercase">{tip.move}</span>. {tip.why}
+        </div>
+      )}
       {phase === "player" && (
         <div className={`grid gap-2 ${canSplit ? "grid-cols-4" : "grid-cols-3"}`}>
           <Button variant="lime" onClick={hit}>
@@ -176,6 +184,12 @@ export function Blackjack({ chips, adjust }: { chips: number; adjust: (d: number
           </Button>
           {canSplit && <Button onClick={doSplit}>Split</Button>}
         </div>
+      )}
+
+      {(phase === "player" || phase === "bet") && (
+        <button className="min-h-11 font-mono text-[10px] uppercase tracking-wider text-cc-aqua" aria-pressed={coach} onClick={() => setCoach(!coach)}>
+          Coach {coach ? "on" : "off"}
+        </button>
       )}
 
       {phase === "insure" && (

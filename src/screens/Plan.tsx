@@ -122,6 +122,7 @@ const NEWS: string[] = [
   "Next move: one plain nudge on Home (bill due, behind pace, log, save)",
   "Spots monthly charges hiding in your spending and adds them as bills",
   "Spend notes suggest your recent ones so repeats match",
+  "Blackjack Coach: turn it on and it names the best move and why",
 ];
 const NEWS_SHOWN = 8;
 
