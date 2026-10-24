@@ -52,7 +52,7 @@ export function Goals({ state, actions }: { state: State; actions: Actions }) {
   return (
     <div className="space-y-4">
       <RankCard state={state} />
-      <PhotoHeader src="/art/tab-goals.webp" title="Goals" sub="Every bucket, one summit" />
+      <PhotoHeader src="/art/tab-goals.webp" video="/art/tab-goals-loop.mp4" title="Goals" sub="Every bucket, one summit" />
       {goals.length === 0 && <Empty>No goals yet. On the Plan tab, add a savings bucket with a target amount and it shows up here.</Empty>}
       {goals.map((g, gi) => {
         const saved = bucketSaved(g);
