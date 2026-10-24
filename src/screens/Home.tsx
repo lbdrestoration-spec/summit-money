@@ -187,7 +187,7 @@ export function Home({ state, actions, onCasino, onPlan }: { state: State; actio
 
       {on("paysplit") && <PaydaySplit state={state} actions={actions} />}
 
-      {on("duesoon") && <DueSoon state={state} />}
+      {on("duesoon") && <DueSoon state={state} actions={actions} />}
 
       <div id="h-goals" className="scroll-mt-4" />
       <DeadlineCards state={state} />

@@ -92,6 +92,8 @@ export type State = {
   debts: Debt[];
   /** Home sections the user switched off */
   hidden: string[];
+  /** Bills marked paid, keyed by name and due date */
+  billsPaid: string[];
 };
 
 export const DEFAULT_CATEGORIES = ["Food", "Gas", "Fun", "Business", "Shopping", "Other"];
@@ -124,6 +126,7 @@ export const emptyState = (): State => ({
   apy: 4,
   debts: [],
   hidden: [],
+  billsPaid: [],
   challenge: [],
   challengeStep: 1,
   roundMoved: 0,

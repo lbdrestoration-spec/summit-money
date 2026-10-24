@@ -124,7 +124,7 @@ export function Runway({ state }: { state: State }) {
 }
 
 /** Bills landing in the next few days. */
-export function DueSoon({ state }: { state: State }) {
+export function DueSoon({ state, actions }: { state: State; actions: Actions }) {
   const now = today();
   const due = billsBetween(state.bills, now, addDays(now, 4));
   if (!due.length) return null;
@@ -133,12 +133,24 @@ export function DueSoon({ state }: { state: State }) {
       <Heading tone="pink">Bills due soon</Heading>
       {due.map((b, i) => {
         const days = Math.round((parse(b.date).getTime() - now.getTime()) / 86400000);
+        const key = `${b.name}:${b.date}`;
+        const paid = state.billsPaid.includes(key);
         return (
-          <div key={`${b.name}-${i}`} className="flex items-center justify-between text-sm">
-            <span>
+          <div key={`${b.name}-${i}`} className="flex items-center justify-between gap-2 text-sm">
+            <span className={paid ? "text-cc-muted line-through" : ""}>
               {b.name} <span className="text-cc-muted">· {days <= 0 ? "today" : days === 1 ? "tomorrow" : `in ${days} days`}</span>
             </span>
-            <span className="font-cc text-xl text-cc-pink">{money(b.amount)}</span>
+            <span className="flex items-center gap-2">
+              <span className={`font-cc text-xl ${paid ? "text-cc-muted" : "text-cc-pink"}`}>{money(b.amount)}</span>
+              <button
+                aria-pressed={paid}
+                aria-label={`${paid ? "Unmark" : "Mark"} ${b.name} paid`}
+                onClick={() => actions.toggleBillPaid(key)}
+                className={`min-h-11 min-w-11 rounded-lg border px-2 font-mono text-[10px] uppercase ${paid ? "border-cc-lime/60 text-cc-lime" : "border-cc-line text-cc-muted"}`}
+              >
+                {paid ? "✓ Paid" : "Paid?"}
+              </button>
+            </span>
           </div>
         );
       })}
