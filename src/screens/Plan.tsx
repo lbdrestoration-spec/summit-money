@@ -9,6 +9,7 @@ import { History } from "./History";
 import { Recap } from "./Recap";
 import { Afford } from "./Afford";
 import { BillsYear } from "./BillsYear";
+import { TaxSetAside } from "./TaxSetAside";
 import { Debts } from "./Debts";
 import { ambienceVolume, setAmbienceVolume } from "../ambience";
 import { getVolume, play, setVolume } from "../sound";
@@ -187,6 +188,7 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
           <li>Home photo turns to a snowstorm when it's snowing in Whitefish</li>
           <li>Days on snow: count your rides and see the cost per day</li>
           <li>Bills per year, with what dropping one would free up</li>
+          <li>Tax set-aside estimate for side income, one tap into a Tax bucket</li>
         </ul>
       </Card>
       <Recap state={state} />
@@ -223,6 +225,8 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
           ))}
         </div>
       </Card>
+
+      <TaxSetAside state={state} actions={actions} />
 
       <Card tone="pink">
         <div className="flex items-end justify-between">

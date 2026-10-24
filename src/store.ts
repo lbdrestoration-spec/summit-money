@@ -181,6 +181,7 @@ export function useStore() {
     removeDebt: (id: string) => update((s) => ({ ...s, debts: s.debts.filter((d) => d.id !== id) })),
     toggleHidden: (id: string) => update((s) => ({ ...s, hidden: s.hidden.includes(id) ? s.hidden.filter((x) => x !== id) : [...s.hidden, id] })),
     toggleBillPaid: (key: string) => update((s) => ({ ...s, billsPaid: s.billsPaid.includes(key) ? s.billsPaid.filter((x) => x !== key) : [...s.billsPaid, key].slice(-120) })),
+    setTaxRate: (n: number) => update((s) => ({ ...s, taxRate: Number.isFinite(n) ? Math.max(0, Math.min(60, n)) : s.taxRate })),
     toggleRide: (date: string) => update((s) => ({ ...s, rides: s.rides.includes(date) ? s.rides.filter((x) => x !== date) : [...s.rides, date].slice(-400) })),
     prepDone: (date: string) => update((s) => (s.prepDays.includes(date) ? s : { ...s, prepDays: [...s.prepDays, date] })),
     /** 52-week challenge: week n deposits n x step into a bucket. Undo removes that deposit again. */
