@@ -4,6 +4,7 @@ import { buzz } from "../haptic";
 import type { Actions } from "../store";
 import type { State } from "../types";
 import { bucketIcon } from "../bucketIcon";
+import { usualSaves, usualSpends } from "../usual";
 import { Button, input, label } from "../ui";
 
 /** Floating + button: log a spend, or put money into savings, from any screen in two taps. */
@@ -19,6 +20,8 @@ export function QuickAdd({ state, actions, launch, onLaunched }: { state: State;
   const targetName = state.buckets.find((b) => b.id === target)?.name ?? "";
   const when = iso(yesterday ? addDays(today(), -1) : today());
   const valid = Number(amount) > 0 && (mode === "spend" || !!target);
+  const usualS = usualSpends(state, iso(today()));
+  const usualB = usualSaves(state, iso(today()));
 
   useEffect(() => {
     if (!launch) return;
@@ -87,6 +90,40 @@ export function QuickAdd({ state, actions, launch, onLaunched }: { state: State;
               </button>
             </div>
             <input ref={ref} className={`${input} font-cc text-4xl`} inputMode="decimal" placeholder="$0" value={amount} onChange={(e) => setAmount(e.target.value)} aria-label="Quick amount" />
+            {mode === "spend" && usualS.length > 0 && (
+              <div className="flex flex-wrap gap-2" role="group" aria-label="Your usual spends">
+                {usualS.map((u) => (
+                  <button
+                    type="button"
+                    key={`${u.category}|${u.amount}`}
+                    onClick={() => {
+                      setAmount(String(u.amount));
+                      setCategory(u.category);
+                    }}
+                    className="min-h-10 rounded-full border border-cc-orange/60 px-3 text-sm text-cc-orange"
+                  >
+                    Usual: {u.category} {money(u.amount, { cents: u.amount % 1 !== 0 })}
+                  </button>
+                ))}
+              </div>
+            )}
+            {mode === "save" && usualB.length > 0 && (
+              <div className="flex flex-wrap gap-2" role="group" aria-label="Your usual saves">
+                {usualB.map((u) => (
+                  <button
+                    type="button"
+                    key={`${u.bucketId}|${u.amount}`}
+                    onClick={() => {
+                      setAmount(String(u.amount));
+                      setBucketId(u.bucketId);
+                    }}
+                    className="min-h-10 rounded-full border border-cc-lime/60 px-3 text-sm text-cc-lime"
+                  >
+                    Usual: {u.bucketName} {money(u.amount, { cents: u.amount % 1 !== 0 })}
+                  </button>
+                ))}
+              </div>
+            )}
             <div className="flex gap-2" role="group" aria-label="Which day">
               {[false, true].map((y) => (
                 <button type="button" key={String(y)} onClick={() => setYesterday(y)} aria-pressed={yesterday === y} className={`min-h-10 flex-1 rounded-full border px-3 text-sm ${yesterday === y ? "border-cc-aqua bg-cc-aqua/15 text-cc-aqua" : "border-cc-line text-cc-muted"}`}>
