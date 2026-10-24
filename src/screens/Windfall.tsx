@@ -12,7 +12,7 @@ export function Windfall({ state, actions }: { state: State; actions: Actions })
   const amount = Number(raw);
   const { slices, left } = splitWindfall(state, amount);
   return (
-    <Card tone="lime" className="space-y-3">
+    <Card tone="lime" className="space-y-3" photo="/art/windfall.webp">
       <Heading tone="lime">Windfall split</Heading>
       <label className="block space-y-1">
         <span className={label}>Lump sum (refund, gift, bonus)</span>

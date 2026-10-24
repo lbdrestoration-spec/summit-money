@@ -10,7 +10,7 @@ export function Records({ state }: { state: State }) {
   const r = records(state);
   if (!r.bestWeek && r.longestStreak === 0) return null;
   return (
-    <Card tone="gold" className="space-y-3">
+    <Card tone="gold" className="space-y-3" photo="/art/bests.webp">
       <Heading tone="gold">Personal bests</Heading>
       <div className="grid grid-cols-2 gap-3">
         {r.bestWeek && (
