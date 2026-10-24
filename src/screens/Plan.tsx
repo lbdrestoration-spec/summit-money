@@ -133,6 +133,7 @@ const NEWS: string[] = [
   "New casino game: Powder Drop, a ten-row peg board with three risk levels",
   "Spending by weekday: see which day of the week costs you most",
   "Personal bests: best saving week, biggest deposit, longest log streak",
+  "New casino game: Summit Wheel, 24 slots and one big 8x",
 ];
 const NEWS_SHOWN = 8;
 

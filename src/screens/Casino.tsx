@@ -10,6 +10,7 @@ import { Dice } from "../casino/Dice";
 import { Baccarat } from "../casino/Baccarat";
 import { Keno } from "../casino/Keno";
 import { Plinko } from "../casino/Plinko";
+import { SummitWheel } from "../casino/SummitWheel";
 import { ScratchCard } from "../casino/ScratchCard";
 import { Lobby } from "../casino/Lobby";
 import { find as findItem } from "../casino/shop";
@@ -37,6 +38,7 @@ const games = [
   { id: "bacc", name: "Baccarat", icon: "🂡" },
   { id: "keno", name: "Keno", icon: "🔢" },
   { id: "plinko", name: "Drop", icon: "⚪" },
+  { id: "wheel", name: "Wheel", icon: "🎡" },
   { id: "school", name: "School", icon: "🎓" },
   { id: "run", name: "Run", icon: "⛷" },
 ] as const;
@@ -176,6 +178,7 @@ export function Casino({ state, actions, active }: { state: State; actions: Acti
         {game === "mines" && <Mines chips={state.chips} adjust={actions.adjustChips} />}
         {game === "dice" && <Dice chips={state.chips} adjust={actions.adjustChips} />}
         {game === "bacc" && <Baccarat chips={state.chips} adjust={actions.adjustChips} />}
+        {game === "wheel" && <SummitWheel chips={state.chips} adjust={actions.adjustChips} />}
         {game === "plinko" && <Plinko chips={state.chips} adjust={actions.adjustChips} />}
         {game === "keno" && <Keno chips={state.chips} adjust={actions.adjustChips} />}
         {game === "school" && <PokerSchool />}
