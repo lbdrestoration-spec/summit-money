@@ -5,6 +5,7 @@ import type { Bucket, State } from "../types";
 import { bucketIcon } from "../bucketIcon";
 import { Button, Card, Empty, Heading, PhotoHeader, input, label } from "../ui";
 import { events, toIcs } from "../ics";
+import { History } from "./History";
 import { Debts } from "./Debts";
 import { ambienceVolume, setAmbienceVolume } from "../ambience";
 import { getVolume, play, setVolume } from "../sound";
@@ -173,6 +174,7 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
           <li>Whitefish list, today strip, customize which Home cards show</li>
         </ul>
       </Card>
+      <History state={state} />
       <Debts state={state} actions={actions} />
       <SoundCard />
       <Card tone="lime">
