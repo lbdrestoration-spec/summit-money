@@ -14,6 +14,7 @@ import { Mountain } from "./Mountain";
 import { Interest } from "./Interest";
 import { TodayStrip } from "./TodayStrip";
 import { Local } from "./Local";
+import { SnowDays } from "./SnowDays";
 import { Prep } from "./Prep";
 import { Weather } from "./Weather";
 import { DeadlineCards, FridayPayCard } from "./Deadlines";
@@ -79,6 +80,7 @@ export const HOME_SECTIONS: { id: string; label: string }[] = [
   { id: "runs", label: "Daily runs" },
   { id: "urge", label: "Urge toolkit" },
   { id: "prep", label: "Board prep" },
+  { id: "snowdays", label: "Days on snow" },
   { id: "mountain", label: "Whitefish Mountain" },
   { id: "local", label: "Whitefish list" },
   { id: "weather", label: "Whitefish weather" },
@@ -248,6 +250,7 @@ export function Home({ state, actions, onCasino, onPlan }: { state: State; actio
       {on("urge") && <Urge state={state} actions={actions} onCasino={onCasino} />}
 
       {on("prep") && <Prep state={state} actions={actions} />}
+      {on("snowdays") && <SnowDays state={state} actions={actions} />}
       {on("mountain") && <Mountain />}
       {on("local") && <Local state={state} actions={actions} />}
       {on("weather") && <Weather />}

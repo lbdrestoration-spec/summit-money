@@ -94,6 +94,8 @@ export type State = {
   hidden: string[];
   /** Bills marked paid, keyed by name and due date */
   billsPaid: string[];
+  /** Days (ISO) spent on snow */
+  rides: string[];
 };
 
 export const DEFAULT_CATEGORIES = ["Food", "Gas", "Fun", "Business", "Shopping", "Other"];
@@ -127,6 +129,7 @@ export const emptyState = (): State => ({
   debts: [],
   hidden: [],
   billsPaid: [],
+  rides: [],
   challenge: [],
   challengeStep: 1,
   roundMoved: 0,
