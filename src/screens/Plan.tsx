@@ -127,7 +127,7 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
 
   return (
     <div className="space-y-4">
-      <PhotoHeader src="/art/lake.webp" title="My plan" sub="Bills, buckets, backup" />
+      <PhotoHeader src="/art/tab-plan.webp" title="My plan" sub="Bills, buckets, backup" />
       <Card tone="aqua" className="space-y-2">
         <Heading>What's new</Heading>
         <ul className="space-y-1 text-sm text-cc-snow/90">

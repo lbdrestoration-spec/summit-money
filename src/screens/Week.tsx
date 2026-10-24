@@ -73,7 +73,7 @@ export function Week({ state, actions }: { state: State; actions: Actions }) {
 
   return (
     <div className="space-y-4">
-      <PhotoHeader src="/art/road.webp" title="This week" sub="Your weekly rundown" />
+      <PhotoHeader src="/art/tab-week.webp" title="This week" sub="Your weekly rundown" />
       <Card tone="aqua">
         <Heading>Weekly rundown</Heading>
         <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-cc-muted">

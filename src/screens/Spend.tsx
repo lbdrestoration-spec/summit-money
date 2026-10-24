@@ -23,7 +23,7 @@ export function Spend({ state, actions }: { state: State; actions: Actions }) {
 
   return (
     <div className="space-y-4">
-      <PhotoHeader src="/art/gondola.webp" title="Log it" sub="Every dollar has a place" />
+      <PhotoHeader src="/art/tab-spend.webp" title="Log it" sub="Every dollar has a place" />
       <Card tone="orange">
         <Heading tone="orange">Log spending</Heading>
         <form onSubmit={submit} className="mt-3 space-y-3">

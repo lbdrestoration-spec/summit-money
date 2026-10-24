@@ -3,7 +3,7 @@ import { addDays, bucketSaved, daysBetween, iso, money, parse, today } from "../
 import { bucketIcon, bucketPhoto } from "../bucketIcon";
 import type { Actions } from "../store";
 import type { Bucket, State } from "../types";
-import { Button, Card, Empty, Heading, Progress, input, label } from "../ui";
+import { Button, Card, Empty, PhotoHeader, Progress, input, label } from "../ui";
 import { BudgetCards, Checklist, Journal, RankCard, TrophyCase } from "./Trail";
 
 /** Balance over time for one goal, plus its latest deposits. */
@@ -52,7 +52,7 @@ export function Goals({ state, actions }: { state: State; actions: Actions }) {
   return (
     <div className="space-y-4">
       <RankCard state={state} />
-      <Heading tone="gold">Goals</Heading>
+      <PhotoHeader src="/art/tab-goals.webp" title="Goals" sub="Every bucket, one summit" />
       {goals.length === 0 && <Empty>No goals yet. On the Plan tab, add a savings bucket with a target amount and it shows up here.</Empty>}
       {goals.map((g, gi) => {
         const saved = bucketSaved(g);

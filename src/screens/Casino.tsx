@@ -8,7 +8,7 @@ import { Roulette } from "../casino/Roulette";
 import { DAILY_LOG, earnedThisWeek, PER_DOLLAR, WEEKLY_CAP } from "../chips";
 import type { Actions } from "../store";
 import type { State } from "../types";
-import { Card, Empty, Heading, Progress, label } from "../ui";
+import { Card, Empty, Heading, PhotoHeader, Progress, label } from "../ui";
 
 const games = [
   { id: "blackjack", name: "Blackjack", icon: "♠" },
@@ -47,6 +47,7 @@ export function Casino({ state, actions }: { state: State; actions: Actions }) {
         if ((e.target as HTMLElement).closest("button") && !(e.target as HTMLElement).closest("[data-mute]")) play("tick");
       }}
     >
+      <PhotoHeader src="/art/tab-casino.webp" title="Casino" sub="Play money only" />
       <Card tone="gold" className="space-y-3" photo="/art/lodge.webp">
         <div className="flex items-end justify-between">
           <div>
