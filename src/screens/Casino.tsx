@@ -13,6 +13,8 @@ import { ScratchCard } from "../casino/ScratchCard";
 import { Lobby } from "../casino/Lobby";
 import { find as findItem } from "../casino/shop";
 import { Shop } from "../casino/Shop";
+import { CasinoStats } from "../casino/CasinoStats";
+import { noteChange, noteVisit, readStats, saveStats, type CStats } from "../casino/cstats";
 import { Trivia } from "../casino/Trivia";
 import { VideoPoker } from "../casino/VideoPoker";
 import { Poker } from "../casino/Poker";
@@ -61,9 +63,17 @@ export function Casino({ state, actions, active }: { state: State; actions: Acti
   const inPlay = state.chips + state.tableStack;
   // chips spent in the shop are not game losses
   const sessionNet = inPlay - sessionStart.current.held - (totalEarned - sessionStart.current.earned) + (state.shop.spent - sessionStart.current.shop);
+  useEffect(() => {
+    setStats((st) => {
+      const n = noteVisit(st, sessionNet);
+      if (n !== st) saveStats(n);
+      return n;
+    });
+  }, [sessionNet]);
   const earned = earnedThisWeek(state);
   const broke = state.chips === 0 && state.tableStack === 0;
   const [muted, setMute] = useState(isMuted());
+  const [stats, setStats] = useState<CStats>(readStats);
   useEffect(() => {
     document.documentElement.style.setProperty("--card-hue", `${findItem("back", state.shop.back).hue}deg`);
   }, [state.shop.back]);
@@ -74,7 +84,14 @@ export function Casino({ state, actions, active }: { state: State; actions: Acti
     if (state.chipLog.length === p.logged && inPlay !== p.held) {
       const d = inPlay - p.held;
       // bets leave the wallet the moment they are placed, so only payouts make a sound
-      if (d > 0) play(d >= 500 ? "big" : "win");
+      if (d > 0) {
+        play(d >= 500 ? "big" : "win");
+        setStats((st) => {
+          const n = noteChange(st, d);
+          saveStats(n);
+          return n;
+        });
+      }
     }
     prev.current = { held: inPlay, logged: state.chipLog.length };
   }, [inPlay, state.chipLog.length]);
@@ -168,6 +185,8 @@ export function Casino({ state, actions, active }: { state: State; actions: Acti
       <Trivia state={state} actions={actions} />
 
       <Shop state={state} actions={actions} />
+
+      <CasinoStats stats={stats} />
 
       <Card>
         <Heading tone="lime">How you earned chips</Heading>

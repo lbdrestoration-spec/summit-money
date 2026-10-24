@@ -123,6 +123,7 @@ const NEWS: string[] = [
   "Spots monthly charges hiding in your spending and adds them as bills",
   "Spend notes suggest your recent ones so repeats match",
   "Blackjack Coach: turn it on and it names the best move and why",
+  "Casino \"Your highs\": biggest payout, big wins and best visit",
 ];
 const NEWS_SHOWN = 8;
 
