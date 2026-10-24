@@ -11,6 +11,7 @@ import { Countdowns, DueSoon, BillsCover, BiggestLeak, WeekRing, Challenge, Save
 import { RunsCard } from "./Trail";
 import { Urge } from "./Urge";
 import { Mountain } from "./Mountain";
+import { TodayStrip } from "./TodayStrip";
 import { Local } from "./Local";
 import { Prep } from "./Prep";
 import { Weather } from "./Weather";
@@ -140,6 +141,8 @@ export function Home({ state, actions, onCasino, onPlan }: { state: State; actio
           </button>
         ))}
       </nav>
+
+      <TodayStrip state={state} onCasino={onCasino} />
 
       <WeekNudge state={state} actions={actions} />
 
