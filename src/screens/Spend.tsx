@@ -53,7 +53,12 @@ export function Spend({ state, actions }: { state: State; actions: Actions }) {
               </button>
             ))}
           </div>
-          <input className={input} placeholder="Note (optional)" value={note} onChange={(e) => setNote(e.target.value)} />
+          <input className={input} placeholder="Note (optional)" value={note} onChange={(e) => setNote(e.target.value)} list="recent-notes" aria-label="Spend note" />
+          <datalist id="recent-notes">
+            {[...new Set(state.spends.slice().reverse().map((x) => x.note.trim()).filter(Boolean))].slice(0, 12).map((n) => (
+              <option key={n} value={n} />
+            ))}
+          </datalist>
           <label className="block space-y-1">
             <span className={label}>Date</span>
             <input className={input} type="date" value={date} onChange={(e) => setDate(e.target.value)} />

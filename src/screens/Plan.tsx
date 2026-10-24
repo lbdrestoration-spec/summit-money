@@ -11,6 +11,7 @@ import { Recap } from "./Recap";
 import { YearReview } from "./YearReview";
 import { Afford } from "./Afford";
 import { BillsYear } from "./BillsYear";
+import { RecurringCard } from "./RecurringCard";
 import { TaxSetAside } from "./TaxSetAside";
 import { Debts } from "./Debts";
 import { ambienceVolume, setAmbienceVolume } from "../ambience";
@@ -119,6 +120,8 @@ const NEWS: string[] = [
   "Casino: games come first, and it remembers your last game",
   "New photos for investing, fun and wedding goals",
   "Next move: one plain nudge on Home (bill due, behind pace, log, save)",
+  "Spots monthly charges hiding in your spending and adds them as bills",
+  "Spend notes suggest your recent ones so repeats match",
 ];
 const NEWS_SHOWN = 8;
 
@@ -217,6 +220,7 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
       <YearReview state={state} />
       <Afford state={state} />
       <BillsYear state={state} />
+      <RecurringCard state={state} actions={actions} />
       <History state={state} />
       <Debts state={state} actions={actions} />
       <SoundCard />
