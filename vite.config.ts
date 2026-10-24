@@ -20,7 +20,8 @@ export default defineConfig({
         orientation: "portrait",
         start_url: "/",
         shortcuts: [
-          { name: "Log spending", short_name: "Spend", url: "/?tab=spend", icons: [{ src: "pwa-192x192.png", sizes: "192x192" }] },
+          { name: "Save money", short_name: "Save", url: "/?action=save", icons: [{ src: "pwa-192x192.png", sizes: "192x192" }] },
+          { name: "Log a spend", short_name: "Spend", url: "/?action=spend", icons: [{ src: "pwa-192x192.png", sizes: "192x192" }] },
           { name: "Casino", short_name: "Casino", url: "/?tab=casino", icons: [{ src: "pwa-192x192.png", sizes: "192x192" }] },
           { name: "Goals", short_name: "Goals", url: "/?tab=goals", icons: [{ src: "pwa-192x192.png", sizes: "192x192" }] },
         ],

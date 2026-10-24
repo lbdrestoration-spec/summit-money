@@ -33,6 +33,11 @@ export default function App() {
     return tabs.some((t) => t.id === q) ? (q as Tab) : "home";
   });
   const [editingPlan, setEditingPlan] = useState(false);
+  /** Home-screen shortcuts: /?action=save or /?action=spend opens the quick sheet. */
+  const [launch, setLaunch] = useState<"save" | "spend" | null>(() => {
+    const a = new URLSearchParams(window.location.search).get("action");
+    return a === "save" || a === "spend" ? a : null;
+  });
 
   const runs = runsToday(state);
   useEffect(() => {
@@ -233,7 +238,7 @@ export default function App() {
         </div>
       </main>
 
-      {tab !== "casino" && tab !== "spend" && <QuickAdd state={state} actions={actions} />}
+      {tab !== "casino" && tab !== "spend" && <QuickAdd state={state} actions={actions} launch={launch} onLaunched={() => setLaunch(null)} />}
 
       <nav
         className="fixed inset-x-0 bottom-0 z-10 border-t border-cc-line bg-cc-deep/95 pb-[env(safe-area-inset-bottom)] backdrop-blur"

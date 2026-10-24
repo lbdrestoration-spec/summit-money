@@ -7,7 +7,7 @@ import { bucketIcon } from "../bucketIcon";
 import { Button, input, label } from "../ui";
 
 /** Floating + button: log a spend, or put money into savings, from any screen in two taps. */
-export function QuickAdd({ state, actions }: { state: State; actions: Actions }) {
+export function QuickAdd({ state, actions, launch, onLaunched }: { state: State; actions: Actions; launch?: "save" | "spend" | null; onLaunched?: () => void }) {
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState("");
   const [mode, setMode] = useState<"spend" | "save">("spend");
@@ -20,6 +20,13 @@ export function QuickAdd({ state, actions }: { state: State; actions: Actions })
   const when = iso(yesterday ? addDays(today(), -1) : today());
   const valid = Number(amount) > 0 && (mode === "spend" || !!target);
 
+  useEffect(() => {
+    if (!launch) return;
+    setMode(launch);
+    setOpen(true);
+    onLaunched?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [launch]);
   useEffect(() => {
     if (open) ref.current?.focus();
   }, [open]);
