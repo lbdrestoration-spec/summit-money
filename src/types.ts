@@ -73,6 +73,8 @@ export type State = {
   challengeStep: number;
   /** Round-up jar chips already moved into savings (the jar itself is derived from spends). */
   roundMoved: number;
+  /** Days (ISO) the snowboard prep circuit was finished */
+  prepDays: string[];
 };
 
 export const DEFAULT_CATEGORIES = ["Food", "Gas", "Fun", "Business", "Shopping", "Other"];
@@ -96,6 +98,7 @@ export const emptyState = (): State => ({
   packed: [],
   catLimits: {},
   questDays: [],
+  prepDays: [],
   challenge: [],
   challengeStep: 1,
   roundMoved: 0,

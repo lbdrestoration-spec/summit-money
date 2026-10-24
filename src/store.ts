@@ -128,6 +128,7 @@ export function useStore() {
     /** Pay the daily-runs bonus once per day */
     claimQuests: (date: string, bonus: number) =>
       update((s) => (s.questDays.includes(date) ? s : grant({ ...s, questDays: [...s.questDays, date] }, bonus, "Finished today's runs"))),
+    prepDone: (date: string) => update((s) => (s.prepDays.includes(date) ? s : { ...s, prepDays: [...s.prepDays, date] })),
     /** 52-week challenge: week n deposits n x step into a bucket. Undo removes that deposit again. */
     challengeMark: (week: number, bucketId: string, date: string) =>
       update((s) => {

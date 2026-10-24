@@ -11,6 +11,7 @@ import { Countdowns, DueSoon, BillsCover, BiggestLeak, WeekRing, Challenge, Save
 import { RunsCard } from "./Trail";
 import { Urge } from "./Urge";
 import { Mountain } from "./Mountain";
+import { Prep } from "./Prep";
 import { Weather } from "./Weather";
 import { DeadlineCards, FridayPayCard } from "./Deadlines";
 
@@ -210,6 +211,7 @@ export function Home({ state, actions, onCasino, onPlan }: { state: State; actio
 
       <Urge state={state} actions={actions} onCasino={onCasino} />
 
+      <Prep state={state} actions={actions} />
       <Mountain />
       <Weather />
 
