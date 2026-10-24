@@ -189,6 +189,7 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
           <li>Avalanche and Powder Dice: two more Casino games</li>
           <li>The + button offers your usual spends and saves in one tap</li>
           <li>Year so far: best month, top category, and a share picture</li>
+          <li>Trip readiness gauge in the last 60 days before the ski trip</li>
           <li>Home photo turns to a snowstorm when it's snowing in Whitefish</li>
           <li>Days on snow: count your rides and see the cost per day</li>
           <li>Bills per year, with what dropping one would free up</li>
