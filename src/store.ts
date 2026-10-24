@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { iso, today } from "./calc";
+import { allDone, CHEST, SEGMENTS } from "./casino/daily";
 import { chipsFor, RUNS_PAID_PER_DAY } from "./casino/run-logic";
 import { DAILY_LOG, grant, isLogged, PER_DOLLAR } from "./chips";
 import { emptyState, type Bill, type Bucket, type Income, type Plan, type Settings, type Spend, type State } from "./types";
@@ -138,6 +139,11 @@ export function useStore() {
         const next = { ...s, runs: { best, day: date, paid: paidToday + (chips > 0 ? 1 : 0) } };
         return chips > 0 ? grant(next, chips, `Gondola Run (${score})`) : next;
       }),
+    /** Daily wheel: one spin per day. The prize is picked by the caller and paid through the weekly cap. */
+    spinDaily: (date: string, prize: number) =>
+      update((s) => (s.daily.wheel === date || !SEGMENTS.includes(prize as never) ? s : grant({ ...s, daily: { ...s.daily, wheel: date } }, prize, "Daily wheel"))),
+    claimChest: (date: string) =>
+      update((s) => (s.daily.chest === date || !allDone(s, date) ? s : grant({ ...s, daily: { ...s.daily, chest: date } }, CHEST, "Daily missions chest"))),
     prepDone: (date: string) => update((s) => (s.prepDays.includes(date) ? s : { ...s, prepDays: [...s.prepDays, date] })),
     /** 52-week challenge: week n deposits n x step into a bucket. Undo removes that deposit again. */
     challengeMark: (week: number, bucketId: string, date: string) =>

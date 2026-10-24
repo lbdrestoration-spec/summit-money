@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { isMuted, play, setMuted } from "../sound";
 import { Blackjack } from "../casino/Blackjack";
 import { GondolaRun } from "../casino/GondolaRun";
+import { Lobby } from "../casino/Lobby";
 import { Poker } from "../casino/Poker";
 import { Roulette } from "../casino/Roulette";
 import { DAILY_LOG, earnedThisWeek, PER_DOLLAR, WEEKLY_CAP } from "../chips";
@@ -92,6 +93,8 @@ export function Casino({ state, actions }: { state: State; actions: Actions }) {
           <p className="mt-1 text-sm text-cc-muted">That's the game. Log your day and put money toward your savings to earn more, then come back.</p>
         </Card>
       )}
+
+      <Lobby state={state} actions={actions} />
 
       <div className="grid grid-cols-4 gap-2">
         {games.map((g) => (

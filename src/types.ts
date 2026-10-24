@@ -77,6 +77,8 @@ export type State = {
   prepDays: string[];
   /** Gondola Run: best score, and how many runs were paid today */
   runs: { best: number; day: string; paid: number };
+  /** Dates (ISO) the daily wheel was spun and the mission chest opened */
+  daily: { wheel: string; chest: string };
 };
 
 export const DEFAULT_CATEGORIES = ["Food", "Gas", "Fun", "Business", "Shopping", "Other"];
@@ -102,6 +104,7 @@ export const emptyState = (): State => ({
   questDays: [],
   prepDays: [],
   runs: { best: 0, day: "", paid: 0 },
+  daily: { wheel: "", chest: "" },
   challenge: [],
   challengeStep: 1,
   roundMoved: 0,
