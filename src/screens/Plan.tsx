@@ -156,7 +156,7 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
           <li>Quick spend: the orange + button on every screen</li>
           <li>Live Whitefish temperature and 5-day snow forecast on Home</li>
           <li>Payday card suggests what to move into each bucket</li>
-          <li>Trail ranks, 16 trophies, daily runs for bonus chips</li>
+          <li>Trail ranks, 20 trophies, daily runs for bonus chips</li>
           <li>Feeling the urge? A 10-minute pause and a kept-in-pocket tally</li>
           <li>Trip budgets for Dec 10 and July, plus a Montana checklist</li>
           <li>What if slider, 14-day timeline, month calendar, runway</li>
@@ -168,6 +168,9 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
           <li>Casino: Gondola Run game, daily wheel, missions and chest</li>
           <li>Poker bots with different styles, live hand name and pot odds</li>
           <li>Sound sliders on this tab</li>
+          <li>Video poker, Hi-Lo, daily trivia, chip shop in the Casino</li>
+          <li>Interest estimate, debt payoff planner, calendar export</li>
+          <li>Whitefish list, today strip, customize which Home cards show</li>
         </ul>
       </Card>
       <Debts state={state} actions={actions} />

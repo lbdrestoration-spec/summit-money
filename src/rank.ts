@@ -86,6 +86,10 @@ export function trophies(s: State): Trophy[] {
     { id: "w4", name: "Month Of Saving", desc: "Save 4 weeks in a row", icon: "📈", earned: savingWeekStreak(s) >= 4 },
     { id: "d10000", name: "Ten Grand", desc: "Save $10,000", icon: "▲", earned: saved >= 10000 },
     { id: "w12", name: "Season Of Saving", desc: "Save 12 weeks in a row", icon: "🌨", earned: savingWeekStreak(s) >= 12 },
+    { id: "run100", name: "Gondola 100", desc: "Score 100 in Gondola Run", icon: "⛷", earned: s.runs.best >= 100 },
+    { id: "prep7", name: "Legs Ready", desc: "Finish board prep 7 days", icon: "🏂", earned: s.prepDays.length >= 7 },
+    { id: "local6", name: "Local", desc: "Tick off 6 Whitefish list items", icon: "🌲", earned: s.local.length >= 6 },
+    { id: "shop1", name: "High Roller Style", desc: "Buy something in the chip shop", icon: "🎴", earned: s.shop.owned.length >= 1 },
     { id: "habit", name: "Steady Saver", desc: "Put money in a bucket 5 times", icon: "⚑", earned: wedIsh },
   ];
 }

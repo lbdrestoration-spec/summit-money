@@ -8,9 +8,14 @@ import { Button, label } from "../ui";
 import { chipsFor, GROUND, H, jump, newRun, PX, RIDER_H, RIDER_W, RUNS_PAID_PER_DAY, score, step, W, type Run } from "./run-logic";
 
 function draw(ctx: CanvasRenderingContext2D, r: Run) {
+  // the sky drifts from day to dusk to night as you ride farther
+  const phase = (r.dist / 4000) % 1;
+  const SKIES: [string, string][] = [["#2a6fb0", "#bfe0f5"], ["#7a4a8a", "#f2a65a"], ["#0a1530", "#2a4a7a"], ["#2b4a78", "#e7a98a"]];
+  const k = Math.floor(phase * SKIES.length);
+  const [top, bot] = SKIES[k];
   const sky = ctx.createLinearGradient(0, 0, 0, H);
-  sky.addColorStop(0, "#16314f");
-  sky.addColorStop(1, "#8fb4d4");
+  sky.addColorStop(0, top);
+  sky.addColorStop(1, bot);
   ctx.fillStyle = sky;
   ctx.fillRect(0, 0, W, H);
   // far ridge scrolls slowly
@@ -38,6 +43,15 @@ function draw(ctx: CanvasRenderingContext2D, r: Run) {
         ctx.lineTo(o.x - 2 + i, top + o.h / 2.2);
         ctx.fill();
       }
+    } else if (o.kind === "rock") {
+      ctx.fillStyle = "#6b7684";
+      ctx.beginPath();
+      ctx.ellipse(o.x + o.w / 2, base - o.h / 2 + 2, o.w / 2 + 1, o.h / 2 + 2, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#8d98a6";
+      ctx.beginPath();
+      ctx.ellipse(o.x + o.w / 2 - 2, base - o.h / 2, o.w / 3, o.h / 3, 0, 0, Math.PI * 2);
+      ctx.fill();
     } else {
       ctx.fillStyle = "#7de3ff";
       ctx.beginPath();
@@ -164,7 +178,7 @@ export function GondolaRun({ state, actions }: { state: State; actions: Actions 
             {phase === "over" ? "Run again" : "Drop in"}
           </Button>
           <p className="text-xs text-cc-muted">
-            Jump the pines, grab the blue flakes. Score ÷ 8 in chips, up to 60. The first {RUNS_PAID_PER_DAY} runs each day pay. {chancesLeft} paid {chancesLeft === 1 ? "run" : "runs"} left today.
+            Jump the pines and rocks, grab the blue flakes. The sky turns to dusk as you go. Score ÷ 8 in chips, up to 60. The first {RUNS_PAID_PER_DAY} runs each day pay. {chancesLeft} paid {chancesLeft === 1 ? "run" : "runs"} left today.
           </p>
         </>
       )}

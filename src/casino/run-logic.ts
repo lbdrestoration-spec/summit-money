@@ -9,7 +9,7 @@ const GRAVITY = 1800;
 const JUMP = 640;
 export const MAX_SPEED = 420;
 
-export type Obstacle = { kind: "tree" | "flake"; x: number; w: number; h: number; y: number; taken?: boolean };
+export type Obstacle = { kind: "tree" | "rock" | "flake"; x: number; w: number; h: number; y: number; taken?: boolean };
 export type Run = {
   y: number; // height above the snow
   vy: number;
@@ -48,8 +48,11 @@ export function step(r: Run, dt: number, rnd: () => number): Run {
   for (const o of n.obs) o.x -= dx;
   n.gap -= dx;
   if (n.gap <= 0) {
-    if (rnd() < 0.72) {
+    const roll = rnd();
+    if (roll < 0.5) {
       n.obs.push({ kind: "tree", x: W + 20, w: 16 + Math.floor(rnd() * 10), h: 28 + Math.floor(rnd() * 20), y: 0 });
+    } else if (roll < 0.72) {
+      n.obs.push({ kind: "rock", x: W + 20, w: 20 + Math.floor(rnd() * 10), h: 14 + Math.floor(rnd() * 6), y: 0 });
     } else {
       const y = 50 + Math.floor(rnd() * 40);
       for (let i = 0; i < 3; i++) n.obs.push({ kind: "flake", x: W + 20 + i * 28, w: 12, h: 12, y });
@@ -59,7 +62,7 @@ export function step(r: Run, dt: number, rnd: () => number): Run {
   for (const o of n.obs) {
     const overlapX = PX + RIDER_W > o.x + 3 && PX < o.x + o.w - 3;
     if (!overlapX) continue;
-    if (o.kind === "tree") {
+    if (o.kind === "tree" || o.kind === "rock") {
       if (n.y < o.h - 6) n.over = true;
     } else if (!o.taken && n.y + RIDER_H > o.y - 6 && n.y < o.y + o.h + 6) {
       o.taken = true;
