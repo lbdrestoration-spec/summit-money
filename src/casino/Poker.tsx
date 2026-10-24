@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Button, label } from "../ui";
 import { CardView, Slot } from "./CardView";
-import { BB, BOT_STACK, N, NAMES, legal, playHuman, startHand, type Hand } from "./poker-engine";
+import { best7, handName } from "./poker-eval";
+import { BB, BOT_STACK, N, NAMES, STYLES, legal, playHuman, startHand, type Hand } from "./poker-engine";
 
 type Table = { button: number; stacks: number[] };
 const BUYINS = [100, 200, 400];
@@ -126,7 +127,7 @@ export function Poker({
               ))}
             </div>
             <div className="mt-1 truncate text-xs">
-              {NAMES[p]}
+              {NAMES[p]} <span className="text-[10px] text-cc-muted">{STYLES[p]?.tag}</span>
               {hand.button === p && <span className="ml-1 rounded bg-cc-gold px-1 text-[9px] font-bold text-cc-night">D</span>}
             </div>
             <div className="font-cc text-lg text-cc-gold">{hand.stacks[p]}</div>
@@ -142,6 +143,14 @@ export function Poker({
           {Array.from({ length: 5 }, (_, i) => (hand.board[i] ? <CardView key={i} card={hand.board[i]} /> : <Slot key={i} />))}
         </div>
         <div className="min-h-8 text-xs text-cc-muted">{hand.log.slice(-3).join(" · ")}</div>
+        {!hand.over && hand.board.length >= 3 && !hand.folded[0] && (
+          <div className="text-xs text-cc-aqua">Your hand: {handName(best7([...hand.hole[0], ...hand.board]))}</div>
+        )}
+        {myTurn && lg.toCall > 0 && (
+          <div className="text-xs text-cc-muted">
+            Call {lg.toCall} to win {lg.pot}. Pot odds {(lg.pot / lg.toCall).toFixed(1)} to 1.
+          </div>
+        )}
       </div>
 
       <div className="rounded-lg border border-cc-line p-3">

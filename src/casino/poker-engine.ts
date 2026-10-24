@@ -7,6 +7,14 @@ export const BB = 10;
 export const MAX_RAISES = 3;
 export const BOT_STACK = 200;
 export const NAMES = ["You", "Hudson", "Aspen", "Vail"];
+/** How each bot plays. need: extra strength wanted to stay in. raiseAt: strength that makes it raise. bluff: chance to raise for free. */
+export type Style = { tag: string; need: number; raiseAt: number; bluff: number; stubborn: number };
+export const STYLES: (Style | null)[] = [
+  null,
+  { tag: "Tight", need: 0.08, raiseAt: 0.82, bluff: 0.02, stubborn: 0.06 },
+  { tag: "Aggressive", need: -0.08, raiseAt: 0.6, bluff: 0.16, stubborn: 0.2 },
+  { tag: "Balanced", need: 0, raiseAt: 0.74, bluff: 0.06, stubborn: 0.12 },
+];
 export type Action = "fold" | "call" | "raise";
 
 export type Result = {
@@ -189,10 +197,11 @@ function botAction(h: Hand, p: number): Action {
   const s = strength(h, p);
   const canRaise = h.raises < MAX_RAISES && h.stacks[p] > toCall;
   const r = Math.random();
-  if (toCall === 0) return canRaise && ((s > 0.62 && r < 0.65) || r < 0.06) ? "raise" : "call";
-  if (s > 0.78 && canRaise && r < 0.5) return "raise";
-  const need = 0.28 + (toCall > BB ? 0.1 : 0) + h.raises * 0.06;
-  if (s < need && r > 0.12) return "fold";
+  const st = STYLES[p] ?? STYLES[3]!;
+  if (toCall === 0) return canRaise && ((s > st.raiseAt - 0.12 && r < 0.65) || r < st.bluff) ? "raise" : "call";
+  if (s > st.raiseAt && canRaise && r < 0.5) return "raise";
+  const need = 0.28 + st.need + (toCall > BB ? 0.1 : 0) + h.raises * 0.06;
+  if (s < need && r > st.stubborn) return "fold";
   return "call";
 }
 
