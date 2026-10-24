@@ -5,6 +5,7 @@ import { GondolaRun } from "../casino/GondolaRun";
 import { HiLo } from "../casino/HiLo";
 import { Slots } from "../casino/Slots";
 import { PokerSchool } from "../casino/PokerSchool";
+import { Mines } from "../casino/Mines";
 import { ScratchCard } from "../casino/ScratchCard";
 import { Lobby } from "../casino/Lobby";
 import { find as findItem } from "../casino/shop";
@@ -25,6 +26,7 @@ const games = [
   { id: "vp", name: "Video", icon: "♥" },
   { id: "hilo", name: "Hi-Lo", icon: "↕" },
   { id: "slots", name: "Slots", icon: "❄" },
+  { id: "mines", name: "Avalanche", icon: "💥" },
   { id: "school", name: "School", icon: "🎓" },
   { id: "run", name: "Run", icon: "⛷" },
 ] as const;
@@ -115,7 +117,7 @@ export function Casino({ state, actions, active }: { state: State; actions: Acti
       <ScratchCard state={state} actions={actions} />
       <Trivia state={state} actions={actions} />
 
-      <div className="grid grid-cols-4 gap-1.5">
+      <div className="grid grid-cols-3 gap-1.5">
         {games.map((g) => (
           <button
             key={g.id}
@@ -135,6 +137,7 @@ export function Casino({ state, actions, active }: { state: State; actions: Acti
         {game === "vp" && <VideoPoker chips={state.chips} adjust={actions.adjustChips} />}
         {game === "hilo" && <HiLo chips={state.chips} adjust={actions.adjustChips} />}
         {game === "slots" && <Slots chips={state.chips} adjust={actions.adjustChips} />}
+        {game === "mines" && <Mines chips={state.chips} adjust={actions.adjustChips} />}
         {game === "school" && <PokerSchool />}
         {game === "run" && active && <GondolaRun state={state} actions={actions} />}
         {game === "poker" && <Poker chips={state.chips} tableStack={state.tableStack} adjust={actions.adjustChips} setTableStack={actions.setTableStack} />}
