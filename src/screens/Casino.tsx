@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { isMuted, play, setMuted } from "../sound";
 import { Blackjack } from "../casino/Blackjack";
+import { GondolaRun } from "../casino/GondolaRun";
 import { Poker } from "../casino/Poker";
 import { Roulette } from "../casino/Roulette";
 import { DAILY_LOG, earnedThisWeek, PER_DOLLAR, WEEKLY_CAP } from "../chips";
@@ -12,6 +13,7 @@ const games = [
   { id: "blackjack", name: "Blackjack", icon: "♠" },
   { id: "roulette", name: "Roulette", icon: "●" },
   { id: "poker", name: "Poker", icon: "♦" },
+  { id: "run", name: "Run", icon: "⛷" },
 ] as const;
 type Game = (typeof games)[number]["id"];
 
@@ -91,13 +93,13 @@ export function Casino({ state, actions }: { state: State; actions: Actions }) {
         </Card>
       )}
 
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-4 gap-2">
         {games.map((g) => (
           <button
             key={g.id}
             onClick={() => setGame(g.id)}
             aria-pressed={game === g.id}
-            className={`flex min-h-14 flex-col items-center justify-center rounded-xl border font-cc text-lg uppercase ${game === g.id ? "border-cc-aqua bg-cc-aqua/15 text-cc-aqua" : "border-cc-line text-cc-muted"}`}
+            className={`flex min-h-14 flex-col items-center justify-center rounded-xl border font-cc text-base uppercase ${game === g.id ? "border-cc-aqua bg-cc-aqua/15 text-cc-aqua" : "border-cc-line text-cc-muted"}`}
           >
             <span aria-hidden="true">{g.icon}</span>
             {g.name}
@@ -108,6 +110,7 @@ export function Casino({ state, actions }: { state: State; actions: Actions }) {
       <Card photo="/art/table.webp">
         {game === "blackjack" && <Blackjack chips={state.chips} adjust={actions.adjustChips} />}
         {game === "roulette" && <Roulette chips={state.chips} adjust={actions.adjustChips} />}
+        {game === "run" && <GondolaRun state={state} actions={actions} />}
         {game === "poker" && <Poker chips={state.chips} tableStack={state.tableStack} adjust={actions.adjustChips} setTableStack={actions.setTableStack} />}
       </Card>
 

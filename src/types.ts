@@ -75,6 +75,8 @@ export type State = {
   roundMoved: number;
   /** Days (ISO) the snowboard prep circuit was finished */
   prepDays: string[];
+  /** Gondola Run: best score, and how many runs were paid today */
+  runs: { best: number; day: string; paid: number };
 };
 
 export const DEFAULT_CATEGORIES = ["Food", "Gas", "Fun", "Business", "Shopping", "Other"];
@@ -99,6 +101,7 @@ export const emptyState = (): State => ({
   catLimits: {},
   questDays: [],
   prepDays: [],
+  runs: { best: 0, day: "", paid: 0 },
   challenge: [],
   challengeStep: 1,
   roundMoved: 0,

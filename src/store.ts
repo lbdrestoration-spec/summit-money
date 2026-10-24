@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { iso, today } from "./calc";
+import { chipsFor, RUNS_PAID_PER_DAY } from "./casino/run-logic";
 import { DAILY_LOG, grant, isLogged, PER_DOLLAR } from "./chips";
 import { emptyState, type Bill, type Bucket, type Income, type Plan, type Settings, type Spend, type State } from "./types";
 
@@ -128,6 +129,15 @@ export function useStore() {
     /** Pay the daily-runs bonus once per day */
     claimQuests: (date: string, bonus: number) =>
       update((s) => (s.questDays.includes(date) ? s : grant({ ...s, questDays: [...s.questDays, date] }, bonus, "Finished today's runs"))),
+    /** Finish a Gondola Run: remember the best, pay chips for the first few runs each day. Returns chips paid. */
+    finishRun: (score: number, date: string) =>
+      update((s) => {
+        const paidToday = s.runs.day === date ? s.runs.paid : 0;
+        const best = Math.max(s.runs.best, score);
+        const chips = paidToday < RUNS_PAID_PER_DAY ? chipsFor(score) : 0;
+        const next = { ...s, runs: { best, day: date, paid: paidToday + (chips > 0 ? 1 : 0) } };
+        return chips > 0 ? grant(next, chips, `Gondola Run (${score})`) : next;
+      }),
     prepDone: (date: string) => update((s) => (s.prepDays.includes(date) ? s : { ...s, prepDays: [...s.prepDays, date] })),
     /** 52-week challenge: week n deposits n x step into a bucket. Undo removes that deposit again. */
     challengeMark: (week: number, bucketId: string, date: string) =>
