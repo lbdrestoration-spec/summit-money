@@ -141,7 +141,7 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
 
   return (
     <div className="space-y-4">
-      <PhotoHeader src="/art/tab-plan.webp" title="My plan" sub="Bills, buckets, backup" />
+      <PhotoHeader src="/art/tab-plan.webp" video="/art/tab-plan-loop.mp4" title="My plan" sub="Bills, buckets, backup" />
       <Card tone="aqua" className="space-y-2">
         <Heading>What's new</Heading>
         <ul className="space-y-1 text-sm text-cc-snow/90">
@@ -179,7 +179,9 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
           <li>History search, Paid? toggle on due-soon bills, lodge music</li>
           <li>Month recap: saved, spent, top category, no-spend days</li>
           <li>Think it over: what a purchase costs in weeks of saving</li>
-          <li>Gondola Run keeps your last 10 scores</li>
+          <li>Gondola Run keeps your last 10 scores; 8 more Whitefish list ideas</li>
+          <li>Plan tab has its own cabin-window video</li>
+          <li>Snow Slots in the Casino</li>
         </ul>
       </Card>
       <Recap state={state} />

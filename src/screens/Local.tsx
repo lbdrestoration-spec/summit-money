@@ -16,6 +16,14 @@ export const LOCAL_ITEMS: { id: string; text: string; season: string }[] = [
   { id: "sled", text: "Go dog sledding or snowmobiling", season: "Winter" },
   { id: "sunrise", text: "Watch sunrise from the mountain", season: "Any" },
   { id: "lodge", text: "Hot chocolate by a lodge fire", season: "Winter" },
+  { id: "apgar", text: "Drive to Apgar in Glacier National Park", season: "Any" },
+  { id: "dam", text: "See Hungry Horse Dam", season: "Any" },
+  { id: "river", text: "Float or paddle the Flathead River", season: "Summer" },
+  { id: "huckle", text: "Eat something made with huckleberries", season: "Any" },
+  { id: "nordic", text: "Cross-country ski or fat-bike a groomed trail", season: "Winter" },
+  { id: "aurora", text: "Look for northern lights on a clear night", season: "Any" },
+  { id: "stars", text: "Stargaze well away from town lights", season: "Any" },
+  { id: "market", text: "Browse the Whitefish farmers market", season: "Summer" },
 ];
 
 /** A tick-off list of things to do around Whitefish. */
