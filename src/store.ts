@@ -144,6 +144,7 @@ export function useStore() {
       update((s) => (s.daily.wheel === date || !SEGMENTS.includes(prize as never) ? s : grant({ ...s, daily: { ...s.daily, wheel: date } }, prize, "Daily wheel"))),
     claimChest: (date: string) =>
       update((s) => (s.daily.chest === date || !allDone(s, date) ? s : grant({ ...s, daily: { ...s.daily, chest: date } }, CHEST, "Daily missions chest"))),
+    toggleLocal: (id: string) => update((s) => ({ ...s, local: s.local.includes(id) ? s.local.filter((x) => x !== id) : [...s.local, id] })),
     prepDone: (date: string) => update((s) => (s.prepDays.includes(date) ? s : { ...s, prepDays: [...s.prepDays, date] })),
     /** 52-week challenge: week n deposits n x step into a bucket. Undo removes that deposit again. */
     challengeMark: (week: number, bucketId: string, date: string) =>

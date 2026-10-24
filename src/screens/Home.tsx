@@ -11,6 +11,7 @@ import { Countdowns, DueSoon, BillsCover, BiggestLeak, WeekRing, Challenge, Save
 import { RunsCard } from "./Trail";
 import { Urge } from "./Urge";
 import { Mountain } from "./Mountain";
+import { Local } from "./Local";
 import { Prep } from "./Prep";
 import { Weather } from "./Weather";
 import { DeadlineCards, FridayPayCard } from "./Deadlines";
@@ -213,6 +214,7 @@ export function Home({ state, actions, onCasino, onPlan }: { state: State; actio
 
       <Prep state={state} actions={actions} />
       <Mountain />
+      <Local state={state} actions={actions} />
       <Weather />
 
       <BackupNudge state={state} onPlan={onPlan} />
