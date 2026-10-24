@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { musicWanted, startMusic } from "./music";
 import { ambienceOn, ambienceWanted, startAmbience, stopAmbience } from "./ambience";
 import { bucketPhoto } from "./bucketIcon";
 import { money } from "./calc";
@@ -52,6 +53,13 @@ export default function App() {
       startAmbience();
       setAmb(ambienceOn());
     };
+    window.addEventListener("pointerdown", go, { once: true });
+    return () => window.removeEventListener("pointerdown", go);
+  }, []);
+  useEffect(() => {
+    // same for the lodge music
+    if (!musicWanted()) return;
+    const go = () => startMusic();
     window.addEventListener("pointerdown", go, { once: true });
     return () => window.removeEventListener("pointerdown", go);
   }, []);

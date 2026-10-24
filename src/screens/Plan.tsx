@@ -9,6 +9,7 @@ import { History } from "./History";
 import { Debts } from "./Debts";
 import { ambienceVolume, setAmbienceVolume } from "../ambience";
 import { getVolume, play, setVolume } from "../sound";
+import { musicOn, musicVolume, setMusicVolume, startMusic, stopMusic } from "../music";
 
 function Row({ title, sub, right, onDelete, deleteLabel }: { title: string; sub?: string; right: string; onDelete: () => void; deleteLabel?: string }) {
   return (
@@ -412,6 +413,8 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
 function SoundCard() {
   const [fx, setFx] = useState(Math.round(getVolume() * 100));
   const [amb, setAmb] = useState(Math.round(ambienceVolume() * 100));
+  const [mus, setMus] = useState(Math.round(musicVolume() * 100));
+  const [playing, setPlaying] = useState(musicOn());
   return (
     <Card tone="aqua" className="space-y-3">
       <Heading tone="aqua">Sound</Heading>
@@ -446,7 +449,34 @@ function SoundCard() {
           }}
         />
       </label>
-      <p className="text-xs text-cc-muted">Turn the ambience on with the snowflake button at the top.</p>
+      <div className="flex items-center justify-between gap-3">
+        <span className={label}>Lodge music (made in the app) {mus}%</span>
+        <Button
+          variant={playing ? "lime" : "ghost"}
+          aria-label={playing ? "Music on" : "Music off"}
+          onClick={() => {
+            if (playing) stopMusic();
+            else startMusic();
+            setPlaying(musicOn());
+          }}
+        >
+          {playing ? "On" : "Off"}
+        </Button>
+      </div>
+      <input
+        type="range"
+        min={0}
+        max={100}
+        value={mus}
+        aria-label="Music volume"
+        className="w-full accent-cc-aqua"
+        onChange={(e) => {
+          const v = Number(e.target.value);
+          setMus(v);
+          setMusicVolume(v / 100);
+        }}
+      />
+      <p className="text-xs text-cc-muted">Turn the cabin ambience on with the snowflake button at the top.</p>
     </Card>
   );
 }
