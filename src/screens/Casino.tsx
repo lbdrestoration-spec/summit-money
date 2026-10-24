@@ -3,6 +3,7 @@ import { isMuted, play, setMuted } from "../sound";
 import { Blackjack } from "../casino/Blackjack";
 import { GondolaRun } from "../casino/GondolaRun";
 import { Lobby } from "../casino/Lobby";
+import { Trivia } from "../casino/Trivia";
 import { VideoPoker } from "../casino/VideoPoker";
 import { Poker } from "../casino/Poker";
 import { Roulette } from "../casino/Roulette";
@@ -98,6 +99,7 @@ export function Casino({ state, actions }: { state: State; actions: Actions }) {
       )}
 
       <Lobby state={state} actions={actions} />
+      <Trivia state={state} actions={actions} />
 
       <div className="grid grid-cols-5 gap-1.5">
         {games.map((g) => (

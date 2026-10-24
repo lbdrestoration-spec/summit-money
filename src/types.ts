@@ -81,6 +81,8 @@ export type State = {
   daily: { wheel: string; chest: string };
   /** Whitefish bucket list items checked off */
   local: string[];
+  /** Daily trivia: the date, how many were answered, how many were right */
+  trivia: { day: string; done: number; right: number };
 };
 
 export const DEFAULT_CATEGORIES = ["Food", "Gas", "Fun", "Business", "Shopping", "Other"];
@@ -108,6 +110,7 @@ export const emptyState = (): State => ({
   runs: { best: 0, day: "", paid: 0 },
   daily: { wheel: "", chest: "" },
   local: [],
+  trivia: { day: "", done: 0, right: 0 },
   challenge: [],
   challengeStep: 1,
   roundMoved: 0,

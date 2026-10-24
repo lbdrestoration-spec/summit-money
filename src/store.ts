@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { iso, today } from "./calc";
 import { allDone, CHEST, SEGMENTS } from "./casino/daily";
+import { CHIPS_PER_RIGHT, PER_DAY } from "./casino/trivia";
 import { chipsFor, RUNS_PAID_PER_DAY } from "./casino/run-logic";
 import { DAILY_LOG, grant, isLogged, PER_DOLLAR } from "./chips";
 import { emptyState, type Bill, type Bucket, type Income, type Plan, type Settings, type Spend, type State } from "./types";
@@ -145,6 +146,14 @@ export function useStore() {
     claimChest: (date: string) =>
       update((s) => (s.daily.chest === date || !allDone(s, date) ? s : grant({ ...s, daily: { ...s.daily, chest: date } }, CHEST, "Daily missions chest"))),
     toggleLocal: (id: string) => update((s) => ({ ...s, local: s.local.includes(id) ? s.local.filter((x) => x !== id) : [...s.local, id] })),
+    /** Answer today's next trivia question. Pays chips for a right answer, through the weekly cap. */
+    answerTrivia: (date: string, right: boolean) =>
+      update((s) => {
+        const t = s.trivia.day === date ? s.trivia : { day: date, done: 0, right: 0 };
+        if (t.done >= PER_DAY) return s;
+        const next = { ...s, trivia: { day: date, done: t.done + 1, right: t.right + (right ? 1 : 0) } };
+        return right ? grant(next, CHIPS_PER_RIGHT, "Trivia") : next;
+      }),
     prepDone: (date: string) => update((s) => (s.prepDays.includes(date) ? s : { ...s, prepDays: [...s.prepDays, date] })),
     /** 52-week challenge: week n deposits n x step into a bucket. Undo removes that deposit again. */
     challengeMark: (week: number, bucketId: string, date: string) =>
