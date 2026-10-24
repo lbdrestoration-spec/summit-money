@@ -83,6 +83,10 @@ export type State = {
   local: string[];
   /** Daily trivia: the date, how many were answered, how many were right */
   trivia: { day: string; done: number; right: number };
+  /** Chip shop: owned item ids, what is equipped, and total chips spent there */
+  shop: { owned: string[]; back: string; felt: string; spent: number };
+  /** Yearly rate (percent) used by the interest estimator */
+  apy: number;
 };
 
 export const DEFAULT_CATEGORIES = ["Food", "Gas", "Fun", "Business", "Shopping", "Other"];
@@ -111,6 +115,8 @@ export const emptyState = (): State => ({
   daily: { wheel: "", chest: "" },
   local: [],
   trivia: { day: "", done: 0, right: 0 },
+  shop: { owned: [], back: "classic", felt: "classic", spent: 0 },
+  apy: 4,
   challenge: [],
   challengeStep: 1,
   roundMoved: 0,

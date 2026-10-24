@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { iso, today } from "./calc";
 import { allDone, CHEST, SEGMENTS } from "./casino/daily";
 import { CHIPS_PER_RIGHT, PER_DAY } from "./casino/trivia";
+import { isOwned, ITEMS, keyOf } from "./casino/shop";
 import { chipsFor, RUNS_PAID_PER_DAY } from "./casino/run-logic";
 import { DAILY_LOG, grant, isLogged, PER_DOLLAR } from "./chips";
 import { emptyState, type Bill, type Bucket, type Income, type Plan, type Settings, type Spend, type State } from "./types";
@@ -154,6 +155,19 @@ export function useStore() {
         const next = { ...s, trivia: { day: date, done: t.done + 1, right: t.right + (right ? 1 : 0) } };
         return right ? grant(next, CHIPS_PER_RIGHT, "Trivia") : next;
       }),
+    /** Buy a cosmetic with chips. Only works with enough chips and never twice. */
+    buyItem: (slot: "back" | "felt", id: string) =>
+      update((s) => {
+        const it = ITEMS.find((i) => i.slot === slot && i.id === id);
+        if (!it || isOwned(s.shop.owned, it) || s.chips < it.price) return s;
+        return { ...s, chips: s.chips - it.price, shop: { ...s.shop, owned: [...s.shop.owned, keyOf(it)], spent: s.shop.spent + it.price, [slot]: id } };
+      }),
+    equipItem: (slot: "back" | "felt", id: string) =>
+      update((s) => {
+        const it = ITEMS.find((i) => i.slot === slot && i.id === id);
+        return it && isOwned(s.shop.owned, it) ? { ...s, shop: { ...s.shop, [slot]: id } } : s;
+      }),
+    setApy: (apy: number) => update((s) => ({ ...s, apy: Math.min(20, Math.max(0, Number.isFinite(apy) ? apy : 0)) })),
     prepDone: (date: string) => update((s) => (s.prepDays.includes(date) ? s : { ...s, prepDays: [...s.prepDays, date] })),
     /** 52-week challenge: week n deposits n x step into a bucket. Undo removes that deposit again. */
     challengeMark: (week: number, bucketId: string, date: string) =>

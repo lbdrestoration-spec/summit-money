@@ -11,6 +11,7 @@ import { Countdowns, DueSoon, BillsCover, BiggestLeak, WeekRing, Challenge, Save
 import { RunsCard } from "./Trail";
 import { Urge } from "./Urge";
 import { Mountain } from "./Mountain";
+import { Interest } from "./Interest";
 import { TodayStrip } from "./TodayStrip";
 import { Local } from "./Local";
 import { Prep } from "./Prep";
@@ -188,6 +189,7 @@ export function Home({ state, actions, onCasino, onPlan }: { state: State; actio
       <BiggestLeak state={state} />
       <RoundUpJar state={state} actions={actions} />
       <BillsCover state={state} />
+      <Interest state={state} actions={actions} />
       <Challenge state={state} actions={actions} />
       <SavingsSplit state={state} />
       <MonthlyBars state={state} />

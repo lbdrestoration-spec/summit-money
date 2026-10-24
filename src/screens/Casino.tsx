@@ -2,7 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { isMuted, play, setMuted } from "../sound";
 import { Blackjack } from "../casino/Blackjack";
 import { GondolaRun } from "../casino/GondolaRun";
+import { HiLo } from "../casino/HiLo";
 import { Lobby } from "../casino/Lobby";
+import { find as findItem } from "../casino/shop";
+import { Shop } from "../casino/Shop";
 import { Trivia } from "../casino/Trivia";
 import { VideoPoker } from "../casino/VideoPoker";
 import { Poker } from "../casino/Poker";
@@ -17,6 +20,7 @@ const games = [
   { id: "roulette", name: "Roulette", icon: "●" },
   { id: "poker", name: "Poker", icon: "♦" },
   { id: "vp", name: "Video", icon: "♥" },
+  { id: "hilo", name: "Hi-Lo", icon: "↕" },
   { id: "run", name: "Run", icon: "⛷" },
 ] as const;
 type Game = (typeof games)[number]["id"];
@@ -25,12 +29,16 @@ export function Casino({ state, actions }: { state: State; actions: Actions }) {
   const [game, setGame] = useState<Game>("blackjack");
   // Game results since you opened the app. Chips you earn from the money habits don't count here.
   const totalEarned = state.chipLog.reduce((a, e) => a + e.amount, 0);
-  const sessionStart = useRef({ held: state.chips + state.tableStack, earned: totalEarned });
+  const sessionStart = useRef({ held: state.chips + state.tableStack, earned: totalEarned, shop: state.shop.spent });
   const inPlay = state.chips + state.tableStack;
-  const sessionNet = inPlay - sessionStart.current.held - (totalEarned - sessionStart.current.earned);
+  // chips spent in the shop are not game losses
+  const sessionNet = inPlay - sessionStart.current.held - (totalEarned - sessionStart.current.earned) + (state.shop.spent - sessionStart.current.shop);
   const earned = earnedThisWeek(state);
   const broke = state.chips === 0 && state.tableStack === 0;
   const [muted, setMute] = useState(isMuted());
+  useEffect(() => {
+    document.documentElement.style.setProperty("--card-hue", `${findItem("back", state.shop.back).hue}deg`);
+  }, [state.shop.back]);
   // Win/loss sounds: only when chips moved and it wasn't from earning
   const prev = useRef({ held: inPlay, logged: state.chipLog.length });
   useEffect(() => {
@@ -101,7 +109,7 @@ export function Casino({ state, actions }: { state: State; actions: Actions }) {
       <Lobby state={state} actions={actions} />
       <Trivia state={state} actions={actions} />
 
-      <div className="grid grid-cols-5 gap-1.5">
+      <div className="grid grid-cols-3 gap-1.5">
         {games.map((g) => (
           <button
             key={g.id}
@@ -115,13 +123,16 @@ export function Casino({ state, actions }: { state: State; actions: Actions }) {
         ))}
       </div>
 
-      <Card photo="/art/table.webp">
+      <Card photo="/art/table.webp" tint={findItem("felt", state.shop.felt).tint}>
         {game === "blackjack" && <Blackjack chips={state.chips} adjust={actions.adjustChips} />}
         {game === "roulette" && <Roulette chips={state.chips} adjust={actions.adjustChips} />}
         {game === "vp" && <VideoPoker chips={state.chips} adjust={actions.adjustChips} />}
+        {game === "hilo" && <HiLo chips={state.chips} adjust={actions.adjustChips} />}
         {game === "run" && <GondolaRun state={state} actions={actions} />}
         {game === "poker" && <Poker chips={state.chips} tableStack={state.tableStack} adjust={actions.adjustChips} setTableStack={actions.setTableStack} />}
       </Card>
+
+      <Shop state={state} actions={actions} />
 
       <Card>
         <Heading tone="lime">How you earned chips</Heading>

@@ -7,7 +7,7 @@ export function CardView({ card, small }: { card: Card | null; small?: boolean }
       <div
         aria-label="Face-down card"
         className={`${size} shrink-0 rounded-lg border border-cc-gold/60 bg-cover bg-center shadow-md`}
-        style={{ backgroundImage: "url(/art/cardback.webp)" }}
+        style={{ backgroundImage: "url(/art/cardback.webp)", filter: "hue-rotate(var(--card-hue, 0deg))" }}
       />
     );
   return (

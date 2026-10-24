@@ -30,7 +30,7 @@ const toneBorder: Record<Tone, string> = {
   gold: "border-cc-gold/45",
 };
 
-export function Card({ children, tone, className = "", photo }: { children: ReactNode; tone?: Tone; className?: string; photo?: string }) {
+export function Card({ children, tone, className = "", photo, tint }: { children: ReactNode; tone?: Tone; className?: string; photo?: string; tint?: string }) {
   const base = `rise relative overflow-hidden rounded-2xl border bg-cc-panel/70 backdrop-blur-md ${tone ? toneBorder[tone] : "border-cc-line"}`;
   if (!photo)
     return <section className={`${base} p-4 ${className}`}>{children}</section>;
@@ -38,6 +38,7 @@ export function Card({ children, tone, className = "", photo }: { children: Reac
     <section className={base}>
       <img src={photo} alt="" aria-hidden="true" className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-55" loading="lazy" />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-cc-night/95 via-cc-night/65 to-cc-night/20" />
+      {tint && <div className="pointer-events-none absolute inset-0" style={{ background: tint }} />}
       <div className={`relative p-4 ${className}`}>{children}</div>
     </section>
   );
