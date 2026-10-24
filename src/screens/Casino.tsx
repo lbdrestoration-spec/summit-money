@@ -25,7 +25,7 @@ const games = [
 ] as const;
 type Game = (typeof games)[number]["id"];
 
-export function Casino({ state, actions }: { state: State; actions: Actions }) {
+export function Casino({ state, actions, active }: { state: State; actions: Actions; active: boolean }) {
   const [game, setGame] = useState<Game>("blackjack");
   // Game results since you opened the app. Chips you earn from the money habits don't count here.
   const totalEarned = state.chipLog.reduce((a, e) => a + e.amount, 0);
@@ -58,7 +58,7 @@ export function Casino({ state, actions }: { state: State; actions: Actions }) {
         if ((e.target as HTMLElement).closest("button") && !(e.target as HTMLElement).closest("[data-mute]")) play("tick");
       }}
     >
-      <PhotoHeader src="/art/tab-casino.webp" title="Casino" sub="Play money only" />
+      <PhotoHeader src="/art/tab-casino.webp" video={active ? "/art/tab-casino-loop.mp4" : undefined} title="Casino" sub="Play money only" />
       <Card tone="gold" className="space-y-3" photo="/art/lodge.webp">
         <div className="flex items-end justify-between">
           <div>
@@ -128,7 +128,7 @@ export function Casino({ state, actions }: { state: State; actions: Actions }) {
         {game === "roulette" && <Roulette chips={state.chips} adjust={actions.adjustChips} />}
         {game === "vp" && <VideoPoker chips={state.chips} adjust={actions.adjustChips} />}
         {game === "hilo" && <HiLo chips={state.chips} adjust={actions.adjustChips} />}
-        {game === "run" && <GondolaRun state={state} actions={actions} />}
+        {game === "run" && active && <GondolaRun state={state} actions={actions} />}
         {game === "poker" && <Poker chips={state.chips} tableStack={state.tableStack} adjust={actions.adjustChips} setTableStack={actions.setTableStack} />}
       </Card>
 

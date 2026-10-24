@@ -12,6 +12,7 @@ export type Bucket = {
   monthlyPlan: number;
   contributions: Contribution[];
 };
+export type Debt = { id: string; name: string; balance: number; apr: number; payment: number };
 export type Settings = {
   /** Any real payday (past or future), ISO yyyy-mm-dd */
   payAnchor: string;
@@ -87,6 +88,8 @@ export type State = {
   shop: { owned: string[]; back: string; felt: string; spent: number };
   /** Yearly rate (percent) used by the interest estimator */
   apy: number;
+  /** Debts tracked in the payoff planner */
+  debts: Debt[];
 };
 
 export const DEFAULT_CATEGORIES = ["Food", "Gas", "Fun", "Business", "Shopping", "Other"];
@@ -117,6 +120,7 @@ export const emptyState = (): State => ({
   trivia: { day: "", done: 0, right: 0 },
   shop: { owned: [], back: "classic", felt: "classic", spent: 0 },
   apy: 4,
+  debts: [],
   challenge: [],
   challengeStep: 1,
   roundMoved: 0,

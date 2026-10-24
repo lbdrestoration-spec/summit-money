@@ -168,6 +168,9 @@ export function useStore() {
         return it && isOwned(s.shop.owned, it) ? { ...s, shop: { ...s.shop, [slot]: id } } : s;
       }),
     setApy: (apy: number) => update((s) => ({ ...s, apy: Math.min(20, Math.max(0, Number.isFinite(apy) ? apy : 0)) })),
+    addDebt: (name: string, balance: number, apr: number, payment: number) =>
+      update((s) => (balance > 0 && payment > 0 && name.trim() ? { ...s, debts: [...s.debts, { id: uid(), name: name.trim(), balance, apr: Math.max(0, apr), payment }] } : s)),
+    removeDebt: (id: string) => update((s) => ({ ...s, debts: s.debts.filter((d) => d.id !== id) })),
     prepDone: (date: string) => update((s) => (s.prepDays.includes(date) ? s : { ...s, prepDays: [...s.prepDays, date] })),
     /** 52-week challenge: week n deposits n x step into a bucket. Undo removes that deposit again. */
     challengeMark: (week: number, bucketId: string, date: string) =>

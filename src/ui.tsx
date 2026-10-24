@@ -45,10 +45,11 @@ export function Card({ children, tone, className = "", photo, tint }: { children
 }
 
 /** Photo banner at the top of a screen */
-export function PhotoHeader({ src, title, sub }: { src: string; title: string; sub?: string }) {
+export function PhotoHeader({ src, title, sub, video }: { src: string; title: string; sub?: string; video?: string }) {
   return (
     <div className="rise relative h-36 overflow-hidden rounded-2xl border border-cc-line">
       <img src={src} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover" />
+      {video && <video className="hero-video absolute inset-0 h-full w-full object-cover" src={video} poster={src} autoPlay muted loop playsInline preload="auto" aria-hidden="true" />}
       <div className="absolute inset-0 bg-gradient-to-t from-cc-night via-cc-night/40 to-transparent" />
       <div className="absolute inset-x-4 bottom-3">
         <h2 className="font-cc text-4xl font-bold uppercase leading-none tracking-wide text-cc-snow">{title}</h2>

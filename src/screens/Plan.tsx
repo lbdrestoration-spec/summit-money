@@ -4,6 +4,8 @@ import type { Actions } from "../store";
 import type { Bucket, State } from "../types";
 import { bucketIcon } from "../bucketIcon";
 import { Button, Card, Empty, Heading, PhotoHeader, input, label } from "../ui";
+import { events, toIcs } from "../ics";
+import { Debts } from "./Debts";
 import { ambienceVolume, setAmbienceVolume } from "../ambience";
 import { getVolume, play, setVolume } from "../sound";
 
@@ -113,6 +115,14 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
     a.click();
     URL.revokeObjectURL(a.href);
   }
+  function exportIcs() {
+    const blob = new Blob([toIcs(events(state))], { type: "text/calendar" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `summit-money-calendar-${iso(today())}.ics`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
   function importData(file: File) {
     file.text().then((t) => {
       try {
@@ -160,6 +170,7 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
           <li>Sound sliders on this tab</li>
         </ul>
       </Card>
+      <Debts state={state} actions={actions} />
       <SoundCard />
       <Card tone="lime">
         <Heading tone="lime">Side income</Heading>
@@ -373,7 +384,7 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
       <Card>
         <Heading tone="violet">Backup</Heading>
         <p className="mt-1 text-xs text-cc-muted">Your data lives on this phone only. Save a backup file now and then, so you never lose your history.</p>
-        <div className="mt-3 flex gap-2">
+        <div className="mt-3 flex flex-wrap gap-2">
           <Button className="flex-1" onClick={exportData}>
             Save backup
           </Button>
@@ -382,6 +393,9 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
           </Button>
           <Button className="flex-1" onClick={exportCsv}>
             Export CSV
+          </Button>
+          <Button className="flex-1" onClick={exportIcs}>
+            Calendar
           </Button>
           <input ref={fileRef} type="file" accept="application/json" hidden onChange={(e) => e.target.files?.[0] && importData(e.target.files[0])} />
         </div>

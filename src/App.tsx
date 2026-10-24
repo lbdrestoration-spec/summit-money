@@ -234,7 +234,7 @@ export default function App() {
         {tab === "plan" && <Plan state={state} actions={actions} onEditPlan={() => setEditingPlan(true)} />}
         {/* Casino stays mounted so a hand in progress survives switching tabs */}
         <div hidden={tab !== "casino"}>
-          <Casino state={state} actions={actions} />
+          <Casino state={state} actions={actions} active={tab === "casino"} />
         </div>
       </main>
 
