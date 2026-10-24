@@ -7,6 +7,8 @@ import { Slots } from "../casino/Slots";
 import { PokerSchool } from "../casino/PokerSchool";
 import { Mines } from "../casino/Mines";
 import { Dice } from "../casino/Dice";
+import { Baccarat } from "../casino/Baccarat";
+import { Keno } from "../casino/Keno";
 import { ScratchCard } from "../casino/ScratchCard";
 import { Lobby } from "../casino/Lobby";
 import { find as findItem } from "../casino/shop";
@@ -29,6 +31,8 @@ const games = [
   { id: "slots", name: "Slots", icon: "❄" },
   { id: "mines", name: "Avalanche", icon: "💥" },
   { id: "dice", name: "Dice", icon: "🎲" },
+  { id: "bacc", name: "Baccarat", icon: "🂡" },
+  { id: "keno", name: "Keno", icon: "🔢" },
   { id: "school", name: "School", icon: "🎓" },
   { id: "run", name: "Run", icon: "⛷" },
 ] as const;
@@ -119,13 +123,13 @@ export function Casino({ state, actions, active }: { state: State; actions: Acti
       <ScratchCard state={state} actions={actions} />
       <Trivia state={state} actions={actions} />
 
-      <div className="grid grid-cols-5 gap-1.5">
+      <div className="grid grid-cols-4 gap-1.5">
         {games.map((g) => (
           <button
             key={g.id}
             onClick={() => setGame(g.id)}
             aria-pressed={game === g.id}
-            className={`flex min-h-14 flex-col items-center justify-center rounded-xl border font-cc text-xs uppercase ${game === g.id ? "border-cc-aqua bg-cc-aqua/15 text-cc-aqua" : "border-cc-line text-cc-muted"}`}
+            className={`flex min-h-14 flex-col items-center justify-center rounded-xl border font-cc text-sm uppercase ${game === g.id ? "border-cc-aqua bg-cc-aqua/15 text-cc-aqua" : "border-cc-line text-cc-muted"}`}
           >
             <span aria-hidden="true">{g.icon}</span>
             {g.name}
@@ -141,6 +145,8 @@ export function Casino({ state, actions, active }: { state: State; actions: Acti
         {game === "slots" && <Slots chips={state.chips} adjust={actions.adjustChips} />}
         {game === "mines" && <Mines chips={state.chips} adjust={actions.adjustChips} />}
         {game === "dice" && <Dice chips={state.chips} adjust={actions.adjustChips} />}
+        {game === "bacc" && <Baccarat chips={state.chips} adjust={actions.adjustChips} />}
+        {game === "keno" && <Keno chips={state.chips} adjust={actions.adjustChips} />}
         {game === "school" && <PokerSchool />}
         {game === "run" && active && <GondolaRun state={state} actions={actions} />}
         {game === "poker" && <Poker chips={state.chips} tableStack={state.tableStack} adjust={actions.adjustChips} setTableStack={actions.setTableStack} />}

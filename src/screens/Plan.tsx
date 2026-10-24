@@ -187,7 +187,7 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
           <li>Plan tab has its own cabin-window video</li>
           <li>Snow Slots and a free daily scratch card in the Casino</li>
           <li>Poker School: practice calling the winner of a showdown</li>
-          <li>Avalanche and Powder Dice: two more Casino games</li>
+          <li>Avalanche, Powder Dice, Baccarat and Keno: 12 Casino games in all</li>
           <li>The + button offers your usual spends and saves in one tap</li>
           <li>Year so far: best month, top category, and a share picture</li>
           <li>Trip readiness gauge in the last 60 days before the ski trip</li>
