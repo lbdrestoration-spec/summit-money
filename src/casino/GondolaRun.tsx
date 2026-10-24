@@ -163,6 +163,16 @@ export function GondolaRun({ state, actions }: { state: State; actions: Actions 
         style={{ aspectRatio: `${W} / ${H}` }}
         onPointerDown={() => phase === "play" && hop()}
       />
+      {phase !== "play" && (state.runs.recent ?? []).length > 0 && (
+        <div aria-label="Recent runs" role="group">
+          <div className={label}>Last {(state.runs.recent ?? []).length} runs</div>
+          <div className="mt-1 flex h-10 items-end gap-1">
+            {(state.runs.recent ?? []).map((v, i) => (
+              <div key={i} title={String(v)} className={`flex-1 rounded-t ${v === state.runs.best ? "bg-cc-gold" : "bg-cc-aqua/60"}`} style={{ height: `${Math.max(8, (v / Math.max(1, state.runs.best)) * 100)}%` }} />
+            ))}
+          </div>
+        </div>
+      )}
       {phase === "play" ? (
         <Button variant="lime" className="w-full" onPointerDown={hop}>
           Jump

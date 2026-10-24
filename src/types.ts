@@ -77,7 +77,7 @@ export type State = {
   /** Days (ISO) the snowboard prep circuit was finished */
   prepDays: string[];
   /** Gondola Run: best score, and how many runs were paid today */
-  runs: { best: number; day: string; paid: number };
+  runs: { best: number; day: string; paid: number; /** Last 10 scores, newest last (absent in older saves) */ recent?: number[] };
   /** Dates (ISO) the daily wheel was spun and the mission chest opened */
   daily: { wheel: string; chest: string };
   /** Whitefish bucket list items checked off */

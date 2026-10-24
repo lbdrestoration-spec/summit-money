@@ -138,7 +138,7 @@ export function useStore() {
         const paidToday = s.runs.day === date ? s.runs.paid : 0;
         const best = Math.max(s.runs.best, score);
         const chips = paidToday < RUNS_PAID_PER_DAY ? chipsFor(score) : 0;
-        const next = { ...s, runs: { best, day: date, paid: paidToday + (chips > 0 ? 1 : 0) } };
+        const next = { ...s, runs: { best, day: date, paid: paidToday + (chips > 0 ? 1 : 0), recent: [...(s.runs.recent ?? []), score].slice(-10) } };
         return chips > 0 ? grant(next, chips, `Gondola Run (${score})`) : next;
       }),
     /** Daily wheel: one spin per day. The prize is picked by the caller and paid through the weekly cap. */

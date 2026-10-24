@@ -7,6 +7,7 @@ import { Button, Card, Empty, Heading, PhotoHeader, input, label } from "../ui";
 import { events, toIcs } from "../ics";
 import { History } from "./History";
 import { Recap } from "./Recap";
+import { Afford } from "./Afford";
 import { Debts } from "./Debts";
 import { ambienceVolume, setAmbienceVolume } from "../ambience";
 import { getVolume, play, setVolume } from "../sound";
@@ -177,9 +178,12 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
           <li>Poker sit and go: 4 players, rising blinds, top two paid</li>
           <li>History search, Paid? toggle on due-soon bills, lodge music</li>
           <li>Month recap: saved, spent, top category, no-spend days</li>
+          <li>Think it over: what a purchase costs in weeks of saving</li>
+          <li>Gondola Run keeps your last 10 scores</li>
         </ul>
       </Card>
       <Recap state={state} />
+      <Afford state={state} />
       <History state={state} />
       <Debts state={state} actions={actions} />
       <SoundCard />
