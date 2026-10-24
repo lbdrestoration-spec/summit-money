@@ -79,7 +79,7 @@ export type State = {
   /** Gondola Run: best score, and how many runs were paid today */
   runs: { best: number; day: string; paid: number; /** Last 10 scores, newest last (absent in older saves) */ recent?: number[] };
   /** Dates (ISO) the daily wheel was spun and the mission chest opened */
-  daily: { wheel: string; chest: string };
+  daily: { wheel: string; chest: string; /** Day the scratch card was taken (absent in older saves) */ scratch?: string };
   /** Whitefish bucket list items checked off */
   local: string[];
   /** Daily trivia: the date, how many were answered, how many were right */

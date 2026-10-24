@@ -4,6 +4,7 @@ import { Blackjack } from "../casino/Blackjack";
 import { GondolaRun } from "../casino/GondolaRun";
 import { HiLo } from "../casino/HiLo";
 import { Slots } from "../casino/Slots";
+import { ScratchCard } from "../casino/ScratchCard";
 import { Lobby } from "../casino/Lobby";
 import { find as findItem } from "../casino/shop";
 import { Shop } from "../casino/Shop";
@@ -109,6 +110,7 @@ export function Casino({ state, actions, active }: { state: State; actions: Acti
       )}
 
       <Lobby state={state} actions={actions} />
+      <ScratchCard state={state} actions={actions} />
       <Trivia state={state} actions={actions} />
 
       <div className="grid grid-cols-4 gap-1.5">

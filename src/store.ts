@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { iso, today } from "./calc";
 import { allDone, CHEST, SEGMENTS } from "./casino/daily";
+import { VALID_PRIZES } from "./casino/scratch";
 import { CHIPS_PER_RIGHT, PER_DAY } from "./casino/trivia";
 import { isOwned, ITEMS, keyOf } from "./casino/shop";
 import { chipsFor, RUNS_PAID_PER_DAY } from "./casino/run-logic";
@@ -144,6 +145,13 @@ export function useStore() {
     /** Daily wheel: one spin per day. The prize is picked by the caller and paid through the weekly cap. */
     spinDaily: (date: string, prize: number) =>
       update((s) => (s.daily.wheel === date || !SEGMENTS.includes(prize as never) ? s : grant({ ...s, daily: { ...s.daily, wheel: date } }, prize, "Daily wheel"))),
+    /** Daily scratch card: one per day. A winning prize is paid through the weekly cap. */
+    scratchDaily: (date: string, prize: number) =>
+      update((s) => {
+        if (s.daily.scratch === date || !VALID_PRIZES.includes(prize)) return s;
+        const next = { ...s, daily: { ...s.daily, scratch: date } };
+        return prize > 0 ? grant(next, prize, "Daily scratch card") : next;
+      }),
     claimChest: (date: string) =>
       update((s) => (s.daily.chest === date || !allDone(s, date) ? s : grant({ ...s, daily: { ...s.daily, chest: date } }, CHEST, "Daily missions chest"))),
     toggleLocal: (id: string) => update((s) => ({ ...s, local: s.local.includes(id) ? s.local.filter((x) => x !== id) : [...s.local, id] })),

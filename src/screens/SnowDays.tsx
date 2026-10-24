@@ -11,7 +11,7 @@ export function SnowDays({ state, actions }: { state: State; actions: Actions })
   const rode = state.rides.includes(t);
   const st = seasonStats(state.rides, state.spends, now);
   return (
-    <Card tone="aqua" className="space-y-3">
+    <Card tone="aqua" className="space-y-3" photo="/art/snowdays.webp">
       <Heading tone="aqua">Days on snow</Heading>
       <div className="flex items-end justify-between">
         <div>
