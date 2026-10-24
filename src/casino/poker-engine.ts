@@ -40,12 +40,16 @@ export type Hand = {
   currentBet: number;
   raises: number;
   toAct: number; // -1 once the hand is over
+  sb: number;
+  bb: number;
+  /** seats that are not playing this hand (busted in a tournament) */
+  out: boolean[];
   over: boolean;
   result: Result | null;
   log: string[];
 };
 
-const betSize = (street: number) => (street < 2 ? BB : BB * 2);
+const betSize = (h: Hand, street = h.street) => (street < 2 ? h.bb : h.bb * 2);
 const pot = (h: Hand) => h.committed.reduce((a, b) => a + b, 0);
 const live = (h: Hand) => [...Array(N).keys()].filter((p) => !h.folded[p]);
 
@@ -159,7 +163,7 @@ function apply(h: Hand, p: number, action: Action) {
     const put = post(h, p, toCall);
     h.log.push(toCall === 0 ? `${NAMES[p]} checks` : `${NAMES[p]} calls ${put}`);
   } else {
-    post(h, p, h.currentBet + betSize(h.street) - h.bets[p]);
+    post(h, p, h.currentBet + betSize(h) - h.bets[p]);
     if (h.bets[p] > h.currentBet) {
       h.currentBet = h.bets[p];
       h.raises++;
@@ -200,7 +204,7 @@ function botAction(h: Hand, p: number): Action {
   const st = STYLES[p] ?? STYLES[3]!;
   if (toCall === 0) return canRaise && ((s > st.raiseAt - 0.12 && r < 0.65) || r < st.bluff) ? "raise" : "call";
   if (s > st.raiseAt && canRaise && r < 0.5) return "raise";
-  const need = 0.28 + st.need + (toCall > BB ? 0.1 : 0) + h.raises * 0.06;
+  const need = 0.28 + st.need + (toCall > h.bb ? 0.1 : 0) + h.raises * 0.06;
   if (s < need && r > st.stubborn) return "fold";
   return "call";
 }
@@ -210,32 +214,40 @@ function runBots(h: Hand) {
 }
 
 /* ---------- public api ---------- */
-export function startHand(stacks: number[], button: number): Hand {
+export function startHand(stacks: number[], button: number, opts: { sb?: number; bb?: number; out?: boolean[] } = {}): Hand {
   const deck = makeShoe(1);
+  const out = opts.out ?? Array(N).fill(false);
   const h: Hand = {
     button,
     start: [...stacks],
     stacks: [...stacks],
     bets: Array(N).fill(0),
     committed: Array(N).fill(0),
-    folded: Array(N).fill(false),
+    folded: [...out],
     allIn: Array(N).fill(false),
     acted: Array(N).fill(false),
-    hole: Array.from({ length: N }, () => [deck.pop() as Card, deck.pop() as Card]),
+    hole: Array.from({ length: N }, (_, p) => (out[p] ? [] : [deck.pop() as Card, deck.pop() as Card])),
     board: [],
     deck,
     street: 0,
-    currentBet: BB,
+    currentBet: opts.bb ?? BB,
     raises: 0,
     toAct: -1,
+    sb: opts.sb ?? SB,
+    bb: opts.bb ?? BB,
+    out,
     over: false,
     result: null,
     log: [],
   };
-  const sb = (button + 1) % N;
-  const bb = (button + 2) % N;
-  post(h, sb, SB);
-  post(h, bb, BB);
+  const seat = (from: number) => {
+    for (let i = 1; i <= N; i++) if (!out[(from + i) % N]) return (from + i) % N;
+    return from;
+  };
+  const sb = seat(button);
+  const bb = seat(sb);
+  post(h, sb, h.sb);
+  post(h, bb, h.bb);
   h.toAct = nextActor(h, bb);
   if (h.toAct === -1) endStreet(h);
   runBots(h);
@@ -255,7 +267,7 @@ export function legal(h: Hand) {
   return {
     toCall: Math.min(toCall, h.stacks[0]),
     canRaise: h.raises < MAX_RAISES && h.stacks[0] > toCall,
-    raiseTo: Math.min(h.currentBet + betSize(h.street), h.bets[0] + h.stacks[0]),
+    raiseTo: Math.min(h.currentBet + betSize(h), h.bets[0] + h.stacks[0]),
     pot: pot(h),
   };
 }

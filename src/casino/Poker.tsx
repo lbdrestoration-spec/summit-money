@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button, label } from "../ui";
 import { CardView, Slot } from "./CardView";
 import { best7, handName } from "./poker-eval";
+import { afterHand, BUY_IN, dealNext, finished as tourFinished, levelOf, blindsFor, prizeFor, startTour, type Tour } from "./poker-tourney";
 import { BB, BOT_STACK, N, NAMES, STYLES, legal, playHuman, startHand, type Hand } from "./poker-engine";
 
 type Table = { button: number; stacks: number[] };
@@ -21,6 +22,8 @@ export function Poker({
   const [table, setTable] = useState<Table | null>(null);
   const [hand, setHand] = useState<Hand | null>(null);
   const [buyIn, setBuyIn] = useState(200);
+  const [tour, setTour] = useState<Tour | null>(null);
+  const [prizePaid, setPrizePaid] = useState(false);
 
   function deal(stacks: number[], button: number) {
     const s = stacks.map((x, p) => (p === 0 ? x : x < BB * 4 ? BOT_STACK : x));
@@ -41,7 +44,35 @@ export function Poker({
     if (!hand) return;
     const next = playHuman(hand, a);
     setHand(next);
-    if (next.over) setTableStack(next.stacks[0]);
+    if (next.over && !tour) setTableStack(next.stacks[0]);
+  }
+
+  function enterSitAndGo() {
+    if (chips < BUY_IN) return;
+    adjust(-BUY_IN);
+    const t = startTour();
+    setTour(t);
+    setPrizePaid(false);
+    setHand(dealNext(t));
+  }
+  function tourNext() {
+    if (!hand || !tour || !hand.over) return;
+    const t = afterHand(tour, hand);
+    setTour(t);
+    setHand(dealNext(t));
+  }
+  function collectAndLeave() {
+    if (tour && hand && !prizePaid) {
+      const prize = prizeFor(afterHand(tour, hand).places[0]);
+      if (prize > 0) adjust(prize);
+      setPrizePaid(true);
+    }
+    setTour(null);
+    setHand(null);
+  }
+  function forfeit() {
+    setTour(null);
+    setHand(null);
   }
 
   function nextHand() {
@@ -59,7 +90,7 @@ export function Poker({
   }
 
   /* ---------- lobby ---------- */
-  if (!table || !hand) {
+  if ((!table && !tour) || !hand) {
     return (
       <div className="space-y-4">
         {tableStack > 0 ? (
@@ -94,6 +125,15 @@ export function Poker({
             <Button variant="lime" className="w-full" disabled={buyIn > chips} onClick={() => sit(buyIn, true)}>
               Sit down with {buyIn}
             </Button>
+            <div className="space-y-2 rounded-lg border border-cc-aqua/40 p-3">
+              <div className="font-cc text-xl text-cc-aqua">Sit &amp; go</div>
+              <p className="text-xs text-cc-muted">
+                Pay {BUY_IN}. Everyone starts with 1,000 tournament chips and blinds rise every 4 hands. Last one standing wins {prizeFor(1)}, second place gets {prizeFor(2)}. Closing the app mid-game forfeits the buy-in.
+              </p>
+              <Button className="w-full" disabled={chips < BUY_IN} onClick={enterSitAndGo}>
+                Enter sit &amp; go ({BUY_IN})
+              </Button>
+            </div>
             {chips < BUYINS[0] && <p className="text-xs text-cc-muted">You need at least {BUYINS[0]} chips to sit down. Log your day and save to earn more.</p>}
           </div>
         )}
@@ -116,12 +156,27 @@ export function Poker({
         : `${NAMES[r.winners[0]]} wins`;
   const winnerHand = r && r.showdown ? r.handNames[r.winners[0]] : null;
 
+  const after = tour && hand.over ? afterHand(tour, hand) : null;
+  const over = !!after && tourFinished(after);
+  const myPlace = after ? after.places[0] : null;
+  const prize = prizeFor(myPlace);
+  const [tsb, tbb] = tour ? blindsFor(tour.handNo) : [0, 0];
+
   return (
     <div className="space-y-4">
+      {tour && (
+        <div className="flex items-center justify-between rounded-lg border border-cc-aqua/40 px-3 py-2 text-xs">
+          <span className="text-cc-aqua">Sit &amp; go · level {levelOf(tour.handNo)}</span>
+          <span className="text-cc-muted">
+            Blinds {tsb}/{tbb} · hand {tour.handNo + 1}
+          </span>
+        </div>
+      )}
       <div className="grid grid-cols-3 gap-2">
         {[1, 2, 3].map((p) => (
           <div key={p} className={`rounded-lg border p-2 text-center ${hand.toAct === p ? "border-cc-aqua" : "border-cc-line"} ${hand.folded[p] ? "opacity-50" : ""}`}>
-            <div className="flex justify-center gap-1">
+            <div className="flex min-h-14 justify-center gap-1">
+              {hand.out[p] && <span className="self-center text-xs text-cc-muted">Out</span>}
               {hand.hole[p].map((c, i) => (
                 <CardView key={i} small card={reveal && !hand.folded[p] ? c : null} />
               ))}
@@ -167,7 +222,30 @@ export function Poker({
         </div>
       </div>
 
-      {hand.over && r ? (
+      {tour && over ? (
+        <div className="space-y-3">
+          <div className={`rounded-lg border p-3 text-center ${prize > 0 ? "border-cc-lime/50 text-cc-lime" : "border-cc-pink/50 text-cc-pink"}`}>
+            <div className="font-cc text-2xl uppercase">{myPlace === 1 ? "You won the sit & go" : `You finished ${myPlace === 2 ? "2nd" : myPlace === 3 ? "3rd" : "4th"}`}</div>
+            <div className="text-sm text-cc-snow">{prize > 0 ? `Prize: ${prize} chips` : "No prize this time."}</div>
+          </div>
+          <Button variant="lime" className="w-full" onClick={collectAndLeave}>
+            {prize > 0 ? `Collect ${prize} chips` : "Back to lobby"}
+          </Button>
+        </div>
+      ) : tour && hand.over && r ? (
+        <div className="space-y-3">
+          <div className={`rounded-lg border p-3 text-center ${net > 0 ? "border-cc-lime/50 text-cc-lime" : net < 0 ? "border-cc-pink/50 text-cc-pink" : "border-cc-line"}`}>
+            <div className="font-cc text-2xl uppercase">{winnerText}</div>
+            <div className="text-sm text-cc-snow">
+              you {net >= 0 ? "+" : ""}
+              {net}
+            </div>
+          </div>
+          <Button variant="lime" className="w-full" onClick={tourNext}>
+            Next hand
+          </Button>
+        </div>
+      ) : hand.over && r ? (
         <div className="space-y-3">
           <div className={`rounded-lg border p-3 text-center ${net > 0 ? "border-cc-lime/50 text-cc-lime" : net < 0 ? "border-cc-pink/50 text-cc-pink" : "border-cc-line"}`}>
             <div className="font-cc text-2xl uppercase">{winnerText}</div>
@@ -195,6 +273,11 @@ export function Poker({
             Raise to {lg.raiseTo}
           </Button>
         </div>
+      )}
+      {tour && !hand.over && (
+        <button className="min-h-11 w-full font-mono text-[10px] uppercase tracking-wider text-cc-muted" onClick={forfeit}>
+          Forfeit and leave
+        </button>
       )}
     </div>
   );
