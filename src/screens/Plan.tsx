@@ -128,6 +128,7 @@ const NEWS: string[] = [
   "Casino \"Your highs\": biggest payout, big wins and best visit",
   "Ride days: what a season on the hill costs in weeks of saving",
   "Windfall split: a lump sum fills your goals in proportion, one tap to apply",
+  "New casino game: Powder Drop, a ten-row peg board with three risk levels",
 ];
 const NEWS_SHOWN = 8;
 
