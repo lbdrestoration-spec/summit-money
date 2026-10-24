@@ -55,6 +55,35 @@ function BackupNudge({ state, onPlan }: { state: State; onPlan: () => void }) {
   );
 }
 
+export const HOME_SECTIONS: { id: string; label: string }[] = [
+  { id: "weeknudge", label: "Weekly nudge" },
+  { id: "countdowns", label: "Countdowns" },
+  { id: "paysplit", label: "Payday split" },
+  { id: "duesoon", label: "Due soon" },
+  { id: "payfirst", label: "Pay yourself first" },
+  { id: "lastweek", label: "Last week" },
+  { id: "rate", label: "Savings rate" },
+  { id: "milestones", label: "Milestones" },
+  { id: "yearend", label: "Year-end" },
+  { id: "leak", label: "Biggest leak" },
+  { id: "roundup", label: "Round-up jar" },
+  { id: "billscover", label: "Bills cover" },
+  { id: "interest", label: "Interest estimate" },
+  { id: "challenge", label: "52-week challenge" },
+  { id: "split", label: "Savings split" },
+  { id: "monthly", label: "Monthly bars" },
+  { id: "heat", label: "Saving heat map" },
+  { id: "whatif", label: "What if" },
+  { id: "runway", label: "Runway" },
+  { id: "timeline", label: "Timeline" },
+  { id: "runs", label: "Daily runs" },
+  { id: "urge", label: "Urge toolkit" },
+  { id: "prep", label: "Board prep" },
+  { id: "mountain", label: "Whitefish Mountain" },
+  { id: "local", label: "Whitefish list" },
+  { id: "weather", label: "Whitefish weather" },
+];
+
 const JUMPS = [
   { id: "h-goals", label: "Deadlines" },
   { id: "h-saving", label: "Saving" },
@@ -71,6 +100,7 @@ function skyFor(hour: number): { id: string; src: string; alt: string; video?: s
 }
 
 export function Home({ state, actions, onCasino, onPlan }: { state: State; actions: Actions; onCasino: () => void; onPlan: () => void }) {
+  const on = (id: string) => !state.hidden.includes(id);
   const sky = skyFor(new Date().getHours());
   const [shareNote, setShareNote] = useState("");
   const m = monthStats(state);
@@ -145,9 +175,9 @@ export function Home({ state, actions, onCasino, onPlan }: { state: State; actio
 
       <TodayStrip state={state} onCasino={onCasino} />
 
-      <WeekNudge state={state} actions={actions} />
+      {on("weeknudge") && <WeekNudge state={state} actions={actions} />}
 
-      <Countdowns state={state} />
+      {on("countdowns") && <Countdowns state={state} />}
 
       <p className="px-1 text-center font-cc text-xl italic leading-snug text-cc-snow/80">“{quoteOf(todayIso)}”</p>
       <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-cc-muted">
@@ -155,9 +185,9 @@ export function Home({ state, actions, onCasino, onPlan }: { state: State; actio
         {rank.next ? ` · ${money(rank.next.at - rank.saved)} to ${rank.next.name}` : ""}
       </div>
 
-      <PaydaySplit state={state} actions={actions} />
+      {on("paysplit") && <PaydaySplit state={state} actions={actions} />}
 
-      <DueSoon state={state} />
+      {on("duesoon") && <DueSoon state={state} />}
 
       <div id="h-goals" className="scroll-mt-4" />
       <DeadlineCards state={state} />
@@ -181,19 +211,19 @@ export function Home({ state, actions, onCasino, onPlan }: { state: State; actio
       )}
 
       <div id="h-saving" className="scroll-mt-4" />
-      <PayFirst state={state} actions={actions} />
-      <LastWeek state={state} />
-      <SavingsRate state={state} />
-      <Milestones state={state} />
-      <YearEnd state={state} />
-      <BiggestLeak state={state} />
-      <RoundUpJar state={state} actions={actions} />
-      <BillsCover state={state} />
-      <Interest state={state} actions={actions} />
-      <Challenge state={state} actions={actions} />
-      <SavingsSplit state={state} />
-      <MonthlyBars state={state} />
-      <SaveHeat state={state} />
+      {on("payfirst") && <PayFirst state={state} actions={actions} />}
+      {on("lastweek") && <LastWeek state={state} />}
+      {on("rate") && <SavingsRate state={state} />}
+      {on("milestones") && <Milestones state={state} />}
+      {on("yearend") && <YearEnd state={state} />}
+      {on("leak") && <BiggestLeak state={state} />}
+      {on("roundup") && <RoundUpJar state={state} actions={actions} />}
+      {on("billscover") && <BillsCover state={state} />}
+      {on("interest") && <Interest state={state} actions={actions} />}
+      {on("challenge") && <Challenge state={state} actions={actions} />}
+      {on("split") && <SavingsSplit state={state} />}
+      {on("monthly") && <MonthlyBars state={state} />}
+      {on("heat") && <SaveHeat state={state} />}
 
       <Card tone="lime">
         <div className="mb-2 flex items-end justify-between">
@@ -206,23 +236,25 @@ export function Home({ state, actions, onCasino, onPlan }: { state: State; actio
       <div id="h-pay" className="scroll-mt-4" />
       <FridayPayCard state={state} actions={actions} />
 
-      <WhatIf state={state} />
+      {on("whatif") && <WhatIf state={state} />}
 
-      <Runway state={state} />
+      {on("runway") && <Runway state={state} />}
 
-      <Timeline state={state} />
+      {on("timeline") && <Timeline state={state} />}
 
       <div id="h-tools" className="scroll-mt-4" />
-      <RunsCard state={state} />
+      {on("runs") && <RunsCard state={state} />}
 
-      <Urge state={state} actions={actions} onCasino={onCasino} />
+      {on("urge") && <Urge state={state} actions={actions} onCasino={onCasino} />}
 
-      <Prep state={state} actions={actions} />
-      <Mountain />
-      <Local state={state} actions={actions} />
-      <Weather />
+      {on("prep") && <Prep state={state} actions={actions} />}
+      {on("mountain") && <Mountain />}
+      {on("local") && <Local state={state} actions={actions} />}
+      {on("weather") && <Weather />}
 
       <BackupNudge state={state} onPlan={onPlan} />
+
+      <Customize state={state} actions={actions} />
 
       <Card>
         <Heading tone="aqua">This month</Heading>
@@ -237,5 +269,32 @@ export function Home({ state, actions, onCasino, onPlan }: { state: State; actio
         </div>
       </Card>
     </div>
+  );
+}
+
+/** Switch Home cards on and off so the screen only shows what you care about. */
+function Customize({ state, actions }: { state: State; actions: Actions }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <Card tone="violet">
+      <button className="flex min-h-11 w-full items-center justify-between text-left" aria-expanded={open} onClick={() => setOpen(!open)}>
+        <Heading tone="violet">Customize Home</Heading>
+        <span aria-hidden="true" className="text-xl text-cc-muted">
+          {open ? "−" : "+"}
+        </span>
+      </button>
+      {open && (
+        <ul className="mt-2 grid grid-cols-1 gap-0.5">
+          {HOME_SECTIONS.map((x) => (
+            <li key={x.id}>
+              <label className="flex min-h-11 items-center gap-3 text-sm">
+                <input type="checkbox" checked={!state.hidden.includes(x.id)} onChange={() => actions.toggleHidden(x.id)} className="h-5 w-5 accent-cc-violet" />
+                {x.label}
+              </label>
+            </li>
+          ))}
+        </ul>
+      )}
+    </Card>
   );
 }

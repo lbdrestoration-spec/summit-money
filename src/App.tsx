@@ -94,7 +94,7 @@ export default function App() {
     savedPrev.current = savedNow;
   }, [savedNow]);
   const seen = useRef<{ chip: string | undefined; rank: string; idx: number }>({ chip: state.chipLog[0]?.id, rank: rankOf(state).cur.name, idx: rankOf(state).index });
-  const [rankUp, setRankUp] = useState<{ kicker: string; name: string; image: string } | null>(null);
+  const [rankUp, setRankUp] = useState<{ kicker: string; name: string; image: string; video?: string } | null>(null);
   const rankIdx = rankOf(state).index;
   const rankName = rankOf(state).cur.name;
   const lastChip = state.chipLog[0];
@@ -123,7 +123,7 @@ export default function App() {
     if (fresh.length) {
       const b = state.buckets.find((x) => x.id === fresh[0]);
       setToast(`Goal reached: ${b?.name ?? "nice work"}`);
-      if (b) setRankUp({ kicker: "Goal reached", name: b.name, image: bucketPhoto(b.name, Math.max(0, state.buckets.filter((x) => x.target).findIndex((x) => x.id === b.id))) });
+      if (b) setRankUp({ kicker: "Goal reached", name: b.name, image: bucketPhoto(b.name, Math.max(0, state.buckets.filter((x) => x.target).findIndex((x) => x.id === b.id))), video: "/art/celebrate.mp4" });
       buzz([60, 40, 60, 40, 90]);
     }
     seenGoals.current = reached;
@@ -188,6 +188,12 @@ export default function App() {
           className="rise fixed inset-0 z-40 flex flex-col items-center justify-end bg-cc-night bg-cover bg-center p-8 pb-24 text-center"
           style={{ backgroundImage: `linear-gradient(to top, rgba(6,10,18,0.95), rgba(6,10,18,0.15) 60%), url(${rankUp.image})` }}
         >
+          {rankUp.video && (
+            <>
+              <video className="hero-video pointer-events-none absolute inset-0 -z-10 h-full w-full object-cover" src={rankUp.video} poster="/art/celebrate.webp" autoPlay muted loop playsInline aria-hidden="true" />
+              <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-t from-cc-night/90 via-cc-night/10 to-transparent" />
+            </>
+          )}
           <div className="font-mono text-xs uppercase tracking-[0.3em] text-cc-aqua">{rankUp.kicker}</div>
           <div className="mt-2 font-cc text-6xl font-bold uppercase leading-none text-cc-lime">{rankUp.name}</div>
           <div className="mt-4 font-mono text-[10px] uppercase tracking-[0.2em] text-cc-muted">Tap to keep going</div>

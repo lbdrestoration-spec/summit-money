@@ -90,6 +90,8 @@ export type State = {
   apy: number;
   /** Debts tracked in the payoff planner */
   debts: Debt[];
+  /** Home sections the user switched off */
+  hidden: string[];
 };
 
 export const DEFAULT_CATEGORIES = ["Food", "Gas", "Fun", "Business", "Shopping", "Other"];
@@ -121,6 +123,7 @@ export const emptyState = (): State => ({
   shop: { owned: [], back: "classic", felt: "classic", spent: 0 },
   apy: 4,
   debts: [],
+  hidden: [],
   challenge: [],
   challengeStep: 1,
   roundMoved: 0,

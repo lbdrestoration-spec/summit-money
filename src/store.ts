@@ -171,6 +171,7 @@ export function useStore() {
     addDebt: (name: string, balance: number, apr: number, payment: number) =>
       update((s) => (balance > 0 && payment > 0 && name.trim() ? { ...s, debts: [...s.debts, { id: uid(), name: name.trim(), balance, apr: Math.max(0, apr), payment }] } : s)),
     removeDebt: (id: string) => update((s) => ({ ...s, debts: s.debts.filter((d) => d.id !== id) })),
+    toggleHidden: (id: string) => update((s) => ({ ...s, hidden: s.hidden.includes(id) ? s.hidden.filter((x) => x !== id) : [...s.hidden, id] })),
     prepDone: (date: string) => update((s) => (s.prepDays.includes(date) ? s : { ...s, prepDays: [...s.prepDays, date] })),
     /** 52-week challenge: week n deposits n x step into a bucket. Undo removes that deposit again. */
     challengeMark: (week: number, bucketId: string, date: string) =>
