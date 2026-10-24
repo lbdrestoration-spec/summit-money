@@ -67,7 +67,60 @@ function BucketEditor({ bucket, onSave, onCancel }: { bucket: Bucket; onSave: (p
   );
 }
 
+/** Newest last. The card shows the latest few and can expand to everything. */
+const NEWS: string[] = [
+  "Home leads with saving: milestone ETA, saving streak, split by bucket",
+  "52-week challenge, one-tap Pay yourself first, snow burst on every deposit",
+  "Goals show your pace and finish date; skipped bets can move into savings",
+  "Blackjack insurance when the dealer shows an ace",
+  "The + button saves too: Spend and Save tabs",
+  "Home photo moves with the clock: dawn, day, golden hour, aurora night",
+  "Round-up jar, bills cushion, year-end forecast, saving days grid",
+  "Plan tab: edit buckets, take money out, remove a mistaken deposit, export CSV",
+  "Share a picture of your progress from the Home photo",
+  "Rank-up and goal-reached celebrations, trophy toasts",
+  "Undo button after any deposit, weekly saving ring on the photo",
+  "Goal history charts, biggest-leak card, works offline",
+  "Quick spend: the orange + button on every screen",
+  "Live Whitefish temperature and 5-day snow forecast on Home",
+  "Payday card suggests what to move into each bucket",
+  "Trail ranks, 20 trophies, daily runs for bonus chips",
+  "Feeling the urge? A 10-minute pause and a kept-in-pocket tally",
+  "Trip budgets for Dec 10 and July, plus a Montana checklist",
+  "What if slider, 14-day timeline, month calendar, runway",
+  "Casino: spinning wheel, blackjack split, lodge table, sounds",
+  "Snowflake button up top: cabin wind and fire ambience",
+  "Hold the app icon for shortcuts: Save, Spend, Casino, Goals",
+  "Whitefish Mountain card: summit snow, wind, forecast, sun times",
+  "Board prep: 5-minute daily circuit and Dec 10 countdown",
+  "Casino: Gondola Run game, daily wheel, missions and chest",
+  "Poker bots with different styles, live hand name and pot odds",
+  "Sound sliders on this tab",
+  "Video poker, Hi-Lo, daily trivia, chip shop in the Casino",
+  "Interest estimate, debt payoff planner, calendar export",
+  "Whitefish list, today strip, customize which Home cards show",
+  "Poker sit and go: 4 players, rising blinds, top two paid",
+  "History search, Paid? toggle on due-soon bills, lodge music",
+  "Month recap: saved, spent, top category, no-spend days",
+  "Think it over: what a purchase costs in weeks of saving",
+  "Gondola Run keeps your last 10 scores; 8 more Whitefish list ideas",
+  "Plan tab has its own cabin-window video",
+  "Snow Slots and a free daily scratch card in the Casino",
+  "Poker School: practice calling the winner of a showdown",
+  "Avalanche, Powder Dice, Baccarat and Keno: 12 Casino games in all",
+  "The + button offers your usual spends and saves in one tap",
+  "Year so far: best month, top category, and a share picture",
+  "Trip readiness gauge in the last 60 days before the ski trip",
+  "Vibration on/off switch in the Sound card; sort goals by progress or date",
+  "Home photo turns to a snowstorm when it's snowing in Whitefish",
+  "Days on snow: count your rides and see the cost per day",
+  "Bills per year, with what dropping one would free up",
+  "Tax set-aside estimate for side income, one tap into a Tax bucket",
+];
+const NEWS_SHOWN = 8;
+
 export function Plan({ state, actions, onEditPlan }: { state: State; actions: Actions; onEditPlan: () => void }) {
+  const [showAllNews, setShowAllNews] = useState(false);
   /* side income */
   const [incAmt, setIncAmt] = useState("");
   const [incNote, setIncNote] = useState("");
@@ -149,54 +202,13 @@ export function Plan({ state, actions, onEditPlan }: { state: State; actions: Ac
       <Card tone="aqua" className="space-y-2">
         <Heading>What's new</Heading>
         <ul className="space-y-1 text-sm text-cc-snow/90">
-          <li>Home leads with saving: milestone ETA, saving streak, split by bucket</li>
-          <li>52-week challenge, one-tap Pay yourself first, snow burst on every deposit</li>
-          <li>Goals show your pace and finish date; skipped bets can move into savings</li>
-          <li>Blackjack insurance when the dealer shows an ace</li>
-          <li>The + button saves too: Spend and Save tabs</li>
-          <li>Home photo moves with the clock: dawn, day, golden hour, aurora night</li>
-          <li>Round-up jar, bills cushion, year-end forecast, saving days grid</li>
-          <li>Plan tab: edit buckets, take money out, remove a mistaken deposit, export CSV</li>
-          <li>Share a picture of your progress from the Home photo</li>
-          <li>Rank-up and goal-reached celebrations, trophy toasts</li>
-          <li>Undo button after any deposit, weekly saving ring on the photo</li>
-          <li>Goal history charts, biggest-leak card, works offline</li>
-          <li>Quick spend: the orange + button on every screen</li>
-          <li>Live Whitefish temperature and 5-day snow forecast on Home</li>
-          <li>Payday card suggests what to move into each bucket</li>
-          <li>Trail ranks, 20 trophies, daily runs for bonus chips</li>
-          <li>Feeling the urge? A 10-minute pause and a kept-in-pocket tally</li>
-          <li>Trip budgets for Dec 10 and July, plus a Montana checklist</li>
-          <li>What if slider, 14-day timeline, month calendar, runway</li>
-          <li>Casino: spinning wheel, blackjack split, lodge table, sounds</li>
-          <li>Snowflake button up top: cabin wind and fire ambience</li>
-          <li>Hold the app icon for shortcuts: Save, Spend, Casino, Goals</li>
-          <li>Whitefish Mountain card: summit snow, wind, forecast, sun times</li>
-          <li>Board prep: 5-minute daily circuit and Dec 10 countdown</li>
-          <li>Casino: Gondola Run game, daily wheel, missions and chest</li>
-          <li>Poker bots with different styles, live hand name and pot odds</li>
-          <li>Sound sliders on this tab</li>
-          <li>Video poker, Hi-Lo, daily trivia, chip shop in the Casino</li>
-          <li>Interest estimate, debt payoff planner, calendar export</li>
-          <li>Whitefish list, today strip, customize which Home cards show</li>
-          <li>Poker sit and go: 4 players, rising blinds, top two paid</li>
-          <li>History search, Paid? toggle on due-soon bills, lodge music</li>
-          <li>Month recap: saved, spent, top category, no-spend days</li>
-          <li>Think it over: what a purchase costs in weeks of saving</li>
-          <li>Gondola Run keeps your last 10 scores; 8 more Whitefish list ideas</li>
-          <li>Plan tab has its own cabin-window video</li>
-          <li>Snow Slots and a free daily scratch card in the Casino</li>
-          <li>Poker School: practice calling the winner of a showdown</li>
-          <li>Avalanche, Powder Dice, Baccarat and Keno: 12 Casino games in all</li>
-          <li>The + button offers your usual spends and saves in one tap</li>
-          <li>Year so far: best month, top category, and a share picture</li>
-          <li>Trip readiness gauge in the last 60 days before the ski trip</li>
-          <li>Vibration on/off switch in the Sound card; sort goals by progress or date</li>
-          <li>Home photo turns to a snowstorm when it's snowing in Whitefish</li>
-          <li>Days on snow: count your rides and see the cost per day</li>
-          <li>Bills per year, with what dropping one would free up</li>
-          <li>Tax set-aside estimate for side income, one tap into a Tax bucket</li>
+          {(showAllNews ? [...NEWS].reverse() : [...NEWS].reverse().slice(0, NEWS_SHOWN)).map((t) => (
+            <li key={t}>{t}</li>
+          ))}
         </ul>
+        <button className="min-h-11 font-mono text-[10px] uppercase tracking-wider text-cc-aqua" aria-expanded={showAllNews} onClick={() => setShowAllNews(!showAllNews)}>
+          {showAllNews ? "Show fewer" : `Show all ${NEWS.length}`}
+        </button>
       </Card>
       <Recap state={state} />
       <YearReview state={state} />
